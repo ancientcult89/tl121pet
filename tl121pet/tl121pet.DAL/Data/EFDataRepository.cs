@@ -17,5 +17,7 @@ namespace tl121pet.DAL.Data
         public IQueryable<SkillType> SkillTypes => _dataContext.SkillTypes;
 
         public IQueryable<Grade> Grades => _dataContext.Grades;
+
+        public IQueryable<Skill> Skills => _dataContext.Skills;
     }
 }

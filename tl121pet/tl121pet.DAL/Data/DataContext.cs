@@ -9,6 +9,7 @@ namespace tl121pet.DAL.Data
 
         public DbSet<Person> People => Set<Person>();
         public DbSet<ProjectTeam> ProjectTeams => Set<ProjectTeam>();
+        public DbSet<Skill> Skills => Set<Skill>();
         public DbSet<SkillGroup> SkillGroups => Set<SkillGroup>();
         public DbSet<SkillType> SkillTypes => Set<SkillType>();
         public DbSet<Grade> Grades => Set<Grade>();

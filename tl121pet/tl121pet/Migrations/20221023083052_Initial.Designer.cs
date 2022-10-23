@@ -11,7 +11,7 @@ using tl121pet.DAL.Data;
 namespace tl121pet.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221023080100_Initial")]
+    [Migration("20221023083052_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -95,6 +95,33 @@ namespace tl121pet.Migrations
                     b.ToTable("ProjectTeams");
                 });
 
+            modelBuilder.Entity("tl121pet.Entities.Models.Skill", b =>
+                {
+                    b.Property<long>("SkillId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SkillId"));
+
+                    b.Property<long>("SkillGroupId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("SkillTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SkillsDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("SkillId");
+
+                    b.HasIndex("SkillGroupId");
+
+                    b.HasIndex("SkillTypeId");
+
+                    b.ToTable("Skills");
+                });
+
             modelBuilder.Entity("tl121pet.Entities.Models.SkillGroup", b =>
                 {
                     b.Property<long>("SkillGroupId")
@@ -146,6 +173,25 @@ namespace tl121pet.Migrations
                     b.Navigation("Grade");
 
                     b.Navigation("ProjectTeam");
+                });
+
+            modelBuilder.Entity("tl121pet.Entities.Models.Skill", b =>
+                {
+                    b.HasOne("tl121pet.Entities.Models.SkillGroup", "SkillGroup")
+                        .WithMany()
+                        .HasForeignKey("SkillGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("tl121pet.Entities.Models.SkillType", "SkillType")
+                        .WithMany()
+                        .HasForeignKey("SkillTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SkillGroup");
+
+                    b.Navigation("SkillType");
                 });
 #pragma warning restore 612, 618
         }

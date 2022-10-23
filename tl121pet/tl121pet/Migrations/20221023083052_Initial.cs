@@ -91,6 +91,33 @@ namespace tl121pet.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Skills",
+                columns: table => new
+                {
+                    SkillId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SkillsDescription = table.Column<string>(type: "text", nullable: false),
+                    SkillTypeId = table.Column<int>(type: "integer", nullable: false),
+                    SkillGroupId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skills", x => x.SkillId);
+                    table.ForeignKey(
+                        name: "FK_Skills_SkillGroups_SkillGroupId",
+                        column: x => x.SkillGroupId,
+                        principalTable: "SkillGroups",
+                        principalColumn: "SkillGroupId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Skills_SkillTypes_SkillTypeId",
+                        column: x => x.SkillTypeId,
+                        principalTable: "SkillTypes",
+                        principalColumn: "SkillTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_People_GradeId",
                 table: "People",
@@ -100,6 +127,16 @@ namespace tl121pet.Migrations
                 name: "IX_People_ProjectTeamId",
                 table: "People",
                 column: "ProjectTeamId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skills_SkillGroupId",
+                table: "Skills",
+                column: "SkillGroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Skills_SkillTypeId",
+                table: "Skills",
+                column: "SkillTypeId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -108,16 +145,19 @@ namespace tl121pet.Migrations
                 name: "People");
 
             migrationBuilder.DropTable(
-                name: "SkillGroups");
-
-            migrationBuilder.DropTable(
-                name: "SkillTypes");
+                name: "Skills");
 
             migrationBuilder.DropTable(
                 name: "Grades");
 
             migrationBuilder.DropTable(
                 name: "ProjectTeams");
+
+            migrationBuilder.DropTable(
+                name: "SkillGroups");
+
+            migrationBuilder.DropTable(
+                name: "SkillTypes");
         }
     }
 }
