@@ -1,0 +1,6 @@
+--postgresql
+start docker image postgres, see port and edit config connection string
+
+--migrations
+dotnet ef migrations add Initial 
+dotnet ef database update
