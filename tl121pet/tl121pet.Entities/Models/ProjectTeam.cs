@@ -6,6 +6,6 @@ namespace tl121pet.Entities.Models
     public class ProjectTeam
     {
         public long ProjectTeamId { get; set; }
-        public string ProjectTeamName { get; set; }
+        public string ProjectTeamName { get; set; } = string.Empty;
     }
 }

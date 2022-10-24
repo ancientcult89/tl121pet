@@ -3,10 +3,13 @@ using tl121pet.Entities.Models;
 
 namespace tl121pet.DAL.Data
 {
-    internal class EFDataRepository : IDataRepository
+    public class EFDataRepository : IDataRepository
     {
         private readonly DataContext _dataContext;
-        public EFDataRepository(DataContext dataContext) => _dataContext = dataContext;
+        public EFDataRepository(DataContext dataContext)
+        {
+            _dataContext = dataContext;
+        }
 
         public IQueryable<Person> People => _dataContext.People;
 
@@ -19,5 +22,11 @@ namespace tl121pet.DAL.Data
         public IQueryable<Grade> Grades => _dataContext.Grades;
 
         public IQueryable<Skill> Skills => _dataContext.Skills;
+
+        public async void DeletePersonAsync(Person person)
+        { 
+            _dataContext.People.Remove(person);
+            await _dataContext.SaveChangesAsync(true);
+        }
     }
 }

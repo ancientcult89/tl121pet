@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>TeamLead helper</title>
+        <link href="/lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="/lib/font-awesome/css/all.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="bg-dark text-white p-2">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col navbar-brand">TeamLead Helper</div>
+                </div>
+            </div>
+        </div>
+        <div class="row m-1 p-1">
+            <div id="categories" class="col-2">
+                <vc:navigation-menu />
+            </div>
+            <div class="col-9">
+                @RenderBody()
+            </div>
+        </div>
+    </body>
+</html>

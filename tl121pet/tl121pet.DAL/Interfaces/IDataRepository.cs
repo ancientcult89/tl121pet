@@ -15,5 +15,7 @@ namespace tl121pet.DAL.Interfaces
         public IQueryable<SkillType> SkillTypes { get; }
         public IQueryable<Grade> Grades { get; }
         public IQueryable<Skill> Skills { get; }
+
+        void DeletePersonAsync(Person person);
     }
 }

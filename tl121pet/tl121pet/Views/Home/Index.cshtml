@@ -1,0 +1,37 @@
+﻿@model List<Person>
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<table class="table table-sm table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th><th>Name</th><th>Grade</th><th>Project Team</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Person p in Model ?? Enumerable.Empty<Person>())
+        {
+            <form asp-action="delete" method="post" asp-route-id="@p.PersonId">
+                <tr class="">
+                    <td>@p.PersonId</td>
+                    <td>@p.LastName, @p.FirstName</td>
+                    <td>
+                        @p.Grade?.GradeName
+                    </td>
+                    <td>
+                        @p.ProjectTeam?.ProjectTeamName
+                    </td>
+                    <td class="text-center">
+                        <form>
+                            <input type="hidden" name="Id" value="@p.PersonId" />
+                            <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@p.PersonId" >Edit</a>
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </form>
+
+        }
+    </tbody>
+</table>

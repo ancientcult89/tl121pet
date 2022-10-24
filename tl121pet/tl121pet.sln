@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tl121pet", "tl121pet\tl121pet.csproj", "{95D7F814-DAB6-4F7A-B8B3-F7C7511C5DC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tl121pet", "tl121pet\tl121pet.csproj", "{95D7F814-DAB6-4F7A-B8B3-F7C7511C5DC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tl121pet.Entities", "tl121pet.Entities\tl121pet.Entities.csproj", "{1DEB06D8-6060-46B8-A7D6-62F74EF0CF58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tl121pet.Entities", "tl121pet.Entities\tl121pet.Entities.csproj", "{1DEB06D8-6060-46B8-A7D6-62F74EF0CF58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tl121pet.DAL", "tl121pet.DAL\tl121pet.DAL.csproj", "{010AD02E-4752-459F-8D76-B2CDC447E499}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tl121pet.DAL", "tl121pet.DAL\tl121pet.DAL.csproj", "{010AD02E-4752-459F-8D76-B2CDC447E499}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tl121pet.Services", "tl121pet.Services\tl121pet.Services.csproj", "{0FBB0867-9119-45DF-9659-D745405697DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tl121pet.Services", "tl121pet.Services\tl121pet.Services.csproj", "{0FBB0867-9119-45DF-9659-D745405697DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tl121pet.Tests", "tl121pet.Tests\tl121pet.Tests.csproj", "{B9CFFA21-A090-489E-AFB2-166557B24CE7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tl121pet.Tests", "tl121pet.Tests\tl121pet.Tests.csproj", "{B9CFFA21-A090-489E-AFB2-166557B24CE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
