@@ -1,5 +1,4 @@
 ﻿using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 

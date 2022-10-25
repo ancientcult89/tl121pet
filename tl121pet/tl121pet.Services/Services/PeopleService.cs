@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.DAL.Data;
 
@@ -12,27 +11,27 @@ namespace tl121pet.Services.Services
         { 
             _dataContext = dataContext;
         }
-        public List<Person> GetAllPeople()
-        {
-            return _dataContext.People.ToList();
-        }
 
-        public async void CreatePersonAsync(Person person)
+        public List<Person> People => _dataContext.People.ToList();
+
+        public void CreatePerson(Person person)
         {
             //person.ProjectTeamId = default;
-            //_dataContext.People.Add(person);
-            //await _dataContext.SaveChangesAsync();
+            _dataContext.People.Add(person);
+            _dataContext.SaveChanges();
         }
 
-        public Person GetPerson(long id)
-        {
-            return _dataContext.People.Find(id) ?? new Person();
-        }
-
-        public async void UpdatePersonAsync(Person person)
+        public void UpdatePerson(Person person)
         {
             _dataContext.People.Update(person);
-            await _dataContext.SaveChangesAsync();
+            _dataContext.SaveChanges();
+        }
+
+        public void DeletePerson(long id)
+        {
+            var personToDelete = _dataContext.People.Find(id);
+            _dataContext.People.Remove(personToDelete);
+            _dataContext.SaveChanges();            
         }
     }
 }

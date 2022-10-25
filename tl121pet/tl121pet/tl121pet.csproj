@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\tl121pet.DAL\tl121pet.DAL.csproj" />
     <ProjectReference Include="..\tl121pet.Entities\tl121pet.Entities.csproj" />
     <ProjectReference Include="..\tl121pet.Services\tl121pet.Services.csproj" />
   </ItemGroup>

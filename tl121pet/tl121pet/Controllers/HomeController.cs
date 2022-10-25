@@ -1,20 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using tl121pet.Data;
+using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Controllers
 {
     public class HomeController : Controller
     {
-        //private IPeopleService _peopleService;
+        private IPeopleService _peopleService;
         private DataContext _dataContext;
-        //private IDataRepository _dataRepository;
-        public HomeController(DataContext dataContext)
+        public HomeController(DataContext dataContext, IPeopleService peopleService)
         {
 
             _dataContext = dataContext;
-            //_dataRepository = dataRepository;
+            _peopleService = peopleService;
         }
         public IActionResult Index()
         {
@@ -27,26 +27,41 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([FromForm] Person person)
+        public IActionResult Edit([FromForm] Person person)
         {
             if (ModelState.IsValid)
             {                
-                _dataContext.People.Update(person);
-                await _dataContext.SaveChangesAsync();
+                _peopleService.UpdatePerson(person);
                 return RedirectToAction("Index");
             }
             return View("PersonEditor", new Person());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(long id)
+        public IActionResult Delete(long id)
         {
-            var personToDelete = _dataContext.People.Find(id);
-            _dataContext.People.Remove(personToDelete);
-            await _dataContext.SaveChangesAsync();
+            _peopleService.DeletePerson(id);
             return RedirectToAction("Index");
         }
 
+        public IActionResult Create()
+        {
+            return View("PersonCreator", new Person());
+        }
+
+        [HttpPost]
+        public IActionResult Create([FromForm] Person person)
+        {
+            if (ModelState.IsValid)
+            {
+                _peopleService.CreatePerson(person);
+                return RedirectToAction("Index");
+            }
+            return View("PersonEditor", new Person());
+        }
+
+
+        //test db endpoint
         [HttpDelete("/api/DeletePerson/{id}")]
         public string DeletePerson(long id)
         { 
@@ -55,6 +70,5 @@ namespace tl121pet.Controllers
             _dataContext.SaveChanges();
             return "Ok";
         }
-
     }
 }

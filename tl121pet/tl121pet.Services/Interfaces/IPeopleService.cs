@@ -4,11 +4,8 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IPeopleService
     {
-        public List<Person> GetAllPeople();
-
-        public void CreatePersonAsync(Person person);
-        public Person GetPerson(long id);
-
-        public void UpdatePersonAsync(Person person);
+        public void CreatePerson(Person person);
+        public void UpdatePerson(Person person);
+        public void DeletePerson(long id);
     }
 }
