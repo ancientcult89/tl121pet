@@ -25,6 +25,7 @@
                     <td class="text-center">
                         <form>
                             <input type="hidden" name="Id" value="@p.PersonId" />
+                            <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@p.PersonId" >Details</a>
                             <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@p.PersonId" >Edit</a>
                             <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                         </form>
