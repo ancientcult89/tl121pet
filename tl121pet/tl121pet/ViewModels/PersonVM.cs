@@ -11,6 +11,8 @@ namespace tl121pet.ViewModels
         public string Theme => themeDict[Mode];
         public bool IsReadonly => Mode == FormMode.Details ? true : false;
 
+        public string ReadonlyTag => IsReadonly ? "readonly" : "";
+
         private Dictionary<FormMode, string> themeDict = new Dictionary<FormMode, string>() {
             { FormMode.Edit, "warning" },
             { FormMode.Create, "success" },

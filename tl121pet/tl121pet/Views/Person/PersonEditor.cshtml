@@ -19,37 +19,37 @@
         <div>
             <span asp-validation-for="SelectedPerson.FirstName" class="text-danger"></span>
         </div>
-        <input class="form-control" asp-for="SelectedPerson.FirstName"/>
+        <input class="form-control" asp-for="SelectedPerson.FirstName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
         <label asp-for="SelectedPerson.LastName"></label>
         <div>
             <span asp-validation-for="SelectedPerson.LastName" class="text-danger"></span>
         </div>
-        <input class="form-control" asp-for="SelectedPerson.LastName"/>
+        <input class="form-control" asp-for="SelectedPerson.LastName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
         <label asp-for="SelectedPerson.SurName"></label>
         <div>
             <span asp-validation-for="SelectedPerson.SurName" class="text-danger"></span>
         </div>
-        <input class="form-control" asp-for="SelectedPerson.SurName"/>
+        <input class="form-control" asp-for="SelectedPerson.SurName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
-        <label asp-for="SelectedPerson.ProjectTeamId"></label>
+        <label>Project Team</label>
         <div>
             <span asp-validation-for="SelectedPerson.ProjectTeamId" class="text-danger"></span>
         </div>
-        <select asp-for="SelectedPerson.ProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectTeamService.GetAllTeams(), "ProjectTeamId", "ProjectTeamName"))">
+        <select asp-for="SelectedPerson.ProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectTeamService.GetAllTeams(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
             <option value="" disabled selected>Choose a Team</option>
         </select>
     </div>
         <div class="form-group">
-        <label asp-for="SelectedPerson.GradeId"></label>
+        <label>Grade</label>
         <div>
             <span asp-validation-for="SelectedPerson.GradeId" class="text-danger"></span>
         </div>
-        <select asp-for="SelectedPerson.GradeId" class="form-control" asp-items="@(new SelectList(_gradeService.GetAllGrades(), "GradeId", "GradeName"))">
+        <select asp-for="SelectedPerson.GradeId" class="form-control" asp-items="@(new SelectList(_gradeService.GetAllGrades(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
             <option value="" disabled selected>Choose a Suplier</option>
         </select>
     </div>
