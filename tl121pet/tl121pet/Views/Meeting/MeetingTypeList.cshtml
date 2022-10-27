@@ -1,0 +1,33 @@
+﻿@model List<MeetingType>
+@{
+    ViewData["Title"] = "Meeting Type";
+}
+
+<table class="table table-sm table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th><th>Name</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(MeetingType mt in Model ?? Enumerable.Empty<MeetingType>())
+        {
+            <form asp-action="DeleteMeetingType" method="post" asp-route-id="@mt.MeetingTypeId">
+                <tr class="">
+                    <td>@mt.MeetingTypeId</td>
+                    <td>@mt.MeetingTypeName</td>
+                    <td class="text-center">
+                        <form>
+                            <input type="hidden" name="Id" value="@mt.MeetingTypeId" />
+                            <a class="btn btn-sm btn-primary" asp-action="MeetingTypeDetails" asp-route-id="@mt.MeetingTypeId" >Details</a>
+                            <a class="btn btn-sm btn-warning" asp-action="MeetingTypeEdit" asp-route-id="@mt.MeetingTypeId" >Edit</a>
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </form>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-sm btn-primary p-2" asp-action="MeetingTypeCreate" >Create</a>

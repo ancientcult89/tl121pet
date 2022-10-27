@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -21,6 +22,19 @@ namespace tl121pet.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Grades", x => x.GradeId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MeetingType",
+                columns: table => new
+                {
+                    MeetingTypeId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MeetingTypeName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeetingType", x => x.MeetingTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -111,6 +125,66 @@ namespace tl121pet.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Meeting",
+                columns: table => new
+                {
+                    MeetingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MeetingTypeId = table.Column<int>(type: "integer", nullable: false),
+                    PersonId = table.Column<long>(type: "bigint", nullable: false),
+                    MeetingDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Meeting", x => x.MeetingId);
+                    table.ForeignKey(
+                        name: "FK_Meeting_MeetingType_MeetingTypeId",
+                        column: x => x.MeetingTypeId,
+                        principalTable: "MeetingType",
+                        principalColumn: "MeetingTypeId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Meeting_People_PersonId",
+                        column: x => x.PersonId,
+                        principalTable: "People",
+                        principalColumn: "PersonId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MeetingNotes",
+                columns: table => new
+                {
+                    MeetingNoteId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MeetingNoteContent = table.Column<string>(type: "text", nullable: false),
+                    MeetingId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeetingNotes", x => x.MeetingNoteId);
+                    table.ForeignKey(
+                        name: "FK_MeetingNotes_Meeting_MeetingId",
+                        column: x => x.MeetingId,
+                        principalTable: "Meeting",
+                        principalColumn: "MeetingId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Meeting_MeetingTypeId",
+                table: "Meeting",
+                column: "MeetingTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Meeting_PersonId",
+                table: "Meeting",
+                column: "PersonId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeetingNotes_MeetingId",
+                table: "MeetingNotes",
+                column: "MeetingId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_People_GradeId",
                 table: "People",
@@ -130,7 +204,7 @@ namespace tl121pet.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "People");
+                name: "MeetingNotes");
 
             migrationBuilder.DropTable(
                 name: "ProjectTeams");
@@ -139,13 +213,22 @@ namespace tl121pet.Migrations
                 name: "Skills");
 
             migrationBuilder.DropTable(
-                name: "Grades");
+                name: "Meeting");
 
             migrationBuilder.DropTable(
                 name: "SkillGroups");
 
             migrationBuilder.DropTable(
                 name: "SkillTypes");
+
+            migrationBuilder.DropTable(
+                name: "MeetingType");
+
+            migrationBuilder.DropTable(
+                name: "People");
+
+            migrationBuilder.DropTable(
+                name: "Grades");
         }
     }
 }
