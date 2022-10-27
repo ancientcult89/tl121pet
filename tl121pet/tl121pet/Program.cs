@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
-using tl121pet.Services.Interfaces;
-using tl121pet.Services.Services;
+using tl121pet.DAL.Interfaces;
+using tl121pet.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
 builder.Services.AddControllersWithViews();
-builder.Services.AddScoped<IPeopleService, PeopleService>();
-builder.Services.AddScoped<IProjectTeamService, ProjectTeamService>();
-builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
+builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 
 var app = builder.Build();
 

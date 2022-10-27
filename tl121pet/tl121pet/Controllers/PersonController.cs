@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
-using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
@@ -10,17 +10,17 @@ namespace tl121pet.Controllers
 {
     public class PersonController : Controller
     {
-        private IPeopleService _peopleService;
+        private IPeopleRepository _peopleRepository;
         private DataContext _dataContext;
-        public PersonController(DataContext dataContext, IPeopleService peopleService)
+        public PersonController(DataContext dataContext, IPeopleRepository peopleRepository)
         {
 
             _dataContext = dataContext;
-            _peopleService = peopleService;
+            _peopleRepository = peopleRepository;
         }
         public IActionResult Index()
         {
-            return View(_dataContext.People.Include(p => p.Grade).Include(p => p.ProjectTeam).ToList());
+            return View("PeopleList", _dataContext.People.Include(p => p.Grade).ToList());
         }
 
         public IActionResult Details(long id)
@@ -38,7 +38,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                _peopleService.UpdatePerson(personVM.SelectedPerson);
+                _peopleRepository.UpdatePerson(personVM.SelectedPerson);
                 return RedirectToAction("Index");
             }
             return View("PersonEditor", personVM);
@@ -47,7 +47,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult Delete(long id)
         {
-            _peopleService.DeletePerson(id);
+            _peopleRepository.DeletePerson(id);
             return RedirectToAction("Index");
         }
 
@@ -61,7 +61,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                _peopleService.CreatePerson(personVM.SelectedPerson);
+                _peopleRepository.CreatePerson(personVM.SelectedPerson);
                 return RedirectToAction("Index");
             }
             return View("PersonEditor", new PersonVM() { SelectedPerson = new Person(), Mode = FormMode.Create });

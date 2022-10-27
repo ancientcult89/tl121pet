@@ -11,7 +11,7 @@ using tl121pet.DAL.Data;
 namespace tl121pet.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221025133913_Initial")]
+    [Migration("20221027124021_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,9 +62,6 @@ namespace tl121pet.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("ProjectTeamId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("SurName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -72,8 +69,6 @@ namespace tl121pet.Migrations
                     b.HasKey("PersonId");
 
                     b.HasIndex("GradeId");
-
-                    b.HasIndex("ProjectTeamId");
 
                     b.ToTable("People");
                 });
@@ -164,15 +159,7 @@ namespace tl121pet.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("tl121pet.Entities.Models.ProjectTeam", "ProjectTeam")
-                        .WithMany()
-                        .HasForeignKey("ProjectTeamId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Grade");
-
-                    b.Navigation("ProjectTeam");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.Skill", b =>

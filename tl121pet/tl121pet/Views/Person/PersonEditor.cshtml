@@ -1,6 +1,6 @@
-﻿@using tl121pet.ViewModels
-@inject IProjectTeamService _projectTeamService
-@inject IGradeService _gradeService
+﻿@using tl121pet.DAL.Interfaces
+@using tl121pet.ViewModels
+@inject IGradeRepository _gradeRepository
 @model PersonVM
 <partial name="_Validation"></partial>
 
@@ -36,21 +36,12 @@
         <input class="form-control" asp-for="SelectedPerson.SurName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
-        <label>Project Team</label>
-        <div>
-            <span asp-validation-for="SelectedPerson.ProjectTeamId" class="text-danger"></span>
-        </div>
-        <select asp-for="SelectedPerson.ProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectTeamService.GetAllTeams(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
-            <option value="" disabled selected>Choose a Team</option>
-        </select>
-    </div>
-        <div class="form-group">
         <label>Grade</label>
         <div>
             <span asp-validation-for="SelectedPerson.GradeId" class="text-danger"></span>
         </div>
-        <select asp-for="SelectedPerson.GradeId" class="form-control" asp-items="@(new SelectList(_gradeService.GetAllGrades(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
-            <option value="" disabled selected>Choose a Suplier</option>
+        <select asp-for="SelectedPerson.GradeId" class="form-control" asp-items="@(new SelectList(_gradeRepository.GetAllGrades(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
+            <option value="" disabled selected>Choose a Grade</option>
         </select>
     </div>
 

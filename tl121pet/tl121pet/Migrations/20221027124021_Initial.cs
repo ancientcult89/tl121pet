@@ -71,8 +71,7 @@ namespace tl121pet.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     SurName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
-                    GradeId = table.Column<long>(type: "bigint", nullable: false),
-                    ProjectTeamId = table.Column<long>(type: "bigint", nullable: false)
+                    GradeId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -82,12 +81,6 @@ namespace tl121pet.Migrations
                         column: x => x.GradeId,
                         principalTable: "Grades",
                         principalColumn: "GradeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_People_ProjectTeams_ProjectTeamId",
-                        column: x => x.ProjectTeamId,
-                        principalTable: "ProjectTeams",
-                        principalColumn: "ProjectTeamId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -124,11 +117,6 @@ namespace tl121pet.Migrations
                 column: "GradeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_People_ProjectTeamId",
-                table: "People",
-                column: "ProjectTeamId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Skills_SkillGroupId",
                 table: "Skills",
                 column: "SkillGroupId");
@@ -145,13 +133,13 @@ namespace tl121pet.Migrations
                 name: "People");
 
             migrationBuilder.DropTable(
+                name: "ProjectTeams");
+
+            migrationBuilder.DropTable(
                 name: "Skills");
 
             migrationBuilder.DropTable(
                 name: "Grades");
-
-            migrationBuilder.DropTable(
-                name: "ProjectTeams");
 
             migrationBuilder.DropTable(
                 name: "SkillGroups");
