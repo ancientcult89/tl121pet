@@ -1,11 +1,10 @@
-﻿using tl121pet.Entities.Models;
-using tl121pet.Storage;
+﻿using tl121pet.Storage;
 
 namespace tl121pet.ViewModels
 {
-    public class MeetingTypeVM
+    public class BaseVM<T>
     {
-        public MeetingType SelectedMeetingType { get; set; } = new MeetingType();
+        public T SelectedItem { get; set; }
         public FormMode Mode { get; set; }
 
         public string Theme => themeDict[Mode];

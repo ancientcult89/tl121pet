@@ -25,20 +25,20 @@ namespace tl121pet.Controllers
 
         public IActionResult Details(long id)
         {
-            return View("PersonEditor", new PersonVM() { SelectedPerson = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Details });
+            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Details });
         }
 
         public IActionResult Edit(long id)
         {
-            return View("PersonEditor", new PersonVM() { SelectedPerson = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Edit });
+            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Edit });
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] PersonVM personVM)
+        public IActionResult Edit([FromForm] BaseVM<Person> personVM)
         {
             if (ModelState.IsValid)
             {
-                _peopleRepository.UpdatePerson(personVM.SelectedPerson);
+                _peopleRepository.UpdatePerson(personVM.SelectedItem);
                 return RedirectToAction("Index");
             }
             return View("PersonEditor", personVM);
@@ -53,18 +53,18 @@ namespace tl121pet.Controllers
 
         public IActionResult Create()
         {
-            return View("PersonEditor", new PersonVM() { SelectedPerson = new Person(), Mode = FormMode.Create });
+            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] PersonVM personVM)
+        public IActionResult Create([FromForm] BaseVM<Person> personVM)
         {
             if (ModelState.IsValid)
             {
-                _peopleRepository.CreatePerson(personVM.SelectedPerson);
+                _peopleRepository.CreatePerson(personVM.SelectedItem);
                 return RedirectToAction("Index");
             }
-            return View("PersonEditor", new PersonVM() { SelectedPerson = new Person(), Mode = FormMode.Create });
+            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
         }
 
 

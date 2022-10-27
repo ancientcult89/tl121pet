@@ -1,7 +1,7 @@
 ﻿@using tl121pet.DAL.Interfaces
 @using tl121pet.ViewModels
 @inject IGradeRepository _gradeRepository
-@model PersonVM
+@model BaseVM<Person>
 <partial name="_Validation"></partial>
 
 <h5 class="bg-@Model.Theme text-white text-center p-2">@Model.Mode.ToString()</h5>
@@ -10,37 +10,37 @@
     @if (@Model.Mode == tl121pet.Storage.FormMode.Edit)
     {
         <div class="form-group">
-            <label asp-for="SelectedPerson.PersonId"></label>
-            <input class="form-control" asp-for="SelectedPerson.PersonId" readonly/>
+            <label asp-for="SelectedItem.PersonId"></label>
+            <input class="form-control" asp-for="SelectedItem.PersonId" readonly/>
         </div>        
     }
     <div class="form-group">
-        <label asp-for="SelectedPerson.FirstName"></label>
+        <label asp-for="SelectedItem.FirstName"></label>
         <div>
-            <span asp-validation-for="SelectedPerson.FirstName" class="text-danger"></span>
+            <span asp-validation-for="SelectedItem.FirstName" class="text-danger"></span>
         </div>
-        <input class="form-control" asp-for="SelectedPerson.FirstName" disabled="@Model.IsReadonly"/>
+        <input class="form-control" asp-for="SelectedItem.FirstName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
-        <label asp-for="SelectedPerson.LastName"></label>
+        <label asp-for="SelectedItem.LastName"></label>
         <div>
-            <span asp-validation-for="SelectedPerson.LastName" class="text-danger"></span>
+            <span asp-validation-for="SelectedItem.LastName" class="text-danger"></span>
         </div>
-        <input class="form-control" asp-for="SelectedPerson.LastName" disabled="@Model.IsReadonly"/>
+        <input class="form-control" asp-for="SelectedItem.LastName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
-        <label asp-for="SelectedPerson.SurName"></label>
+        <label asp-for="SelectedItem.SurName"></label>
         <div>
-            <span asp-validation-for="SelectedPerson.SurName" class="text-danger"></span>
+            <span asp-validation-for="SelectedItem.SurName" class="text-danger"></span>
         </div>
-        <input class="form-control" asp-for="SelectedPerson.SurName" disabled="@Model.IsReadonly"/>
+        <input class="form-control" asp-for="SelectedItem.SurName" disabled="@Model.IsReadonly"/>
     </div>
     <div class="form-group">
         <label>Grade</label>
         <div>
-            <span asp-validation-for="SelectedPerson.GradeId" class="text-danger"></span>
+            <span asp-validation-for="SelectedItem.GradeId" class="text-danger"></span>
         </div>
-        <select asp-for="SelectedPerson.GradeId" class="form-control" asp-items="@(new SelectList(_gradeRepository.GetAllGrades(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
+        <select asp-for="SelectedItem.GradeId" class="form-control" asp-items="@(new SelectList(_gradeRepository.GetAllGrades(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
             <option value="" disabled selected>Choose a Grade</option>
         </select>
     </div>
