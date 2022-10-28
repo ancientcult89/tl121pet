@@ -39,7 +39,7 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _peopleRepository.UpdatePerson(personVM.SelectedItem);
-                return RedirectToAction("Index");
+                return RedirectToAction("PeopleList");
             }
             return View("PersonEditor", personVM);
         }
@@ -48,7 +48,7 @@ namespace tl121pet.Controllers
         public IActionResult Delete(long id)
         {
             _peopleRepository.DeletePerson(id);
-            return RedirectToAction("Index");
+            return RedirectToAction("PeopleList");
         }
 
         public IActionResult Create()
@@ -62,7 +62,7 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _peopleRepository.CreatePerson(personVM.SelectedItem);
-                return RedirectToAction("Index");
+                return RedirectToAction("PeopleList");
             }
             return View("PersonEditor", new BaseVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
         }

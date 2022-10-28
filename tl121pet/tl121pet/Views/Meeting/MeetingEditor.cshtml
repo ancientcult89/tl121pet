@@ -1,40 +1,79 @@
 ﻿@using tl121pet.ViewModels
 @inject IMeetingRepository _meetingRepository
+@inject IPeopleRepository _peopleRepository
 @model BaseVM<Meeting>
 <partial name="_Validation"></partial>
 
-<h5 class="bg-@Model.Theme text-white text-center p-2">@Model.Mode.ToString()</h5>
+<h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Model.Mode.ToString()</h5>
+<div class="shadow-lg p-3 mb-5 bg-white rounded">
 
-<form asp-action="EditMeeting" method="post">
-    @if (@Model.Mode == tl121pet.Storage.FormMode.Edit)
-    {
+    <form asp-action="EditMeeting" method="post">
+        @if (@Model.Mode == tl121pet.Storage.FormMode.Edit)
+        {
+            <div class="form-group">
+                <label asp-for="SelectedItem.MeetingId"></label>
+                <input class="form-control" asp-for="SelectedItem.PersonId" readonly/>
+            </div>        
+        }
         <div class="form-group">
-            <label asp-for="SelectedItem.MeetingId"></label>
-            <input class="form-control" asp-for="SelectedItem.PersonId" readonly/>
-        </div>        
-    }
-    <div class="form-group">
-        <label asp-for="SelectedItem.MeetingPlanDate"></label>
-        <div>
-            <span asp-validation-for="SelectedItem.MeetingPlanDate" class="text-danger"></span>
+            <label asp-for="SelectedItem.MeetingPlanDate"></label>
+            <div>
+                <span asp-validation-for="SelectedItem.MeetingPlanDate" class="text-danger"></span>
+            </div>
+            <input class="form-control" asp-for="SelectedItem.MeetingPlanDate" disabled="@Model.IsReadonly"/>
         </div>
-        <input class="form-control" asp-for="SelectedItem.MeetingPlanDate" disabled="@Model.IsReadonly"/>
-    </div>
-    <div class="form-group">
-        <label>Grade</label>
-        <div>
-            <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
+        <div class="form-group">
+            <label asp-for="SelectedItem.MeetingDate"></label>
+            <div>
+                <span asp-validation-for="SelectedItem.MeetingDate" class="text-danger"></span>
+            </div>
+            <input class="form-control" asp-for="SelectedItem.MeetingDate" disabled="@Model.IsReadonly"/>
         </div>
-        <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(_meetingRepository.GetMeetingTypes(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
-            <option value="" disabled selected>Choose a Meeting Type</option>
-        </select>
-    </div>
+        <div class="form-group">
+            <label>Meeting Type</label>
+            <div>
+                <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
+            </div>
+            <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(_meetingRepository.GetMeetingTypes(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
+                <option value="" disabled selected>Choose a Meeting Type</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Person</label>
+            <div>
+                <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>
+            </div>
+            <select asp-for="SelectedItem.PersonId" class="form-control" asp-items="@(new SelectList(_peopleRepository.GetPeople(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
+                <option value="" disabled selected>Choose a Person</option>
+            </select>
+        </div>
+        <div class="form-check">
+            <div>
+                <span asp-validation-for="SelectedItem.FollowUpIsSended" class="text-danger"></span>
+            </div>
+            <input class="form-check-input" type="checkbox" asp-for="SelectedItem.FollowUpIsSended" disabled="@Model.IsReadonly"/>
+            <label class="form-check-label" asp-for="SelectedItem.FollowUpIsSended">
+                Follow up is Sended
+            </label>
+        </div>
 
-    @if (Model.Mode != tl121pet.Storage.FormMode.Details)
-    {
-        <button class="btn btn-info mt-2" type="submit">
-            Save
-        </button>       
-    }
-    <a class="btn btn-secondary mt-2" asp-action="MeetingList">Back</a>
-</form>
+        @if (Model.Mode != tl121pet.Storage.FormMode.Details)
+        {
+            <button class="btn btn-info mt-2" type="submit">
+                Save
+            </button>       
+        }
+        <a class="btn btn-secondary mt-2" asp-action="MeetingList">Back</a>
+    </form>
+    <p></p>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm">
+                test2
+            </div>
+            <div class="col-sm">
+                test2
+            </div>
+        </div>
+    </div>
+</div>

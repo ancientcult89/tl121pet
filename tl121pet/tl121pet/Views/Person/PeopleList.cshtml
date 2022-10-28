@@ -2,38 +2,39 @@
 @{
     ViewData["Title"] = "Home Page";
 }
+<div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th><th>Name</th><th>Grade</th><th>Project Team</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Person p in Model ?? Enumerable.Empty<Person>())
+            {
+                <form asp-action="delete" method="post" asp-route-id="@p.PersonId">
+                    <tr class="">
+                        <td>@p.PersonId</td>
+                        <td>@p.LastName, @p.FirstName</td>
+                        <td>
+                            @p.Grade?.GradeName
+                        </td>
+                        <td>
+                            Placeholder
+                        </td>
+                        <td class="text-center">
+                            <form>
+                                <input type="hidden" name="Id" value="@p.PersonId" />
+                                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@p.PersonId" >Details</a>
+                                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@p.PersonId" >Edit</a>
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                </form>
+            }
+        </tbody>
+    </table>
 
-<table class="table table-sm table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>ID</th><th>Name</th><th>Grade</th><th>Project Team</th><th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach(Person p in Model ?? Enumerable.Empty<Person>())
-        {
-            <form asp-action="delete" method="post" asp-route-id="@p.PersonId">
-                <tr class="">
-                    <td>@p.PersonId</td>
-                    <td>@p.LastName, @p.FirstName</td>
-                    <td>
-                        @p.Grade?.GradeName
-                    </td>
-                    <td>
-                        Placeholder
-                    </td>
-                    <td class="text-center">
-                        <form>
-                            <input type="hidden" name="Id" value="@p.PersonId" />
-                            <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@p.PersonId" >Details</a>
-                            <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@p.PersonId" >Edit</a>
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-            </form>
-        }
-    </tbody>
-</table>
-
-<a class="btn btn-sm btn-primary p-2" asp-action="Create" >Create</a>
+    <a class="btn btn-sm btn-primary p-2" asp-action="Create" >Create</a>
+</div>
