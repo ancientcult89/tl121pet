@@ -1,13 +1,10 @@
-﻿@using tl121pet.DAL.Interfaces
-@using tl121pet.ViewModels
-
-@model BaseVM<MeetingType>
+﻿@model SimpleEditFormVM<MeetingType>
 <partial name="_Validation"></partial>
 
 <h5 class="bg-@Model.Theme text-white text-center p-2 rounded-top">@Model.Mode.ToString()</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
     <form asp-action="MeetingTypeCreate" method="post">
-        @if (@Model.Mode == tl121pet.Storage.FormMode.Edit)
+        @if (@Model.Mode == FormMode.Edit)
         {
             <div class="form-group">
                 <label asp-for="SelectedItem.MeetingTypeId"></label>

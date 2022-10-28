@@ -4,6 +4,7 @@
     { 
         Edit,
         Details,
-        Create
+        Create,
+        Process
     }
 }

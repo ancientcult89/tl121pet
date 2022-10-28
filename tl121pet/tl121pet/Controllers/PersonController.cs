@@ -25,16 +25,16 @@ namespace tl121pet.Controllers
 
         public IActionResult Details(long id)
         {
-            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Details });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Details });
         }
 
         public IActionResult Edit(long id)
         {
-            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Edit });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Edit });
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] BaseVM<Person> personVM)
+        public IActionResult Edit([FromForm] SimpleEditFormVM<Person> personVM)
         {
             if (ModelState.IsValid)
             {
@@ -53,18 +53,18 @@ namespace tl121pet.Controllers
 
         public IActionResult Create()
         {
-            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] BaseVM<Person> personVM)
+        public IActionResult Create([FromForm] SimpleEditFormVM<Person> personVM)
         {
             if (ModelState.IsValid)
             {
                 _peopleRepository.CreatePerson(personVM.SelectedItem);
                 return RedirectToAction("PeopleList");
             }
-            return View("PersonEditor", new BaseVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
         }
 
 

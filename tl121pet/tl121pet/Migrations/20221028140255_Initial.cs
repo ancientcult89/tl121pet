@@ -132,7 +132,9 @@ namespace tl121pet.Migrations
                     MeetingId = table.Column<Guid>(type: "uuid", nullable: false),
                     MeetingTypeId = table.Column<int>(type: "integer", nullable: false),
                     PersonId = table.Column<long>(type: "bigint", nullable: false),
-                    MeetingDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    MeetingPlanDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    MeetingDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    FollowUpIsSended = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -148,6 +150,25 @@ namespace tl121pet.Migrations
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "PersonId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MeetingGoal",
+                columns: table => new
+                {
+                    MeetingGoalId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MeetingGoalDescription = table.Column<string>(type: "text", nullable: false),
+                    MeetingId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeetingGoal", x => x.MeetingGoalId);
+                    table.ForeignKey(
+                        name: "FK_MeetingGoal_Meeting_MeetingId",
+                        column: x => x.MeetingId,
+                        principalTable: "Meeting",
+                        principalColumn: "MeetingId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -181,6 +202,11 @@ namespace tl121pet.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MeetingGoal_MeetingId",
+                table: "MeetingGoal",
+                column: "MeetingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MeetingNotes_MeetingId",
                 table: "MeetingNotes",
                 column: "MeetingId");
@@ -203,6 +229,9 @@ namespace tl121pet.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "MeetingGoal");
+
             migrationBuilder.DropTable(
                 name: "MeetingNotes");
 

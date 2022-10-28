@@ -18,21 +18,63 @@ namespace tl121pet.Controllers
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
         }
+        #region Meeting
         public IActionResult MeetingList()
         {
-            return View("MeetingList", _dataContext.Meeting.Include(p => p.MeetingNotes).Include(p => p.Person).ToList());
+            return View("MeetingList", _dataContext.Meeting
+                .Include(p => p.MeetingNotes)
+                .Include(p => p.Person)
+                .Include(p => p.MeetingType).ToList());
+        }
+        public IActionResult MeetingDetails(Guid id)
+        {
+            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Details });
         }
 
         public IActionResult MeetingCreate()
         {
-            return View("MeetingEditor", new BaseVM<Meeting>() { SelectedItem = new Meeting(), Mode = FormMode.Create });
+            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = new Meeting(), Mode = FormMode.Create });
+        }
+
+        [HttpPost]
+        public IActionResult MeetingCreate([FromForm] SimpleEditFormVM<Meeting> meetingVM)
+        {
+            if (ModelState.IsValid)
+            {
+                _meetingRepository.CreateMeeting(meetingVM.SelectedItem);
+                return RedirectToAction("MeetingList");
+            }
+            return View("MeetingEditor", meetingVM);
+        }
+
+        public IActionResult MeetingProcess(Guid id)
+        {
+            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Process });
         }
 
         public IActionResult MeetingEdit(Guid id)
         {
-            return View("MeetingEditor", new BaseVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Edit });
+            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Edit });
         }
 
+        [HttpPost]
+        public IActionResult MeetingEdit([FromForm] SimpleEditFormVM<Meeting> meetingVM)
+        {
+            if (ModelState.IsValid)
+            {
+                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                return RedirectToAction("MeetingList");
+            }
+            return View("MeetingEditor", meetingVM);
+        }
+
+        [HttpPost]
+        public IActionResult DeleteMeeting(Guid id)
+        {
+            _meetingRepository.DeleteMeeting(id);
+            return RedirectToAction("MeetingList");
+        }
+        #endregion Meeting
 
         #region MeetingTypes
         public IActionResult MeetingTypeList()
@@ -42,11 +84,11 @@ namespace tl121pet.Controllers
 
         public IActionResult MeetingTypeEdit(int id)
         {
-            return View("MeetingTypeEditor", new BaseVM<MeetingType>() { SelectedItem = _dataContext.MeetingType.Find(id) ?? new MeetingType(), Mode = FormMode.Edit });
+            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { SelectedItem = _dataContext.MeetingType.Find(id) ?? new MeetingType(), Mode = FormMode.Edit });
         }
 
         [HttpPost]
-        public IActionResult MeetingTypeEdit([FromForm] BaseVM<MeetingType> meetingTypeVM)
+        public IActionResult MeetingTypeEdit([FromForm] SimpleEditFormVM<MeetingType> meetingTypeVM)
         {
             if (ModelState.IsValid)
             {
@@ -58,20 +100,20 @@ namespace tl121pet.Controllers
 
         public IActionResult MeetingTypeDetails(int id)
         {
-            return View("MeetingTypeEditor", new BaseVM<MeetingType>() { SelectedItem = _dataContext.MeetingType.Find(id) ?? new MeetingType(), Mode = FormMode.Details });
+            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { SelectedItem = _dataContext.MeetingType.Find(id) ?? new MeetingType(), Mode = FormMode.Details });
         }
 
         public IActionResult MeetingTypeCreate()
         {
-            return View("MeetingTypeEditor", new BaseVM<MeetingType>() { SelectedItem = new MeetingType(), Mode = FormMode.Create });
+            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { SelectedItem = new MeetingType(), Mode = FormMode.Create });
         }
 
         [HttpPost]
-        public IActionResult MeetingTypeCreate([FromForm] BaseVM<MeetingType> meetingTypeVM)
+        public IActionResult MeetingTypeCreate([FromForm] SimpleEditFormVM<MeetingType> meetingTypeVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.UpdateMeetingType(meetingTypeVM.SelectedItem);
+                _meetingRepository.CreateMeetingType(meetingTypeVM.SelectedItem);
                 return RedirectToAction("MeetingTypeList");
             }
             return View("MeetingTypeEditor", meetingTypeVM);
