@@ -18,7 +18,7 @@ namespace tl121pet.Controllers
             _dataContext = dataContext;
             _peopleRepository = peopleRepository;
         }
-        public IActionResult Index()
+        public IActionResult PeopleList()
         {
             return View("PeopleList", _dataContext.People.Include(p => p.Grade).ToList());
         }

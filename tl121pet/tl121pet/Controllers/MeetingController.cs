@@ -18,11 +18,23 @@ namespace tl121pet.Controllers
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
         }
-        public IActionResult Index()
+        public IActionResult MeetingList()
         {
-            return View("MeetingList", _dataContext.Meeting.Include(p => p.MeetingNotes).Include(p => p.Person));
+            return View("MeetingList", _dataContext.Meeting.Include(p => p.MeetingNotes).Include(p => p.Person).ToList());
         }
 
+        public IActionResult MeetingCreate()
+        {
+            return View("MeetingEditor", new BaseVM<Meeting>() { SelectedItem = new Meeting(), Mode = FormMode.Create });
+        }
+
+        public IActionResult MeetingEdit(Guid id)
+        {
+            return View("MeetingEditor", new BaseVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Edit });
+        }
+
+
+        #region MeetingTypes
         public IActionResult MeetingTypeList()
         { 
             return View("MeetingTypeList", _dataContext.MeetingType.ToList());
@@ -71,5 +83,6 @@ namespace tl121pet.Controllers
             _meetingRepository.DeleteMeetingType(id);
             return RedirectToAction("MeetingTypeList");
         }
+        #endregion MeetingType
     }
 }

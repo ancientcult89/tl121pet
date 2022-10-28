@@ -1,5 +1,37 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<Meeting>
 @{
+    ViewData["Title"] = "Meeting";
 }
+
+<table class="table table-sm table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>ID</th><th>Name</th><th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(Meeting m in Model ?? Enumerable.Empty<Meeting>())
+        {
+            <form asp-action="DeleteMeeting" method="post" asp-route-id="@m.MeetingId">
+                <tr class="">
+                    <td>@m.MeetingId</td>
+                    <td>@m.Person?.FirstName, @m.Person?.LastName</td>
+                    <td>@m.MitingType?.MeetingTypeName</td>
+                    <td>@m.MeetingPlanDate</td>
+                    <td>@m.MeetingDate</td>
+                    <td><input type="checkbox" value="@m.FollowUpIsSended"></td>
+                    <td class="text-center">
+                        <form>
+                            <input type="hidden" name="Id" value="@m.MeetingId" />
+                            <a class="btn btn-sm btn-primary" asp-action="MeetingDetails" asp-route-id="@m.MeetingId" >Details</a>
+                            <a class="btn btn-sm btn-warning" asp-action="MeetingEdit" asp-route-id="@m.MeetingId" >Edit</a>
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </form>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-sm btn-primary p-2" asp-action="MeetingCreate" >Create</a>
