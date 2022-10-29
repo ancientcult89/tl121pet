@@ -5,7 +5,10 @@ namespace tl121pet.DAL.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext> opts) : base(opts) { }
+        public DataContext(DbContextOptions<DataContext> opts) : base(opts) {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
+        }
 
         public DbSet<Person> People => Set<Person>();
         public DbSet<ProjectTeam> ProjectTeams => Set<ProjectTeam>();

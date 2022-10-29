@@ -6,7 +6,7 @@
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Model.Mode.ToString()</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
 
-    <form asp-action="MeetingEdit" method="post">
+    <form asp-action="MeetingCreate" method="post">
         @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
             <div class="form-group">
@@ -56,7 +56,7 @@
             </label>
         </div>
 
-        @if (Model.Mode != tl121pet.Storage.FormMode.Details)
+        @if (Model.Mode != FormMode.Details)
         {
             <button class="btn btn-info mt-2" type="submit">
                 Save

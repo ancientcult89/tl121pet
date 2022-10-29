@@ -39,11 +39,12 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult MeetingCreate([FromForm] MeetingEditFormVM meetingVM)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 _meetingRepository.CreateMeeting(meetingVM.SelectedItem);
                 return RedirectToAction("MeetingList");
             }
+            meetingVM.Mode = FormMode.Create;
             return View("MeetingEditor", meetingVM);
         }
 

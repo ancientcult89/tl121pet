@@ -11,5 +11,6 @@ namespace tl121pet.ViewModels
         public bool IsReadonly => Mode == FormMode.Details ? true : false;
 
         public string ReadonlyTag => IsReadonly ? "readonly" : "";
+        public bool IsNewRecord { get; set; } = true;
     }
 }
