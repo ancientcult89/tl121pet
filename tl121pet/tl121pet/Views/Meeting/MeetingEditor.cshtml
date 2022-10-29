@@ -1,12 +1,12 @@
 ﻿@inject IMeetingRepository _meetingRepository
 @inject IPeopleRepository _peopleRepository
 @model MeetingEditFormVM
-<partial name="_Validation"></partial>
+@*<partial name="_Validation"></partial>*@
 
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Model.Mode.ToString()</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
 
-    <form asp-action="MeetingCreate" method="post">
+    <form asp-action="@Model.Mode" method="post">
         @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
             <div class="form-group">
@@ -46,7 +46,7 @@
                 <option value="" disabled selected>Choose a Person</option>
             </select>
         </div>
-        <div class="form-check">
+        <div class="form-check mt-3 mb-3">
             <div>
                 <span asp-validation-for="SelectedItem.FollowUpIsSended" class="text-danger"></span>
             </div>
@@ -54,6 +54,18 @@
             <label class="form-check-label" asp-for="SelectedItem.FollowUpIsSended">
                 Follow up is Sended
             </label>
+        </div>
+        <div class="form-check mt-3 mb-3">
+            <div>
+                <span asp-validation-for="MeetingNotes" class="text-danger"></span>
+            </div>
+            <input class="form-check-input" asp-for="MeetingGoals" disabled="@Model.IsReadonly" hidden/>
+        </div>
+        <div class="form-check mt-3 mb-3">
+            <div>
+                <span asp-validation-for="MeetingNotes" class="text-danger"></span>
+            </div>
+            <input class="form-check-input" asp-for="MeetingNotes" disabled="@Model.IsReadonly" hidden/>
         </div>
 
         @if (Model.Mode != FormMode.Details)
@@ -140,7 +152,3 @@
         </div>
     }
 </div>
-
-@functions{
-    public string NoteContent { get; set; } = "do not work";
-}

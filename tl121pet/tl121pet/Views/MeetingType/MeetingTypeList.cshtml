@@ -13,7 +13,7 @@
         <tbody>
             @foreach(MeetingType mt in Model ?? Enumerable.Empty<MeetingType>())
             {
-                <form asp-action="DeleteMeetingType" method="post" asp-route-id="@mt.MeetingTypeId">
+                <form asp-action="Delete" method="post" asp-route-id="@mt.MeetingTypeId">
                     <tr class="">
                         <td>@mt.MeetingTypeId</td>
                         <td>@mt.MeetingTypeName</td>
@@ -22,7 +22,7 @@
                                 <input type="hidden" name="Id" value="@mt.MeetingTypeId" />
                                 <a class="btn btn-sm btn-primary" asp-action="MeetingTypeDetails" asp-route-id="@mt.MeetingTypeId" >Details</a>
                                 <a class="btn btn-sm btn-warning" asp-action="MeetingTypeEdit" asp-route-id="@mt.MeetingTypeId" >Edit</a>
-@*                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>*@
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                             </form>
                         </td>
                     </tr>
@@ -31,5 +31,5 @@
         </tbody>
     </table>
 
-    <a class="btn btn-sm btn-primary p-2" asp-action="MeetingTypeCreate" >Create</a>
+    <a class="btn btn-sm btn-primary p-2" asp-action="Create" >Create</a>
 </div>
