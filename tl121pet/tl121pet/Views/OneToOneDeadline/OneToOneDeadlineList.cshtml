@@ -1,4 +1,5 @@
-﻿@model List<OneToOneDeadline>
+﻿@inject IGradeRepository _gradeRepository
+@model List<OneToOneDeadline>
 @{
     ViewData["Title"] = "Meeting Type";
 }
@@ -7,7 +8,10 @@
     <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>
-                <th>Name</th><th>Last 1-2-1</th><th>DeadLine</th>
+                <th>Person</th>
+                <th>Grade</th>
+                <th>Last 1-2-1</th>
+                <th>DeadLine</th>
             </tr>
         </thead>
         <tbody>
@@ -15,6 +19,7 @@
             {
                 <tr class="bg @((dl.LastOneToOneMeetingDate.AddMonths(1).Date <= DateTime.Now.Date || dl.LastMeetingOneToOne.MeetingDate == null) ? "bg-danger" : "" )">
                     <td>@dl.Person.LastName @dl.Person.FirstName @dl.Person.SurName</td>
+                    <td>@_gradeRepository.GetGradeName(dl.Person.GradeId)</td>
                     <td>@dl.LastMeetingOneToOne.MeetingDate</td>
                     <td>@(dl.LastOneToOneMeetingDate.AddMonths(1))</td>
                 </tr>

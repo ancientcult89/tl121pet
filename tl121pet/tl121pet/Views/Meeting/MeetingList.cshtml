@@ -7,8 +7,8 @@
     <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Name</th>
+@*                <th>ID</th>*@
+                <th>Person</th>
                 <th>Meeting Type</th>
                 <th>Plan Date</th>
                 <th>Fact Date</th>
@@ -21,7 +21,7 @@
             {
                 <form asp-action="Delete" method="post" asp-route-id="@m.MeetingId">
                     <tr class="">
-                        <td>@m.MeetingId</td>
+@*                        <td>@m.MeetingId</td>*@
                         <td>@m.Person?.FirstName, @m.Person?.LastName</td>
                         <td>@m.MeetingType?.MeetingTypeName</td>
                         <td>@m.MeetingPlanDate</td>

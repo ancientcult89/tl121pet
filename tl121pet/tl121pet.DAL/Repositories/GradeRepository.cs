@@ -15,5 +15,10 @@ namespace tl121pet.DAL.Repositories
         {
             return _dataContext.Grades.ToList();
         }
+
+        public string GetGradeName(long id)
+        {
+            return _dataContext.Grades.Find(id).GradeName ?? "not found";
+        }
     }
 }

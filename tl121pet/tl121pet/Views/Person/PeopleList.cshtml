@@ -6,7 +6,11 @@
     <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>
-                <th>ID</th><th>Name</th><th>Grade</th><th>Project Team</th><th></th>
+@*                <th>ID</th>*@
+                <th>Name</th>
+                <th>Grade</th>
+                <th>Project Team</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -14,7 +18,7 @@
             {
                 <form asp-action="delete" method="post" asp-route-id="@p.PersonId">
                     <tr class="">
-                        <td>@p.PersonId</td>
+@*                        <td>@p.PersonId</td>*@
                         <td>@p.LastName, @p.FirstName</td>
                         <td>
                             @p.Grade?.GradeName
