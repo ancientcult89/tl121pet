@@ -1,4 +1,5 @@
-﻿using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.DTO;
+using tl121pet.Entities.Models;
 
 namespace tl121pet.DAL.Interfaces
 {
@@ -8,5 +9,6 @@ namespace tl121pet.DAL.Interfaces
         public void UpdatePerson(Person person);
         public void DeletePerson(long id);
         public List<Person> GetPeople();
+        public List<PersonInitials> GetInitials();
     }
 }
