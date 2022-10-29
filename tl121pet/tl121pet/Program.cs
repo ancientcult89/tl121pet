@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
 using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.DAL.Repositories;
@@ -12,6 +14,7 @@ builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
+builder.Services.AddScoped<IOneToOneDeadlineService, OneToOneDeadlineService>();
 
 var app = builder.Build();
 
