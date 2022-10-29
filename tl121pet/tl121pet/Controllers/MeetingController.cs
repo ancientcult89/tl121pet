@@ -126,5 +126,20 @@ namespace tl121pet.Controllers
             return RedirectToAction("MeetingTypeList");
         }
         #endregion MeetingType
+
+        #region MeetingNotes
+        [HttpPost]
+        public IActionResult AddNote(Guid id, string noteContent)
+        {
+            _meetingRepository.AddNote(id, noteContent);
+            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Process });
+        }
+
+        public IActionResult DeleteNote(Guid noteId, Guid meetingId)
+        { 
+            _meetingRepository.DeleteNote(noteId);
+            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(meetingId) ?? new Meeting(), Mode = FormMode.Process });
+        }
+        #endregion MeetingNotes
     }
 }

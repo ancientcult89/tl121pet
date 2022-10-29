@@ -20,7 +20,7 @@ namespace tl121pet.Controllers
         }
         public IActionResult PeopleList()
         {
-            return View("PeopleList", _dataContext.People.Include(p => p.Grade).ToList());
+            return View("PeopleList", GetPeopleList());
         }
 
         public IActionResult Details(long id)
@@ -69,13 +69,19 @@ namespace tl121pet.Controllers
 
 
         //test db endpoint
-        [HttpDelete("/api/DeletePerson/{id}")]
+        [HttpDelete("/api/person/deleteperson/{id}")]
         public string DeletePerson(long id)
         {
             var person = _dataContext.People.Find(id);
             _dataContext.People.Remove(person);
             _dataContext.SaveChanges();
             return "Ok";
+        }
+
+        [HttpGet("/api/person/peoplelist")]
+        public List<Person> GetPeopleList()
+        {
+            return _dataContext.People.Include(p => p.Grade).ToList();
         }
     }
 }

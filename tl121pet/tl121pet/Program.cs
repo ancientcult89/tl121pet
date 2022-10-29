@@ -4,6 +4,8 @@ using tl121pet.DAL.Interfaces;
 using tl121pet.DAL.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
 builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
