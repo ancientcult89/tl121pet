@@ -1,17 +1,24 @@
 ﻿<div class="d-grid gap-2">
-    <a class="btn btn-outline-secondary"asp-action="Index"
-        asp-controller="Home" asp-route-category="">
+    <a class="btn @("Home" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="Index"
+        asp-controller="Home">
+            Home
+    </a>
+    <a class="btn @("Person" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="PeopleList"
+        asp-controller="Person">
             Persons
     </a>
 @*    <a class="btn btn-outline-secondary"
         asp-action="Index" asp-controller="Home">
             Grades
     </a>*@
-    <a class="btn btn-outline-secondary"
-        asp-action="MeetingList" asp-controller="Meeting">
+    <a class="btn @("Meeting" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="MeetingList" 
+        asp-controller="Meeting">
             Meetings
     </a>
-    <a class="btn btn-outline-secondary"
+    <a class="btn @("MeetingType" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
         asp-action="MeetingTypeList" asp-controller="MeetingType">
             Meeting Types
     </a>
