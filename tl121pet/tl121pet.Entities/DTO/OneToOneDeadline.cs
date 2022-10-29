@@ -6,5 +6,6 @@ namespace tl121pet.Entities.DTO
     {
         public Person Person { get; set; } = new Person();
         public Meeting LastMeetingOneToOne { get; set; } = new Meeting();
+        public DateTime LastOneToOneMeetingDate { get; set; } = DateTime.Now;
     }
 }

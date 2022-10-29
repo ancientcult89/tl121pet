@@ -95,5 +95,13 @@ namespace tl121pet.DAL.Repositories
             return _dataContext.MeetingGoals.Where(p => p.MeetingId == id).ToList();
         }
         #endregion Meeting
+
+        public Meeting? GetLastOneToOneByPersonId(long personId) 
+        { 
+            return _dataContext.Meetings
+                .Where(p => p.PersonId == personId)
+                .OrderByDescending(p => p.MeetingDate)
+                .Take(1).FirstOrDefault() ;
+        }
     }
 }

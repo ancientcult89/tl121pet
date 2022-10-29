@@ -17,6 +17,6 @@ namespace tl121pet.DAL.Interfaces
         public void AddGoal(Guid id, string content);
         public void DeleteGoal(Guid id);
         public List<MeetingGoal> GetMeetingGoals(Guid id);
-
+        public Meeting? GetLastOneToOneByPersonId(long personId);
     }
 }

@@ -4,15 +4,16 @@
         asp-controller="Home">
             Home
     </a>
+    <a class="btn @("OneToOneDeadline" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="OneToOneDeadlineList"
+        asp-controller="OneToOneDeadline">
+            1-2-1 Deadlines
+    </a>
     <a class="btn @("Person" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
         asp-action="PeopleList"
         asp-controller="Person">
             Persons
     </a>
-@*    <a class="btn btn-outline-secondary"
-        asp-action="Index" asp-controller="Home">
-            Grades
-    </a>*@
     <a class="btn @("Meeting" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
         asp-action="MeetingList" 
         asp-controller="Meeting">

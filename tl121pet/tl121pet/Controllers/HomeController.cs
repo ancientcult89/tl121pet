@@ -6,7 +6,7 @@ namespace tl121pet.Controllers
     {
         public RedirectToRouteResult Index()
         {
-            return RedirectToRoute(new { controller = "Person", action= "PeopleList" });
+            return RedirectToRoute(new { controller = "OneToOneDeadline", action= "OneToOneDeadlineList" });
         }
     }
 }
