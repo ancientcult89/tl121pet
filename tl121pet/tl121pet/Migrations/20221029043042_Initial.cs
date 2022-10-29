@@ -154,7 +154,7 @@ namespace tl121pet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MeetingGoal",
+                name: "MeetingGoals",
                 columns: table => new
                 {
                     MeetingGoalId = table.Column<Guid>(type: "uuid", nullable: false),
@@ -163,9 +163,9 @@ namespace tl121pet.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MeetingGoal", x => x.MeetingGoalId);
+                    table.PrimaryKey("PK_MeetingGoals", x => x.MeetingGoalId);
                     table.ForeignKey(
-                        name: "FK_MeetingGoal_Meeting_MeetingId",
+                        name: "FK_MeetingGoals_Meeting_MeetingId",
                         column: x => x.MeetingId,
                         principalTable: "Meeting",
                         principalColumn: "MeetingId",
@@ -202,8 +202,8 @@ namespace tl121pet.Migrations
                 column: "PersonId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MeetingGoal_MeetingId",
-                table: "MeetingGoal",
+                name: "IX_MeetingGoals_MeetingId",
+                table: "MeetingGoals",
                 column: "MeetingId");
 
             migrationBuilder.CreateIndex(
@@ -230,7 +230,7 @@ namespace tl121pet.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "MeetingGoal");
+                name: "MeetingGoals");
 
             migrationBuilder.DropTable(
                 name: "MeetingNotes");

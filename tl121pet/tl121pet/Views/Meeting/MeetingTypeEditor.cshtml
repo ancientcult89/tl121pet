@@ -3,7 +3,7 @@
 
 <h5 class="bg-@Model.Theme text-white text-center p-2 rounded-top">@Model.Mode.ToString()</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
-    <form asp-action="MeetingTypeCreate" method="post">
+    <form asp-action="MeetingTypeEdit" method="post">
         @if (@Model.Mode == FormMode.Edit)
         {
             <div class="form-group">

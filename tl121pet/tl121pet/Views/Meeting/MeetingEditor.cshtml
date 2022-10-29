@@ -1,17 +1,17 @@
 ﻿@inject IMeetingRepository _meetingRepository
 @inject IPeopleRepository _peopleRepository
-@model SimpleEditFormVM<Meeting>
+@model MeetingEditFormVM
 <partial name="_Validation"></partial>
 
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Model.Mode.ToString()</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
 
     <form asp-action="MeetingEdit" method="post">
-        @if (@Model.Mode == FormMode.Edit)
+        @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
             <div class="form-group">
                 <label asp-for="SelectedItem.MeetingId"></label>
-                <input class="form-control" asp-for="SelectedItem.PersonId" readonly/>
+                <input class="form-control" asp-for="SelectedItem.MeetingId" readonly/>
             </div>
         }
         <div class="form-group">
@@ -65,6 +65,7 @@
         <a class="btn btn-secondary mt-2" asp-action="MeetingList">Back</a>
     </form>
     <p></p>
+
     @if (@Model.Mode == FormMode.Process)
     {
         <div class="container">
@@ -79,7 +80,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (MeetingNote mn in _meetingRepository.GetMeetingNotes(Model.SelectedItem.MeetingId))
+                            @foreach (MeetingNote mn in Model.MeetingNotes ?? new List<MeetingNote>())
                             {
                                 <form asp-action="DeleteNote" method="post" asp-route-noteId="@mn.MeetingNoteId", asp-route-meetingId="@mn.MeetingId">
                                     <tr class="">
@@ -94,9 +95,10 @@
                             }
                         </tbody>
                     </table>
-                    <form asp-action="AddNote" method="post" asp-route-id="@Model.SelectedItem.MeetingId" asp-route-noteContent="">
-                        <input id="notetext" class="form-control" disabled="@Model.IsReadonly"/>
-                        <button class="btn btn-primary mt-2">
+                    <form asp-action="AddNote" method="post">
+                        <input class="form-control" asp-for="SelectedItem.MeetingId" disabled="@Model.IsReadonly" hidden/>
+                        <input class="form-control" asp-for="NewNote" disabled="@Model.IsReadonly"/>
+                        <button class="btn btn-primary mt-2" type="submit">
                             Add Note
                         </button>
                     </form>
@@ -111,25 +113,25 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach (MeetingGoal mg in Model.SelectedItem.MeetingGoals ?? Enumerable.Empty<MeetingGoal>())
+                            @foreach (MeetingGoal mg in Model.MeetingGoals ?? Enumerable.Empty<MeetingGoal>())
                             {
-                                <form asp-action="DeleteMeeting" method="post" asp-route-id="@mg.MeetingId">
+                                <form asp-action="DeleteGoal" method="post" asp-route-goalId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
                                     <tr class="">
-                                        <td>@mg.MeetingGoalDescription</td>
+                                        <td>
+                                            @mg.MeetingGoalDescription                                        
+                                        </td>
                                         <td class="text-center">
-                                            <form>
-                                                <input type="hidden" name="Id" value="@mg.MeetingId" />
-                                                <a class="btn btn-sm btn-primary" asp-action="MeetingDetails" asp-route-id="@mg.MeetingId" >Save</a>
-                                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                                            </form>
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                                         </td>
                                     </tr>
                                 </form>
                             }
                         </tbody>
                     </table>
-                    <form asp-action="PreAddNote" method="post" asp-route-id="@Model.SelectedItem.MeetingId">
-                        <button class="btn btn-primary mt-2">
+                    <form asp-action="AddGoal" method="post">
+                        <input class="form-control" asp-for="SelectedItem.MeetingId" disabled="@Model.IsReadonly" hidden/>
+                        <input class="form-control" asp-for="NewGoal" disabled="@Model.IsReadonly"/>
+                        <button class="btn btn-primary mt-2" type="submit">
                             Add Goal
                         </button>
                     </form>

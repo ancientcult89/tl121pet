@@ -12,7 +12,7 @@ using tl121pet.DAL.Data;
 namespace tl121pet.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221028140255_Initial")]
+    [Migration("20221029043042_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,7 +91,7 @@ namespace tl121pet.Migrations
 
                     b.HasIndex("MeetingId");
 
-                    b.ToTable("MeetingGoal");
+                    b.ToTable("MeetingGoals");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.MeetingNote", b =>

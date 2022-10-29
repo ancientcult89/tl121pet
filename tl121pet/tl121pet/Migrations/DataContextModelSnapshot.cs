@@ -89,7 +89,7 @@ namespace tl121pet.Migrations
 
                     b.HasIndex("MeetingId");
 
-                    b.ToTable("MeetingGoal");
+                    b.ToTable("MeetingGoals");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.MeetingNote", b =>

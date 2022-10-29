@@ -26,7 +26,7 @@
                         <td>@m.MeetingType?.MeetingTypeName</td>
                         <td>@m.MeetingPlanDate</td>
                         <td>@m.MeetingDate</td>
-                        <td><input type="checkbox" value="@m.FollowUpIsSended" disabled></td>
+                        <td><input type="checkbox" asp-for="@m.FollowUpIsSended" disabled></td>
                         <td class="text-center">
                             <form>
                                 <input type="hidden" name="Id" value="@m.MeetingId" />

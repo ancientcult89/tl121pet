@@ -28,16 +28,16 @@ namespace tl121pet.Controllers
         }
         public IActionResult MeetingDetails(Guid id)
         {
-            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Details });
+            return View("MeetingEditor", new MeetingEditFormVM() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Details });
         }
 
         public IActionResult MeetingCreate()
         {
-            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = new Meeting(), Mode = FormMode.Create });
+            return View("MeetingEditor", new MeetingEditFormVM() { SelectedItem = new Meeting(), Mode = FormMode.Create });
         }
 
         [HttpPost]
-        public IActionResult MeetingCreate([FromForm] SimpleEditFormVM<Meeting> meetingVM)
+        public IActionResult MeetingCreate([FromForm] MeetingEditFormVM meetingVM)
         {
             if (ModelState.IsValid)
             {
@@ -49,16 +49,30 @@ namespace tl121pet.Controllers
 
         public IActionResult MeetingProcess(Guid id)
         {
-            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Process });
+            return View("MeetingEditor", new MeetingEditFormVM() { 
+                SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting()
+                , Mode = FormMode.Process 
+                , MeetingNotes = _meetingRepository.GetMeetingNotes(id)
+                , MeetingGoals = _meetingRepository.GetMeetingGoals(id)
+            });
         }
-
+        [HttpPost]
+        public IActionResult MeetingProcess([FromForm] MeetingEditFormVM meetingVM)
+        {
+            if (ModelState.IsValid)
+            {
+                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                return RedirectToAction("MeetingList");
+            }
+            return View("MeetingEditor", meetingVM);
+        }
         public IActionResult MeetingEdit(Guid id)
         {
-            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Edit });
+            return View("MeetingEditor", new MeetingEditFormVM() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Edit });
         }
 
         [HttpPost]
-        public IActionResult MeetingEdit([FromForm] SimpleEditFormVM<Meeting> meetingVM)
+        public IActionResult MeetingEdit([FromForm] MeetingEditFormVM meetingVM)
         {
             if (ModelState.IsValid)
             {
@@ -93,9 +107,9 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _meetingRepository.UpdateMeetingType(meetingTypeVM.SelectedItem);
-                return RedirectToAction("MeetingList");
+                return RedirectToAction("MeetingTypeList");
             }
-            return View("PersonEditor", meetingTypeVM);
+            return View("MeetingTypeEditor", meetingTypeVM);
         }
 
         public IActionResult MeetingTypeDetails(int id)
@@ -129,17 +143,60 @@ namespace tl121pet.Controllers
 
         #region MeetingNotes
         [HttpPost]
-        public IActionResult AddNote(Guid id, string noteContent)
+        public IActionResult AddNote([FromForm] MeetingEditFormVM vm)
         {
-            _meetingRepository.AddNote(id, noteContent);
-            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(id) ?? new Meeting(), Mode = FormMode.Process });
+            if (ModelState.IsValid)
+            { 
+                _meetingRepository.AddNote(vm.SelectedItem.MeetingId, vm.NewNote);                
+            }
+            return View("MeetingEditor", new MeetingEditFormVM() { 
+                SelectedItem = _dataContext.Meeting.Find(vm.SelectedItem.MeetingId) ?? new Meeting()
+                , Mode = FormMode.Process
+                , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
+                , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
+            });
         }
 
-        public IActionResult DeleteNote(Guid noteId, Guid meetingId)
+        public IActionResult DeleteNote(Guid goalId, Guid meetingId)
         { 
-            _meetingRepository.DeleteNote(noteId);
-            return View("MeetingEditor", new SimpleEditFormVM<Meeting>() { SelectedItem = _dataContext.Meeting.Find(meetingId) ?? new Meeting(), Mode = FormMode.Process });
+            _meetingRepository.DeleteNote(goalId);
+            return View("MeetingEditor", new MeetingEditFormVM() { 
+                SelectedItem = _dataContext.Meeting.Find(meetingId) ?? new Meeting()
+                , Mode = FormMode.Process 
+                , MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId)
+                , MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+            });
         }
         #endregion MeetingNotes
+
+        #region MeetingGoals
+        [HttpPost]
+        public IActionResult AddGoal([FromForm] MeetingEditFormVM vm)
+        {
+            if (ModelState.IsValid)
+            {
+                _meetingRepository.AddGoal(vm.SelectedItem.MeetingId, vm.NewGoal);
+            }
+            return View("MeetingEditor", new MeetingEditFormVM()
+            {
+                SelectedItem = _dataContext.Meeting.Find(vm.SelectedItem.MeetingId) ?? new Meeting()
+                , Mode = FormMode.Process
+                , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
+                , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
+            });
+        }
+
+        public IActionResult DeleteGoal(Guid goalId, Guid meetingId)
+        {
+            _meetingRepository.DeleteGoal(goalId);
+            return View("MeetingEditor", new MeetingEditFormVM()
+            {
+                SelectedItem = _dataContext.Meeting.Find(meetingId) ?? new Meeting()
+                , Mode = FormMode.Process
+                , MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId)
+                , MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+            });
+        }
+        #endregion MeetingGoals
     }
 }
