@@ -25,7 +25,7 @@ namespace tl121pet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MeetingType",
+                name: "MeetingTypes",
                 columns: table => new
                 {
                     MeetingTypeId = table.Column<int>(type: "integer", nullable: false)
@@ -34,7 +34,7 @@ namespace tl121pet.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MeetingType", x => x.MeetingTypeId);
+                    table.PrimaryKey("PK_MeetingTypes", x => x.MeetingTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,27 +126,27 @@ namespace tl121pet.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Meeting",
+                name: "Meetings",
                 columns: table => new
                 {
                     MeetingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    MeetingPlanDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    MeetingDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     MeetingTypeId = table.Column<int>(type: "integer", nullable: false),
-                    PersonId = table.Column<long>(type: "bigint", nullable: false),
-                    MeetingPlanDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    MeetingDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    FollowUpIsSended = table.Column<bool>(type: "boolean", nullable: false)
+                    FollowUpIsSended = table.Column<bool>(type: "boolean", nullable: false),
+                    PersonId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Meeting", x => x.MeetingId);
+                    table.PrimaryKey("PK_Meetings", x => x.MeetingId);
                     table.ForeignKey(
-                        name: "FK_Meeting_MeetingType_MeetingTypeId",
+                        name: "FK_Meetings_MeetingTypes_MeetingTypeId",
                         column: x => x.MeetingTypeId,
-                        principalTable: "MeetingType",
+                        principalTable: "MeetingTypes",
                         principalColumn: "MeetingTypeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Meeting_People_PersonId",
+                        name: "FK_Meetings_People_PersonId",
                         column: x => x.PersonId,
                         principalTable: "People",
                         principalColumn: "PersonId",
@@ -165,9 +165,9 @@ namespace tl121pet.Migrations
                 {
                     table.PrimaryKey("PK_MeetingGoals", x => x.MeetingGoalId);
                     table.ForeignKey(
-                        name: "FK_MeetingGoals_Meeting_MeetingId",
+                        name: "FK_MeetingGoals_Meetings_MeetingId",
                         column: x => x.MeetingId,
-                        principalTable: "Meeting",
+                        principalTable: "Meetings",
                         principalColumn: "MeetingId",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -184,22 +184,12 @@ namespace tl121pet.Migrations
                 {
                     table.PrimaryKey("PK_MeetingNotes", x => x.MeetingNoteId);
                     table.ForeignKey(
-                        name: "FK_MeetingNotes_Meeting_MeetingId",
+                        name: "FK_MeetingNotes_Meetings_MeetingId",
                         column: x => x.MeetingId,
-                        principalTable: "Meeting",
+                        principalTable: "Meetings",
                         principalColumn: "MeetingId",
                         onDelete: ReferentialAction.Cascade);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Meeting_MeetingTypeId",
-                table: "Meeting",
-                column: "MeetingTypeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Meeting_PersonId",
-                table: "Meeting",
-                column: "PersonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MeetingGoals_MeetingId",
@@ -210,6 +200,16 @@ namespace tl121pet.Migrations
                 name: "IX_MeetingNotes_MeetingId",
                 table: "MeetingNotes",
                 column: "MeetingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Meetings_MeetingTypeId",
+                table: "Meetings",
+                column: "MeetingTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Meetings_PersonId",
+                table: "Meetings",
+                column: "PersonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_People_GradeId",
@@ -242,7 +242,7 @@ namespace tl121pet.Migrations
                 name: "Skills");
 
             migrationBuilder.DropTable(
-                name: "Meeting");
+                name: "Meetings");
 
             migrationBuilder.DropTable(
                 name: "SkillGroups");
@@ -251,7 +251,7 @@ namespace tl121pet.Migrations
                 name: "SkillTypes");
 
             migrationBuilder.DropTable(
-                name: "MeetingType");
+                name: "MeetingTypes");
 
             migrationBuilder.DropTable(
                 name: "People");

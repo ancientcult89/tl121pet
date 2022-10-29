@@ -43,7 +43,7 @@ namespace tl121pet.DAL.Data
                 dataContext.Skills.Add(s1);
                 dataContext.SaveChanges();
 
-                Person p1 = new Person() { FirstName = "John", LastName = "Smith", Grade = g4, ProjectTeam = pt1 };
+                Person p1 = new Person() { FirstName = "John", LastName = "Smith", Grade = g4 };
                 dataContext.People.Add(p1);
                 dataContext.SaveChanges();
             }

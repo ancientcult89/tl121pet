@@ -13,5 +13,9 @@ namespace tl121pet.DAL.Data
         public DbSet<SkillGroup> SkillGroups => Set<SkillGroup>();
         public DbSet<SkillType> SkillTypes => Set<SkillType>();
         public DbSet<Grade> Grades => Set<Grade>();
+        public DbSet<Meeting> Meetings => Set<Meeting>();
+        public DbSet<MeetingType> MeetingTypes => Set<MeetingType>();
+        public DbSet<MeetingGoal> MeetingGoals => Set<MeetingGoal>();
+        public DbSet<MeetingNote> MeetingNotes => Set<MeetingNote>();
     }
 }

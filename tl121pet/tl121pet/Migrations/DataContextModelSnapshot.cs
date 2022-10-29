@@ -52,10 +52,10 @@ namespace tl121pet.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<DateTime?>("MeetingDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("MeetingPlanDate")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("MeetingTypeId")
                         .HasColumnType("integer");
@@ -69,7 +69,7 @@ namespace tl121pet.Migrations
 
                     b.HasIndex("PersonId");
 
-                    b.ToTable("Meeting");
+                    b.ToTable("Meetings");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.MeetingGoal", b =>
@@ -126,7 +126,7 @@ namespace tl121pet.Migrations
 
                     b.HasKey("MeetingTypeId");
 
-                    b.ToTable("MeetingType");
+                    b.ToTable("MeetingTypes");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.Person", b =>
