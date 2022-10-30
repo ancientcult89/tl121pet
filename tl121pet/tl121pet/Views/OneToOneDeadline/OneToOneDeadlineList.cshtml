@@ -12,16 +12,18 @@
                 <th>Grade</th>
                 <th>Last 1-2-1</th>
                 <th>DeadLine</th>
+                <th>Dey to deadline</th>
             </tr>
         </thead>
         <tbody>
-            @foreach(OneToOneDeadline dl in Model ?? Enumerable.Empty<OneToOneDeadline>())
+            @foreach (OneToOneDeadline dl in Model ?? Enumerable.Empty<OneToOneDeadline>())
             {
-                <tr class="bg @((dl.LastOneToOneMeetingDate.AddMonths(1).Date <= DateTime.Now.Date || dl.LastMeetingOneToOne.MeetingDate == null) ? "bg-danger" : "" )">
+                <tr class="bg @coloringAlertLevel[dl.AlertLVL]">
                     <td>@dl.Person.LastName @dl.Person.FirstName @dl.Person.SurName</td>
                     <td>@_gradeRepository.GetGradeName(dl.Person.GradeId)</td>
                     <td>@dl.LastMeetingOneToOne.MeetingDate</td>
                     <td>@(dl.LastOneToOneMeetingDate.AddMonths(1))</td>
+                    <td>@dl.DayToDeadline</td>
                 </tr>
             }
         </tbody>
@@ -29,3 +31,13 @@
 
     <a class="btn btn-sm btn-primary p-2" asp-action="Create" asp-controller="Meeting">Create</a>
 </div>
+
+@functions{
+    private Dictionary<AlertLevel, string> coloringAlertLevel = new Dictionary<AlertLevel, string>
+    {
+        { AlertLevel.None,  "" },
+        { AlertLevel.Low, "bg-info" },
+        { AlertLevel.Normal, "bg-warning" },
+        { AlertLevel.High, "bg-danger" },
+    };
+}
