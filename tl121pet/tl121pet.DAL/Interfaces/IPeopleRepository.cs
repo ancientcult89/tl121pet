@@ -10,5 +10,6 @@ namespace tl121pet.DAL.Interfaces
         public void DeletePerson(long id);
         public List<Person> GetPeople();
         public List<PersonInitials> GetInitials();
+        public Person GetPerson(long id);
     }
 }

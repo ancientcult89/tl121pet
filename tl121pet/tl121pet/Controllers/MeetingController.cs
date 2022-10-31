@@ -5,6 +5,7 @@ using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
+using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Controllers
 {
@@ -12,11 +13,13 @@ namespace tl121pet.Controllers
     {
         private IMeetingRepository _meetingRepository;
         private DataContext _dataContext;
-        public MeetingController(DataContext dataContext, IMeetingRepository meetingRepository)
+        private IOneToOneService _oneToOneService;
+        public MeetingController(DataContext dataContext, IMeetingRepository meetingRepository, IOneToOneService oneToOneService)
         {
 
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
+            _oneToOneService = oneToOneService;
         }
         #region Meeting
         public IActionResult MeetingList()
@@ -34,6 +37,11 @@ namespace tl121pet.Controllers
                 MeetingNotes = _meetingRepository.GetMeetingNotes(id),
                 MeetingGoals = _meetingRepository.GetMeetingGoals(id)
             });
+        }
+
+        public IActionResult FollowUp(Guid meetingId, long personId)
+        {
+            return View("FollowUp", _oneToOneService.GenerateFollowUp(meetingId, personId));
         }
 
         public IActionResult Create()

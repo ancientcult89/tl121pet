@@ -75,6 +75,12 @@
             </button>
         }
         <a class="btn btn-secondary mt-2" asp-action="MeetingList">Back</a>
+        <a class="btn btn-success mt-2" 
+            asp-action="FollowUp" 
+            asp-route-meetingId="@Model.SelectedItem.MeetingId"
+            asp-route-personId="@Model.SelectedItem.PersonId">
+                Generate FollowUp
+        </a>
     </form>
     <p></p>
 
