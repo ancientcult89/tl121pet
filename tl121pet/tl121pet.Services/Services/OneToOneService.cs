@@ -7,11 +7,11 @@ using tl121pet.Services.Interfaces;
 namespace tl121pet.Services.Services
 {
 
-    public class OneToOneDeadlineService : IOneToOneDeadlineService
+    public class OneToOneService : IOneToOneService
     {
         private IPeopleRepository _peopleRepository;
         private IMeetingRepository _meetingRepository;
-        public OneToOneDeadlineService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository)
+        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository)
         { 
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;

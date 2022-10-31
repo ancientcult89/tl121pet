@@ -5,8 +5,8 @@ namespace tl121pet.Controllers
 {
     public class OneToOneDeadlineController : Controller
     {
-        private IOneToOneDeadlineService _oneToOneDeadlineService;
-        public OneToOneDeadlineController(IOneToOneDeadlineService oneToOneDeadlineService)
+        private IOneToOneService _oneToOneDeadlineService;
+        public OneToOneDeadlineController(IOneToOneService oneToOneDeadlineService)
         { 
             _oneToOneDeadlineService = oneToOneDeadlineService;
         }

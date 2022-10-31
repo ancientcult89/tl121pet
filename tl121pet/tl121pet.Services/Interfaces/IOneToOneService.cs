@@ -2,7 +2,7 @@
 
 namespace tl121pet.Services.Interfaces
 {
-    public interface IOneToOneDeadlineService
+    public interface IOneToOneService
     {
         public List<OneToOneDeadline> GetDeadLines();
     }
