@@ -49,5 +49,10 @@ namespace tl121pet.DAL.Repositories
             }).ToList();
             return personInitials;
         }
+
+        public Person GetPerson(long id)
+        {
+            return _dataContext.People.Find(id) ?? new Person();
+        }
     }
 }

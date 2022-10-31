@@ -24,7 +24,7 @@ namespace tl121pet.Services.Services
                 AlertLevel alert = AlertLevel.None;
                 Meeting lastMeeting = _meetingRepository.GetLastOneToOneByPersonId(p.PersonId) ?? new Meeting();
 
-                //calculate alrt level
+                //TODO: calculate alrt level, extract into another method
                 TimeSpan datediff = new TimeSpan();
                 if (lastMeeting.MeetingDate == null)
                 {
@@ -51,6 +51,33 @@ namespace tl121pet.Services.Services
                 });
             }
             return deadLines;
+        }
+
+        public string GenerateFollowUp(Guid meetingId, long personId)
+        {
+            string result = "";
+            result = $"{_peopleRepository.GetPerson(personId).FirstName}, спасибо за проведённую встречу!\n\n" ;
+            List<MeetingNote> notes = _meetingRepository.GetMeetingNotes(meetingId);
+            if (notes.Count() > 0)
+            {
+                result += "На встрече обсудили:\n";
+                foreach (MeetingNote mn in notes)
+                {
+                    result += $"\t-{mn.MeetingNoteContent};\n";
+                }
+            }
+            result += "\n\n";
+            List<MeetingGoal> goals = _meetingRepository.GetMeetingGoals(meetingId);
+            if (goals.Count() > 0)
+            {
+                result += "К следующему 1-2-1 договорились:\n";
+                foreach (MeetingGoal mg in goals)
+                {
+                    result += $"\t-{mg.MeetingGoalDescription};\n";
+                }
+            }
+            result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
+            return result;
         }
     }
 }
