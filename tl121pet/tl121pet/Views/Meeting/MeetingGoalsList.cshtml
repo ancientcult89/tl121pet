@@ -1,0 +1,34 @@
+﻿@model MeetingEditFormVM
+<div class="col-sm">
+    <h5>Goals</h5>
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (MeetingGoal mg in Model.MeetingGoals ?? Enumerable.Empty<MeetingGoal>())
+            {
+                <form asp-action="DeleteGoal" method="post" asp-route-goalId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
+                    <tr class="">
+                        <td>
+                            @mg.MeetingGoalDescription                                        
+                        </td>
+                        <td class="text-center">
+                            <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">Delete</button>
+                        </td>
+                    </tr>
+                </form>
+            }
+        </tbody>
+    </table>
+    <form asp-action="AddGoal" method="post" hidden="@Model.IsReadonly">
+        <input class="form-control" asp-for="SelectedItem.MeetingId" disabled="@Model.IsReadonly" hidden/>
+        <input class="form-control" asp-for="NewGoal" disabled="@Model.IsReadonly"/>
+        <button class="btn btn-primary mt-2" type="submit">
+            Add Goal
+        </button>
+    </form>
+</div>

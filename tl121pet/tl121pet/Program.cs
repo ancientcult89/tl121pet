@@ -14,7 +14,7 @@ builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
-builder.Services.AddScoped<IOneToOneDeadlineService, OneToOneDeadlineService>();
+builder.Services.AddScoped<IOneToOneService, OneToOneService>();
 
 var app = builder.Build();
 

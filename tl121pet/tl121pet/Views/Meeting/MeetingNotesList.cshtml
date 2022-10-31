@@ -1,0 +1,34 @@
+﻿@model MeetingEditFormVM
+<div class="col-sm">
+    <h5>Notes</h5>
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (MeetingNote mn in Model.MeetingNotes ?? new List<MeetingNote>())
+            {
+                <form asp-action="DeleteNote" method="post" asp-route-noteId="@mn.MeetingNoteId", asp-route-meetingId="@mn.MeetingId">
+                    <tr class="">
+                        <td>
+                            @mn.MeetingNoteContent                                        
+                        </td>
+                        <td class="text-center">
+                            <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">Delete</button>
+                        </td>
+                    </tr>
+                </form>
+            }
+        </tbody>
+    </table>
+    <form asp-action="AddNote" method="post" hidden="@Model.IsReadonly">
+        <input class="form-control" asp-for="SelectedItem.MeetingId" disabled="@Model.IsReadonly" hidden/>
+        <input class="form-control" asp-for="NewNote" disabled="@Model.IsReadonly"/>
+        <button class="btn btn-primary mt-2" type="submit">
+            Add Note
+        </button>
+    </form>
+</div>

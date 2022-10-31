@@ -28,7 +28,12 @@ namespace tl121pet.Controllers
         }
         public IActionResult Details(Guid id)
         {
-            return View("MeetingEditor", new MeetingEditFormVM() { SelectedItem = _dataContext.Meetings.Find(id) ?? new Meeting(), Mode = FormMode.Details });
+            return View("MeetingEditor", new MeetingEditFormVM() { 
+                SelectedItem = _dataContext.Meetings.Find(id) ?? new Meeting(), 
+                Mode = FormMode.Details,
+                MeetingNotes = _meetingRepository.GetMeetingNotes(id),
+                MeetingGoals = _meetingRepository.GetMeetingGoals(id)
+            });
         }
 
         public IActionResult Create()
@@ -105,9 +110,9 @@ namespace tl121pet.Controllers
             });
         }
 
-        public IActionResult DeleteNote(Guid goalId, Guid meetingId)
+        public IActionResult DeleteNote(Guid noteId, Guid meetingId)
         { 
-            _meetingRepository.DeleteNote(goalId);
+            _meetingRepository.DeleteNote(noteId);
             return View("MeetingEditor", new MeetingEditFormVM() { 
                 SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting()
                 , Mode = FormMode.Process 
