@@ -11,10 +11,12 @@ namespace tl121pet.Services.Services
     {
         private IPeopleRepository _peopleRepository;
         private IMeetingRepository _meetingRepository;
-        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository)
+        private IMailService _mailService;
+        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService)
         { 
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
+            _mailService = mailService;
         }
         public List<OneToOneDeadline> GetDeadLines()
         {
@@ -85,6 +87,16 @@ namespace tl121pet.Services.Services
                     alert = AlertLevel.High;
             }
             return (alert, datediff);
+        }
+
+        public void SendFollowUp(Guid meetingId, long personId)
+        { 
+            MailRequest mail = new MailRequest();
+            string personMail = _peopleRepository.GetPerson(personId).Email;
+            mail.ToEmail = personMail;
+            mail.Body = GenerateFollowUp(meetingId, personId);
+            mail.Subject = "1-2-1 Follow-up";
+            _mailService.SendMailAsync(mail);
         }
     }
 }

@@ -14,12 +14,17 @@ namespace tl121pet.Controllers
         private IMeetingRepository _meetingRepository;
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
-        public MeetingController(DataContext dataContext, IMeetingRepository meetingRepository, IOneToOneService oneToOneService)
+        private IMailService _mailService;
+        public MeetingController(DataContext dataContext, 
+            IMeetingRepository meetingRepository, 
+            IMailService mailService,
+            IOneToOneService oneToOneService)
         {
 
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
             _oneToOneService = oneToOneService;
+            _mailService = mailService;
         }
         #region Meeting
         public IActionResult MeetingList()
@@ -41,6 +46,7 @@ namespace tl121pet.Controllers
 
         public IActionResult FollowUp(Guid meetingId, long personId)
         {
+            _oneToOneService.SendFollowUp(meetingId, personId);
             return View("FollowUp", _oneToOneService.GenerateFollowUp(meetingId, personId));
         }
 
