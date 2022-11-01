@@ -1,4 +1,13 @@
-﻿@model string
+﻿@model (string, Guid, FormMode, long)
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
-    <pre>@Model</pre>
+    <pre>@Model.Item1</pre>
 </div>
+
+<form asp-action="FollowUp" method="post"
+    asp-route-meetingId="@Model.Item2"
+    asp-route-mode="@Model.Item3"
+    asp-route-personId="@Model.Item4">
+        <button class="btn btn-success mt-2" type="submit">
+            Send Follow-Up
+        </button>
+</form>

@@ -44,10 +44,22 @@ namespace tl121pet.Controllers
             });
         }
 
-        public IActionResult FollowUp(Guid meetingId, long personId)
+        public IActionResult FollowUp(Guid meetingId, long personId, FormMode mode)
+        {            
+            return View("FollowUp", (_oneToOneService.GenerateFollowUp(meetingId, personId), meetingId, mode, personId));
+        }
+
+        [HttpPost]
+        public IActionResult FollowUp(Guid meetingId, FormMode mode, long personId)
         {
             _oneToOneService.SendFollowUp(meetingId, personId);
-            return View("FollowUp", _oneToOneService.GenerateFollowUp(meetingId, personId));
+            return View("MeetingEditor", new MeetingEditFormVM()
+            {
+                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
+                Mode = mode,
+                MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
+                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+            });
         }
 
         public IActionResult Create()

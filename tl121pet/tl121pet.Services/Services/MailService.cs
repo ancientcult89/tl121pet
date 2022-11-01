@@ -21,14 +21,13 @@ namespace tl121pet.Services.Services
             email.From.Add(MailboxAddress.Parse(_settings.Mail));
             email.To.Add(MailboxAddress.Parse(mail.ToEmail));
             email.Subject = mail.Subject;
-            email.Body = new TextPart(TextFormat.Html) { Text = mail.Body };
+            email.Body = new TextPart(TextFormat.Text) { Text = mail.Body };
 
             using var smtp = new SmtpClient();
             smtp.Connect(
                 _settings.Host,
                 _settings.Port,
-                MailKit.Security.SecureSocketOptions.StartTls);
-            smtp.Send(email);
+                true);
             smtp.Authenticate(_settings.Mail, _settings.Password);
             await smtp.SendAsync(email);
         }

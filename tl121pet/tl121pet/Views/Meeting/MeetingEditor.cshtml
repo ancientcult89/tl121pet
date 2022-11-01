@@ -78,7 +78,8 @@
         <a class="btn btn-success mt-2" 
             asp-action="FollowUp" 
             asp-route-meetingId="@Model.SelectedItem.MeetingId"
-            asp-route-personId="@Model.SelectedItem.PersonId">
+            asp-route-personId="@Model.SelectedItem.PersonId"
+            asp-route-mode="@Model.Mode">
                 Generate FollowUp
         </a>
     </form>

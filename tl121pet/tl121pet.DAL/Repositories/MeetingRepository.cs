@@ -109,5 +109,16 @@ namespace tl121pet.DAL.Repositories
                 .OrderByDescending(p => p.MeetingDate)
                 .Take(1).FirstOrDefault() ;
         }
+
+        public void MarAsSendedFollowUp(Guid meetingId)
+        {
+            Meeting meeting = _dataContext.Meetings.Find(meetingId);
+            if (meeting != null)
+            { 
+                meeting.FollowUpIsSended = true;
+                _dataContext.Update(meeting);
+                _dataContext.SaveChanges();
+            }
+        }
     }
 }

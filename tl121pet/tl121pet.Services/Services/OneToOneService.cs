@@ -96,7 +96,16 @@ namespace tl121pet.Services.Services
             mail.ToEmail = personMail;
             mail.Body = GenerateFollowUp(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";
-            _mailService.SendMailAsync(mail);
+            try
+            {
+                _mailService.SendMailAsync(mail);
+            }
+            finally
+            {
+                MarkAsSendedFollowUp(meetingId);
+            }
         }
+
+        public void MarkAsSendedFollowUp(Guid meetingId) => _meetingRepository.MarAsSendedFollowUp(meetingId);
     }
 }
