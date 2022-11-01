@@ -11,9 +11,10 @@ namespace tl121pet.DAL.Interfaces
         public void CreateMeeting(Meeting m);
         public void UpdateMeeting(Meeting mt);
         public void DeleteMeeting(Guid id);
-        public void AddNote(Guid id, string content);
+        public void AddNote(Guid id, string content, bool feedbackRequired);
         public void DeleteNote(Guid id);
         public List<MeetingNote> GetMeetingNotes(Guid id);
+        public List<MeetingNote> GetMeetingFeedbackRequiredNotes(Guid id);
         public void AddGoal(Guid id, string content);
         public void DeleteGoal(Guid id);
         public List<MeetingGoal> GetMeetingGoals(Guid id);

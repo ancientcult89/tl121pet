@@ -6,6 +6,7 @@ namespace tl121pet.ViewModels
     {
         public List<MeetingNote>? MeetingNotes { get; set; }
         public string? NewNote { get; set; } = "";
+        public bool NewNoteFeedbackRequires { get; set; } = false;
 
         public List<MeetingGoal>? MeetingGoals { get; set; }
         public string? NewGoal { get; set; } = "";

@@ -59,9 +59,9 @@ namespace tl121pet.DAL.Repositories
             _dataContext.SaveChanges();
         }
 
-        public void AddNote(Guid id, string content)
+        public void AddNote(Guid id, string content, bool feedbackRequired)
         {
-            _dataContext.MeetingNotes.Add(new MeetingNote { MeetingId = id, Meeting = default, MeetingNoteContent = content });
+            _dataContext.MeetingNotes.Add(new MeetingNote { MeetingId = id, Meeting = default, MeetingNoteContent = content, FeedbackRequired = feedbackRequired });
             _dataContext.SaveChanges();
         }
 
@@ -77,6 +77,12 @@ namespace tl121pet.DAL.Repositories
             return _dataContext.MeetingNotes.Where(p => p.MeetingId == id).ToList();
         }
 
+        public List<MeetingNote> GetMeetingFeedbackRequiredNotes(Guid id)
+        {
+            return _dataContext.MeetingNotes.Where(p => p.MeetingId == id && p.FeedbackRequired == true).ToList();
+        }
+
+        
         public void AddGoal(Guid id, string content)
         {
             _dataContext.MeetingGoals.Add(new MeetingGoal { MeetingId = id, Meeting = default, MeetingGoalDescription = content });

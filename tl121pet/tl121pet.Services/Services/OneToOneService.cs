@@ -22,25 +22,10 @@ namespace tl121pet.Services.Services
             foreach (Person p in _peopleRepository.GetPeople())
             {
                 AlertLevel alert = AlertLevel.None;
+                TimeSpan datediff = new TimeSpan();
                 Meeting lastMeeting = _meetingRepository.GetLastOneToOneByPersonId(p.PersonId) ?? new Meeting();
 
-                //TODO: calculate alrt level, extract into another method
-                TimeSpan datediff = new TimeSpan();
-                if (lastMeeting.MeetingDate == null)
-                {
-                    alert = AlertLevel.High;
-                }
-                else if (lastMeeting != null)
-                {
-                    DateTime lastMeetingDate = (DateTime)lastMeeting.MeetingDate;
-                    datediff = lastMeetingDate.AddMonths(1).Date - DateTime.Now.Date;
-                    if(datediff.Days < 10 && datediff.Days >= 5)
-                        alert = AlertLevel.Low;
-                    if(datediff.Days < 5)
-                        alert = AlertLevel.Normal;
-                    if(datediff.Days <= 0)
-                        alert = AlertLevel.High;
-                }
+                (alert, datediff) = GetOneToOneDeadlineAlertLevel(lastMeeting);
 
                 deadLines.Add(new OneToOneDeadline {
                     Person = p,
@@ -57,13 +42,13 @@ namespace tl121pet.Services.Services
         {
             string result = "";
             result = $"{_peopleRepository.GetPerson(personId).FirstName}, спасибо за проведённую встречу!\n\n" ;
-            List<MeetingNote> notes = _meetingRepository.GetMeetingNotes(meetingId);
+            List<MeetingNote> notes = _meetingRepository.GetMeetingFeedbackRequiredNotes(meetingId);
             if (notes.Count() > 0)
             {
                 result += "На встрече обсудили:\n";
                 foreach (MeetingNote mn in notes)
                 {
-                    result += $"\t-{mn.MeetingNoteContent};\n";
+                    result += $"\t- {mn.MeetingNoteContent};\n";
                 }
             }
             result += "\n\n";
@@ -73,11 +58,33 @@ namespace tl121pet.Services.Services
                 result += "К следующему 1-2-1 договорились:\n";
                 foreach (MeetingGoal mg in goals)
                 {
-                    result += $"\t-{mg.MeetingGoalDescription};\n";
+                    result += $"\t- {mg.MeetingGoalDescription};\n";
                 }
             }
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
             return result;
+        }
+
+        public (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
+        {
+            AlertLevel alert = AlertLevel.None;
+            TimeSpan datediff = new TimeSpan();
+            if (lastMeeting.MeetingDate == null)
+            {
+                alert = AlertLevel.High;
+            }
+            else if (lastMeeting != null)
+            {
+                DateTime lastMeetingDate = (DateTime)lastMeeting.MeetingDate;
+                datediff = lastMeetingDate.AddMonths(1).Date - DateTime.Now.Date;
+                if (datediff.Days < 10 && datediff.Days >= 5)
+                    alert = AlertLevel.Low;
+                if (datediff.Days < 5)
+                    alert = AlertLevel.Normal;
+                if (datediff.Days <= 0)
+                    alert = AlertLevel.High;
+            }
+            return (alert, datediff);
         }
     }
 }
