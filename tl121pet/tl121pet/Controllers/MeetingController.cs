@@ -46,7 +46,12 @@ namespace tl121pet.Controllers
 
         public IActionResult FollowUp(Guid meetingId, long personId, FormMode mode)
         {            
-            return View("FollowUp", (_oneToOneService.GenerateFollowUp(meetingId, personId), meetingId, mode, personId));
+            return View("FollowUp", new FollowUpVM() { 
+                FollowUpMessage = _oneToOneService.GenerateFollowUp(meetingId, personId), 
+                MeetingId = meetingId, 
+                Mode = mode, 
+                PersonId = personId 
+            });
         }
 
         [HttpPost]
