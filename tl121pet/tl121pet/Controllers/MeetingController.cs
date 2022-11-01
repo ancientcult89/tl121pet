@@ -108,7 +108,7 @@ namespace tl121pet.Controllers
         public IActionResult AddNote([FromForm] MeetingEditFormVM vm)
         {
 
-            _meetingRepository.AddNote(vm.SelectedItem.MeetingId, vm.NewNote);
+            _meetingRepository.AddNote(vm.SelectedItem.MeetingId, vm.NewNote, vm.NewNoteFeedbackRequires);
             
             return View("MeetingEditor", new MeetingEditFormVM() { 
                 SelectedItem = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting()
