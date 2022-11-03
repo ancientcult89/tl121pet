@@ -32,7 +32,10 @@ namespace tl121pet.Controllers
             return View("MeetingList", _dataContext.Meetings
                 .Include(p => p.MeetingNotes)
                 .Include(p => p.Person)
-                .Include(p => p.MeetingType).ToList());
+                .Include(p => p.MeetingType)
+                .OrderByDescending(p => p.MeetingPlanDate.Date)
+                .OrderByDescending(p => p.MeetingDate)
+                .ToList());
         }
         public IActionResult Details(Guid id)
         {

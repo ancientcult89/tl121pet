@@ -21,8 +21,8 @@
                 <tr class="bg @coloringAlertLevel[dl.AlertLVL]">
                     <td>@dl.Person.LastName @dl.Person.FirstName @dl.Person.SurName</td>
                     <td>@_gradeRepository.GetGradeName(dl.Person.GradeId)</td>
-                    <td>@dl.LastMeetingOneToOne.MeetingDate</td>
-                    <td>@(dl.LastOneToOneMeetingDate.AddMonths(1))</td>
+                    <td>@dl.LastMeetingOneToOne.MeetingDate?.ToString("dd.MM.yyyy")</td>
+                    <td>@(dl.LastOneToOneMeetingDate.AddMonths(1).ToString("dd.MM.yyyy"))</td>
                     <td>@dl.DayToDeadline</td>
                 </tr>
             }

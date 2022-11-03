@@ -105,7 +105,7 @@ namespace tl121pet.DAL.Repositories
         public Meeting? GetLastOneToOneByPersonId(long personId) 
         { 
             return _dataContext.Meetings
-                .Where(p => p.PersonId == personId)
+                .Where(p => p.PersonId == personId && p.MeetingDate != null)
                 .OrderByDescending(p => p.MeetingDate)
                 .Take(1).FirstOrDefault() ;
         }

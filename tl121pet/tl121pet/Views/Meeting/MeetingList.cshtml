@@ -24,8 +24,8 @@
 @*                        <td>@m.MeetingId</td>*@
                         <td>@m.Person?.FirstName, @m.Person?.LastName</td>
                         <td>@m.MeetingType?.MeetingTypeName</td>
-                        <td>@m.MeetingPlanDate</td>
-                        <td>@m.MeetingDate</td>
+                        <td>@m.MeetingPlanDate.ToLocalTime().ToString("dd.MM.yyyy")</td>
+                        <td>@m.MeetingDate?.ToLocalTime().ToString("dd.MM.yyyy")</td>
                         <td><input type="checkbox" asp-for="@m.FollowUpIsSended" disabled></td>
                         <td class="text-center">
                             <form>

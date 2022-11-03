@@ -71,11 +71,11 @@ namespace tl121pet.Services.Services
         {
             AlertLevel alert = AlertLevel.None;
             TimeSpan datediff = new TimeSpan();
-            if (lastMeeting.MeetingDate == null)
+            if (lastMeeting.MeetingDate == null && lastMeeting.MeetingId == Guid.Empty)
             {
                 alert = AlertLevel.High;
             }
-            else if (lastMeeting != null)
+            else if (lastMeeting.MeetingDate != null)
             {
                 DateTime lastMeetingDate = (DateTime)lastMeeting.MeetingDate;
                 datediff = lastMeetingDate.AddMonths(1).Date - DateTime.Now.Date;
