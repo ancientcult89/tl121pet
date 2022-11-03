@@ -56,7 +56,8 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _meetingRepository.CreateMeetingType(meetingTypeVM.SelectedItem);
-                return RedirectToAction("MeetingTypeList");
+                meetingTypeVM.Mode = FormMode.Create;
+                return View("MeetingTypeEditor", meetingTypeVM);
             }
             return View("MeetingTypeEditor", meetingTypeVM);
         }
