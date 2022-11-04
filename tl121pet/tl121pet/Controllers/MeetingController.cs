@@ -14,17 +14,13 @@ namespace tl121pet.Controllers
         private IMeetingRepository _meetingRepository;
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
-        private IMailService _mailService;
         public MeetingController(DataContext dataContext, 
             IMeetingRepository meetingRepository, 
-            IMailService mailService,
             IOneToOneService oneToOneService)
         {
-
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
             _oneToOneService = oneToOneService;
-            _mailService = mailService;
         }
         #region Meeting
         public IActionResult MeetingList()
@@ -81,7 +77,8 @@ namespace tl121pet.Controllers
             //if (ModelState.IsValid)
             //{
                 _meetingRepository.CreateMeeting(meetingVM.SelectedItem);
-                return RedirectToAction("MeetingList");
+                meetingVM.Mode = FormMode.Edit;
+                return View("MeetingEditor", meetingVM);
             //}
             //return View("MeetingEditor", meetingVM);
         }
@@ -101,7 +98,8 @@ namespace tl121pet.Controllers
             //if (ModelState.IsValid)
             //{
                 _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
-                return RedirectToAction("MeetingList");
+                meetingVM.Mode = FormMode.Process;
+                return View("MeetingEditor", meetingVM);
             //}
             //return View("MeetingEditor", meetingVM);
         }
@@ -116,7 +114,7 @@ namespace tl121pet.Controllers
             //if (ModelState.IsValid)
             //{
                 _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
-                return RedirectToAction("MeetingList");
+                return View("MeetingEditor", meetingVM);
             //}
             //return View("MeetingEditor", meetingVM);
         }

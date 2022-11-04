@@ -38,8 +38,8 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                _peopleRepository.UpdatePerson(personVM.SelectedItem);
-                return RedirectToAction("PeopleList");
+                _peopleRepository.UpdatePerson(personVM.SelectedItem);                
+                return View("PersonEditor", personVM);
             }
             return View("PersonEditor", personVM);
         }
@@ -62,9 +62,10 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _peopleRepository.CreatePerson(personVM.SelectedItem);
-                return RedirectToAction("PeopleList");
+                personVM.Mode = FormMode.Edit;
+                return View("PersonEditor", personVM);
             }
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
+            return View("PersonEditor", personVM);
         }
 
 

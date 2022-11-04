@@ -1,6 +1,6 @@
-﻿@model List<MeetingType>
+﻿@model List<Grade>
 @{
-    ViewData["Title"] = "Meeting Type";
+    ViewData["Title"] = "Grades";
 }
 
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
@@ -8,22 +8,22 @@
         <thead>
             <tr>
 @*                <th>ID</th>*@
-                <th>Type Name</th>
+                <th>Grade Name</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach(MeetingType mt in Model ?? Enumerable.Empty<MeetingType>())
+            @foreach(Grade grade in Model ?? Enumerable.Empty<Grade>())
             {
-                <form asp-action="Delete" method="post" asp-route-id="@mt.MeetingTypeId">
+                <form asp-action="Delete" method="post" asp-route-id="@grade.GradeId">
                     <tr class="">
 @*                        <td>@mt.MeetingTypeId</td>*@
-                        <td>@mt.MeetingTypeName</td>
+                        <td>@grade.GradeName</td>
                         <td class="text-center">
                             <form>
-                                <input type="hidden" name="Id" value="@mt.MeetingTypeId" />
-                                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@mt.MeetingTypeId" >Details</a>
-                                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@mt.MeetingTypeId" >Edit</a>
+                                <input type="hidden" name="Id" value="@grade.GradeId" />
+                                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@grade.GradeId" >Details</a>
+                                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@grade.GradeId" >Edit</a>
                                 <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                             </form>
                         </td>

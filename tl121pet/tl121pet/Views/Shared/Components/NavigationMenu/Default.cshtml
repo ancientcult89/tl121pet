@@ -23,4 +23,8 @@
         asp-action="MeetingTypeList" asp-controller="MeetingType">
             Meeting Types
     </a>
+    <a class="btn @("Grade" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="GradeList" asp-controller="Grade">
+            Grade
+    </a>
 </div>

@@ -20,5 +20,24 @@ namespace tl121pet.DAL.Repositories
         {
             return _dataContext.Grades.Find(id).GradeName ?? "not found";
         }
+
+        public void CreateGrade(Grade grade)
+        {
+            _dataContext.Grades.Add(grade);
+            _dataContext.SaveChanges();
+        }
+
+        public void UpdateGrade(Grade grade)
+        {
+            _dataContext.Grades.Update(grade);
+            _dataContext.SaveChanges();
+        }
+
+        public void DeleteGrade(long id)
+        {
+            var gradeToDelete = _dataContext.Grades.Find(id);
+            _dataContext.Grades.Remove(gradeToDelete);
+            _dataContext.SaveChanges();
+        }
     }
 }

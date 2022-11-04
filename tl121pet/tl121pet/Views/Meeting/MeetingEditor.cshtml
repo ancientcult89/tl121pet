@@ -55,17 +55,18 @@
                 Follow up is Sended
             </label>
         </div>
+        @*TODO: extract into foreach*@
         <div class="form-check mt-3 mb-3">
             <div>
-                <span asp-validation-for="MeetingNotes" class="text-danger"></span>
+                <span asp-validation-for="MeetingGoals" class="text-danger"></span>
             </div>
-            <input class="form-check-input" asp-for="MeetingGoals" disabled="@Model.IsReadonly" hidden/>
+            <input class="form-control" asp-for="MeetingGoals" disabled="@Model.IsReadonly" />
         </div>
         <div class="form-check mt-3 mb-3">
             <div>
                 <span asp-validation-for="MeetingNotes" class="text-danger"></span>
             </div>
-            <input class="form-check-input" asp-for="MeetingNotes" disabled="@Model.IsReadonly" hidden/>
+            <input class="form-control" asp-for="MeetingNotes" disabled="@Model.IsReadonly" />
         </div>
 
         @if (Model.Mode != FormMode.Details)
