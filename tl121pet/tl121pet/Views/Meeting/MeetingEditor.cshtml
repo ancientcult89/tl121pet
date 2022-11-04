@@ -1,35 +1,36 @@
 ﻿@inject IMeetingRepository _meetingRepository
 @inject IPeopleRepository _peopleRepository
 @model MeetingEditFormVM
+@inject IViewLocalizer Localizer
 @*<partial name="_Validation"></partial>*@
 
-<h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Model.Mode.ToString()</h5>
+<h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Localizer[Model.Mode.ToString()]</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
 
     <form asp-action="@Model.Mode" method="post">
         @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="SelectedItem.MeetingId"></label>
                 <input class="form-control" asp-for="SelectedItem.MeetingId" readonly/>
             </div>
         }
         <div class="form-group">
-            <label asp-for="SelectedItem.MeetingPlanDate"></label>
+            <label asp-for="SelectedItem.MeetingPlanDate">@Localizer["MeetingPlanDate"]</label>
             <div>
                 <span asp-validation-for="SelectedItem.MeetingPlanDate" class="text-danger"></span>
             </div>
             <input type="date" class="form-control" asp-for="SelectedItem.MeetingPlanDate" disabled="@Model.IsReadonly"/>
         </div>
         <div class="form-group">
-            <label asp-for="SelectedItem.MeetingDate"></label>
+            <label asp-for="SelectedItem.MeetingDate">@Localizer["MeetingDate"]</label>
             <div>
                 <span asp-validation-for="SelectedItem.MeetingDate" class="text-danger"></span>
             </div>
             <input type="date" class="form-control" asp-for="SelectedItem.MeetingDate" disabled="@Model.IsReadonly"/>
         </div>
         <div class="form-group">
-            <label>Meeting Type</label>
+            <label>@Localizer["MeetingType"]</label>
             <div>
                 <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
             </div>
@@ -38,7 +39,7 @@
             </select>
         </div>
         <div class="form-group">
-            <label>Person</label>
+            <label>@Localizer["Person"]</label>
             <div>
                 <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>
             </div>
@@ -52,23 +53,23 @@
             </div>
             <input class="form-check-input" type="checkbox" asp-for="SelectedItem.FollowUpIsSended" disabled="@Model.IsReadonly"/>
             <label class="form-check-label" asp-for="SelectedItem.FollowUpIsSended">
-                Follow up is Sended
+                @Localizer["FollowUpIsSended"]
             </label>
         </div>
 
         @if (Model.Mode != FormMode.Details)
         {
             <button class="btn btn-info mt-2" type="submit">
-                Save
+                @Localizer["Save"]
             </button>
         }
-        <a class="btn btn-secondary mt-2" asp-action="MeetingList">Back</a>
+        <a class="btn btn-secondary mt-2" asp-action="MeetingList">@Localizer["Back"]</a>
         <a class="btn btn-success mt-2" 
             asp-action="FollowUp" 
             asp-route-meetingId="@Model.SelectedItem.MeetingId"
             asp-route-personId="@Model.SelectedItem.PersonId"
             asp-route-mode="@Model.Mode">
-                Generate FollowUp
+                @Localizer["GenerateFollowUp"]
         </a>
     </form>
     <p></p>
