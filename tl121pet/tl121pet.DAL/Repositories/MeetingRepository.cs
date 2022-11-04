@@ -120,5 +120,22 @@ namespace tl121pet.DAL.Repositories
                 _dataContext.SaveChanges();
             }
         }
+
+        public void UpdateNote(Guid id, string MeetingNoteContent, bool feedbackRequired)
+        {
+            MeetingNote mn = _dataContext.MeetingNotes.Find(id);
+            mn.MeetingNoteContent = MeetingNoteContent;
+            mn.FeedbackRequired = feedbackRequired;
+            _dataContext.MeetingNotes.Update(mn);
+            _dataContext.SaveChanges();
+        }
+
+        public void UpdateGoal(Guid id, string content)
+        {
+            MeetingGoal mg = _dataContext.MeetingGoals.Find(id);
+            mg.MeetingGoalDescription = content;
+            _dataContext.MeetingGoals.Update(mg);
+            _dataContext.SaveChanges();
+        }
     }
 }
