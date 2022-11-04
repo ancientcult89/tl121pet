@@ -112,4 +112,7 @@
   <data name="Back" xml:space="preserve">
     <value>Back</value>
   </data>
+  <data name="MeetingTypeName" xml:space="preserve">
+    <value>Meeting Type Name</value>
+  </data>
 </root>

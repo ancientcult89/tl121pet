@@ -132,4 +132,7 @@
   <data name="Back" xml:space="preserve">
     <value>Назад</value>
   </data>
+  <data name="MeetingTypeName" xml:space="preserve">
+    <value>Наименование типа встречи</value>
+  </data>
 </root>
