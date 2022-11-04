@@ -10,7 +10,15 @@
         <div class="bg-dark text-white p-2">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col navbar-brand">TeamLead Helper</div>
+                    <div class="col navbar-brand col-11">TeamLead Helper</div>
+                    <form asp-action="SetLanguage" asp-controller="Home">
+                        <select onchange="OnSelected" class="col-sm" onclick="OnSelected" name="lang">
+                            <option value="ru-RU">ru-RU</option>
+                            <option value="en-US">en-US</option>
+                        </select>
+                        <button class="col-sm button button-info button-sm" type="submit">Ok</button>
+                    </form>
+
                 </div>
             </div>
         </div>
