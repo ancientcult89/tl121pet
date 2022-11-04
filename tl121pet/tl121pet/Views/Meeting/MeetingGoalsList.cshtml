@@ -11,16 +11,21 @@
         <tbody>
             @foreach (MeetingGoal mg in Model.MeetingGoals ?? Enumerable.Empty<MeetingGoal>())
             {
-                <form asp-action="DeleteGoal" method="post" asp-route-goalId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
-                    <tr class="">
-                        <td>
-                            @mg.MeetingGoalDescription                                        
-                        </td>
-                        <td class="text-center">
+                <tr class="">
+                    <form asp-action="UpdateGoal" method="post"
+                        asp-route-goalId="@mg.MeetingGoalId",
+                        asp-route-meetingId="@mg.MeetingId">
+                            <td>
+                                <input class="form-control" asp-for="@mg.MeetingGoalDescription" name="MeetingGoalDescription"/>                                                                            
+                            </td>
+                            <td><button type="submit" class="btn btn-sm btn-info" hidden="@Model.IsReadonly">Modify</button></td>
+                    </form>
+                    <td class="text-center">
+                        <form asp-action="DeleteGoal" method="post" asp-route-noteId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
                             <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">Delete</button>
-                        </td>
-                    </tr>
-                </form>
+                        </form>
+                    </td>
+                </tr>
             }
         </tbody>
     </table>

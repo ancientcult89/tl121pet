@@ -96,6 +96,8 @@ namespace tl121pet.Controllers
             //{
                 _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
                 meetingVM.Mode = FormMode.Process;
+                meetingVM.MeetingNotes = _meetingRepository.GetMeetingNotes(meetingVM.SelectedItem.MeetingId);
+                meetingVM.MeetingGoals = _meetingRepository.GetMeetingGoals(meetingVM.SelectedItem.MeetingId);
                 return View("MeetingEditor", meetingVM);
             //}
             //return View("MeetingEditor", meetingVM);
@@ -111,6 +113,8 @@ namespace tl121pet.Controllers
             //if (ModelState.IsValid)
             //{
                 _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                meetingVM.MeetingNotes = _meetingRepository.GetMeetingNotes(meetingVM.SelectedItem.MeetingId);
+                meetingVM.MeetingGoals = _meetingRepository.GetMeetingGoals(meetingVM.SelectedItem.MeetingId);
                 return View("MeetingEditor", meetingVM);
             //}
             //return View("MeetingEditor", meetingVM);
@@ -139,6 +143,21 @@ namespace tl121pet.Controllers
             });
         }
 
+        [HttpPost]
+        public IActionResult UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
+        {
+
+            _meetingRepository.UpdateNote(noteId, MeetingNoteContent, FeedbackRequired);
+
+            return View("MeetingEditor", new MeetingEditFormVM()
+            {
+                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
+                Mode = FormMode.Process,
+                MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
+                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+            });
+        }
+
         public IActionResult DeleteNote(Guid noteId, Guid meetingId)
         { 
             _meetingRepository.DeleteNote(noteId);
@@ -163,6 +182,21 @@ namespace tl121pet.Controllers
                 , Mode = FormMode.Process
                 , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
                 , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
+            });
+        }
+
+        [HttpPost]
+        public IActionResult UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
+        {
+
+            _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
+
+            return View("MeetingEditor", new MeetingEditFormVM()
+            {
+                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
+                Mode = FormMode.Process,
+                MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
+                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
             });
         }
 

@@ -1,1 +1,1 @@
-.\tl121pet\tl121pet.sln 
+start .\tl121pet\tl121pet.sln 

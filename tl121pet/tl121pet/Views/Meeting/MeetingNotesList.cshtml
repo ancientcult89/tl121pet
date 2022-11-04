@@ -7,24 +7,30 @@
                 <th>Description</th>
                 <th>Feedback required</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (MeetingNote mn in Model.MeetingNotes ?? new List<MeetingNote>())
             {
-                <form asp-action="DeleteNote" method="post" asp-route-noteId="@mn.MeetingNoteId", asp-route-meetingId="@mn.MeetingId">
                     <tr class="">
-                        <td>
-                            @mn.MeetingNoteContent                                        
-                        </td>
-                        <td>
-                            <input type="checkbox" asp-for="@mn.FeedbackRequired" disabled>                                   
-                        </td>
+                        <form asp-action="UpdateNote" method="post"
+                            asp-route-noteId="@mn.MeetingNoteId",
+                            asp-route-meetingId="@mn.MeetingId">
+                                <td>
+                                    <input class="form-control" asp-for="@mn.MeetingNoteContent" name="MeetingNoteContent"/>                                                                            
+                                </td>
+                                <td>
+                                    <input type="checkbox" asp-for="@mn.FeedbackRequired" name="FeedbackRequired">                                
+                                </td>
+                                <td><button type="submit" class="btn btn-sm btn-info" hidden="@Model.IsReadonly">Modify</button></td>
+                        </form>
                         <td class="text-center">
-                            <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">Delete</button>
+                            <form asp-action="DeleteNote" method="post" asp-route-noteId="@mn.MeetingNoteId", asp-route-meetingId="@mn.MeetingId">
+                                <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">Delete</button>
+                            </form>
                         </td>
                     </tr>
-                </form>
             }
         </tbody>
     </table>
