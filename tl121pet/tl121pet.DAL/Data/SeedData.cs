@@ -46,7 +46,9 @@ namespace tl121pet.DAL.Data
                 Person p1 = new Person() { FirstName = "John", LastName = "Smith", Grade = g4 };
                 dataContext.People.Add(p1);
                 dataContext.SaveChanges();
+
             }
+
         }
     }
 }

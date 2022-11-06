@@ -20,5 +20,6 @@ namespace tl121pet.DAL.Data
         public DbSet<MeetingType> MeetingTypes => Set<MeetingType>();
         public DbSet<MeetingGoal> MeetingGoals => Set<MeetingGoal>();
         public DbSet<MeetingNote> MeetingNotes => Set<MeetingNote>();
+        public DbSet<User> Users => Set<User>();
     }
 }
