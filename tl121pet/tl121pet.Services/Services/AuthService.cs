@@ -17,17 +17,15 @@ namespace tl121pet.Services.Services
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly HttpClient _httpClient;
+        public string Role { get; set; } = string.Empty;
 
         public AuthService(IConfiguration configuration
             , IUserRepository userRepository
-            , IHttpContextAccessor httpContextAccessor
-            , HttpClient httpClient)
+            , IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
-            _httpClient = httpClient;
         }
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -77,9 +75,11 @@ namespace tl121pet.Services.Services
                 return null;
 
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            { 
-                //string token = CreateToken(user);
+            {
+                string token = CreateToken(user);
+                Role = "Admin";
                 //_httpContextAccessor.HttpContext.Session.SetString("JWToken", token);
+                //_httpContextAccessor.HttpContext.Request.Headers.Authorization = $"Bearer {token}";
                 //HttpClient client = new HttpClient();
                 //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 return user;

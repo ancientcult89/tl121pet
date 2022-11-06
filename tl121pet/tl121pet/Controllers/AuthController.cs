@@ -29,7 +29,7 @@ namespace tl121pet.Controllers
                 UserName = "ancientcult"
             });
 
-
+            
             return View("Login", new UserLoginRequest());
         }
 
@@ -38,7 +38,7 @@ namespace tl121pet.Controllers
         {
             string token = Login(loginRequest);
             if (token != "")
-            { 
+            {
                 return RedirectToRoute(new { controller = "OneToOneDeadline", action = "OneToOneDeadlineList" });
             }
             return View("Login", loginRequest);

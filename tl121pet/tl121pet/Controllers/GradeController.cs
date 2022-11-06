@@ -3,20 +3,23 @@ using Microsoft.AspNetCore.Mvc;
 using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
 namespace tl121pet.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class GradeController : Controller
     {
         private IGradeRepository _gradeRepository;
         private DataContext _dataContext;
-        public GradeController(IGradeRepository gradeRepository, DataContext dataContext)
+        private IAuthService _authService;
+        public GradeController(IGradeRepository gradeRepository, DataContext dataContext, IAuthService authService)
         { 
             _gradeRepository = gradeRepository;
             _dataContext = dataContext;
+            _authService = authService;
         }
 
         public IActionResult GradeList()
