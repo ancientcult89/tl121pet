@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
@@ -79,6 +80,7 @@ namespace tl121pet.Controllers
             return "Ok";
         }
 
+        [Authorize]
         [HttpGet("/api/person/peoplelist")]
         public List<Person> GetPeopleList()
         {

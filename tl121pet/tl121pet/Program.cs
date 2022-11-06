@@ -13,11 +13,42 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
+
+//auth
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opts => {
+    opts.RequireHttpsMetadata = false;
+    opts.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+builder.Services.ConfigureApplicationCookie(opts => {
+    opts.LoginPath = "/Auth/Login";
+});
+
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
+
+builder.Services.AddSwaggerGen(opts => {
+    opts.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standart Authorization header using the Bearer scheme (\"bearer {token}\")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    opts.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 builder.Services.AddLocalization(opts =>  opts.ResourcesPath = "Resources");
 builder.Services.Configure<RequestLocalizationOptions>(options => {
@@ -31,6 +62,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
     options.SupportedUICultures = supportedCultures;
 });
 builder.Services.AddMvc().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
@@ -44,17 +76,6 @@ builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpContextAccessor();
 
-//auth
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opts => {
-    opts.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
-
 var app = builder.Build();
 
 app.UseHttpsRedirection();
@@ -65,9 +86,16 @@ var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 
 #region auth
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 #endregion auth
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapControllerRoute(
     name: "default",

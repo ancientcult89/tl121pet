@@ -17,12 +17,17 @@ namespace tl121pet.Services.Services
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly HttpClient _httpClient;
 
-        public AuthService(IConfiguration configuration, IUserRepository userRepository, IHttpContextAccessor httpContextAccessor)
+        public AuthService(IConfiguration configuration
+            , IUserRepository userRepository
+            , IHttpContextAccessor httpContextAccessor
+            , HttpClient httpClient)
         {
             _configuration = configuration;
             _userRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
+            _httpClient = httpClient;
         }
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
@@ -65,19 +70,22 @@ namespace tl121pet.Services.Services
                 return "no role";
         }
 
-        public bool Login(UserLoginRequest request)
+        public User? Login(UserLoginRequest request)
         {
             User user = _userRepository.GetUserByEmail(request.Email);
             if (user == null)
-                return false;
+                return null;
 
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             { 
-                string token = CreateToken(user);
-                return true;
+                //string token = CreateToken(user);
+                //_httpContextAccessor.HttpContext.Session.SetString("JWToken", token);
+                //HttpClient client = new HttpClient();
+                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                return user;
             }
 
-            return false;
+            return null;
         }
 
         public void Register(UserRegisterRequest request)

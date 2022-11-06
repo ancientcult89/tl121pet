@@ -34,12 +34,24 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login([FromForm] UserLoginRequest loginRequest)
+        public IActionResult SignUp([FromForm] UserLoginRequest loginRequest)
         {
-            bool isLogged = _authService.Login(loginRequest);
-            if(isLogged)
+            string token = Login(loginRequest);
+            if (token != "")
+            { 
                 return RedirectToRoute(new { controller = "OneToOneDeadline", action = "OneToOneDeadlineList" });
+            }
             return View("Login", loginRequest);
+        }
+
+        [HttpPost("/api/auth/login")]
+        public string Login(UserLoginRequest loginRequest)
+        {
+            string res = "";
+            User? user = _authService.Login(loginRequest);
+            if(user != null)
+                res = _authService.CreateToken(user);
+            return res;
         }
     }
 }
