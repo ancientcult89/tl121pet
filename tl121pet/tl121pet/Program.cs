@@ -15,6 +15,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,6 +88,20 @@ app.UseRequestLocalization(options.Value);
 
 #region auth
 app.UseSession();
+app.Use(async (context, next) =>
+{
+    var token = context.Session.GetString("Token");
+    if (!string.IsNullOrEmpty(token))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + token);
+    }
+    await next();
+});
+app.UseStatusCodePages(async context => { 
+    var responce = context.HttpContext.Response;
+    if (responce.StatusCode == (int)HttpStatusCode.Unauthorized || responce.StatusCode == (int)HttpStatusCode.Forbidden)
+        responce.Redirect("/auth/AccessDenied");
+});
 app.UseAuthentication();
 app.UseAuthorization();
 #endregion auth

@@ -13,10 +13,12 @@ namespace tl121pet.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService _authService;
+        private readonly IConfiguration _config;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IConfiguration config)
         {
             _authService = authService;
+            _config = config;
         }
         public IActionResult Login()
         {
@@ -36,22 +38,29 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult SignUp([FromForm] UserLoginRequest loginRequest)
         {
-            string token = Login(loginRequest);
+            string token = LoginApi(loginRequest);
             if (token != "")
             {
+                HttpContext.Session.SetString("Token", token);
                 return RedirectToRoute(new { controller = "OneToOneDeadline", action = "OneToOneDeadlineList" });
             }
             return View("Login", loginRequest);
         }
 
         [HttpPost("/api/auth/login")]
-        public string Login(UserLoginRequest loginRequest)
+        public string LoginApi(UserLoginRequest loginRequest)
         {
             string res = "";
             User? user = _authService.Login(loginRequest);
             if(user != null)
                 res = _authService.CreateToken(user);
             return res;
+        }
+
+        [HttpGet]
+        public IActionResult AccessDenied()
+        {
+            return View("AccessDenied");
         }
     }
 }

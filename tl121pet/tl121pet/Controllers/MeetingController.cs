@@ -6,9 +6,11 @@ using tl121pet.Entities.Models;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 using tl121pet.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace tl121pet.Controllers
 {
+    [Authorize]
     public class MeetingController : Controller
     {
         private IMeetingRepository _meetingRepository;

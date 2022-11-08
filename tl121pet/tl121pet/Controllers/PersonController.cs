@@ -9,6 +9,7 @@ using tl121pet.ViewModels;
 
 namespace tl121pet.Controllers
 {
+    [Authorize]
     public class PersonController : Controller
     {
         private IPeopleRepository _peopleRepository;
