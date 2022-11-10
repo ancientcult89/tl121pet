@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using tl121pet.Entities.Models;
 
 namespace tl121pet.DAL.Data
@@ -47,8 +48,34 @@ namespace tl121pet.DAL.Data
                 dataContext.People.Add(p1);
                 dataContext.SaveChanges();
 
-            }
+                Role role1 = new Role() { RoleName = "Admin" };
+                dataContext.Roles.Add(role1);
+                dataContext.SaveChanges(true);
 
+                CreatePasswordHash("admin", out byte[] passwordHash, out byte[] passwordSalt);
+                User newUser = new User
+                {
+                    Email = "admin@example.com",
+                    UserName = "admin",
+                    PasswordHash = passwordHash,
+                    PasswordSalt = passwordSalt,
+                    Role = role1
+                };
+                dataContext.Users.Add(newUser);
+                dataContext.SaveChanges();
+
+            }
+        }
+
+
+        //duplicate from AuthService
+        public static void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
     }
 }

@@ -15,12 +15,12 @@ namespace tl121pet.Services.Services
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
-        private readonly IUserRepository _userRepository;
+        private readonly IAdminRepository _userRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public string Role { get; set; } = string.Empty;
 
         public AuthService(IConfiguration configuration
-            , IUserRepository userRepository
+            , IAdminRepository userRepository
             , IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;

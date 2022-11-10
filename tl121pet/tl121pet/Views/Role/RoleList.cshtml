@@ -1,0 +1,38 @@
+﻿@model List<Role>
+@inject IViewLocalizer Localizer
+@*@{
+    ViewData["Title"] = "Meeting Type";
+}*@
+
+<div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+@*                <th>ID</th>*@
+                <th>@Localizer["RoleName"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(Role role in Model ?? Enumerable.Empty<Role>())
+            {
+                <form asp-action="Delete" method="post" asp-route-id="@role.RoleId">
+                    <tr class="">
+@*                        <td>@mt.MeetingTypeId</td>*@
+                        <td>@role.RoleName</td>
+                        <td class="text-center">
+                            <form>
+                                <input type="hidden" name="Id" value="@role.RoleId" />
+                                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@role.RoleId" >@Localizer["Details"]</a>
+                                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@role.RoleId" >@Localizer["Edit"]</a>
+                                <button type="submit" class="btn btn-sm btn-danger">@Localizer["Delete"]</button>
+                            </form>
+                        </td>
+                    </tr>
+                </form>
+            }
+        </tbody>
+    </table>
+
+    <a class="btn btn-sm btn-primary p-2" asp-action="Create" >@Localizer["Create"]</a>
+</div>
