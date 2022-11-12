@@ -48,5 +48,11 @@ namespace tl121pet.Controllers
         {
             return View("AccessDenied");
         }
+
+        public IActionResult Logout()
+        {
+            HttpContext.Session.SetString("Token", "");
+            return RedirectToRoute(new { controller = "OneToOneDeadline", action = "OneToOneDeadlineList" });
+        }
     }
 }

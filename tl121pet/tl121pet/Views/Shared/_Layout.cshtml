@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@inject IViewLocalizer Localizer
+
+<!DOCTYPE html>
 <html>
     <head>
         <meta name="viewport" content="width=device-width" />
@@ -17,8 +19,11 @@
                                 <option value="ru-RU">ru-RU</option>
                                 <option value="en-US">en-US</option>
                             </select>
-                            <button class="col-sm btn btn-sm btn-info" type="submit">Ok</button>
+                            <button class="col-sm btn btn-sm btn-info" type="submit">Ok</button>                            
                         </div>
+                    </form>
+                    <form asp-action="Logout" asp-controller="Auth" class="col-sm">
+                            <button class="col-sm btn btn-sm btn-danger" type="submit">Logout</button>                            
                     </form>
                 </div>
             </div>

@@ -97,28 +97,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
+  <data name="UserName" xml:space="preserve">
+    <value>User Name</value>
   </data>
-  <data name="OneToOneDeadlines" xml:space="preserve">
-    <value>1-2-1 Deadlines</value>
-  </data>
-  <data name="Persons" xml:space="preserve">
-    <value>Persons</value>
-  </data>
-  <data name="Meetings" xml:space="preserve">
-    <value>Meetings</value>
-  </data>
-  <data name="Grade" xml:space="preserve">
-    <value>Grade</value>
-  </data>
-  <data name="MeetingTypes" xml:space="preserve">
-    <value>Meeting Types</value>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
   </data>
   <data name="Role" xml:space="preserve">
-    <value>Roles</value>
+    <value>Role</value>
   </data>
-  <data name="User" xml:space="preserve">
-    <value>Users</value>
+  <data name="ChooseRole" xml:space="preserve">
+    <value>Choose Role</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Create</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Password</value>
+  </data>
+  <data name="ChangePassword" xml:space="preserve">
+    <value>Change Password</value>
   </data>
 </root>

@@ -6,7 +6,6 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
-using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -15,7 +14,7 @@ namespace tl121pet.Services.Services
     public class AuthService : IAuthService
     {
         private readonly IConfiguration _configuration;
-        private readonly IAdminRepository _userRepository;
+        private readonly IAdminRepository _adminRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public string Role { get; set; } = string.Empty;
 
@@ -24,7 +23,7 @@ namespace tl121pet.Services.Services
             , IHttpContextAccessor httpContextAccessor)
         {
             _configuration = configuration;
-            _userRepository = userRepository;
+            _adminRepository = userRepository;
             _httpContextAccessor = httpContextAccessor;
         }
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -40,7 +39,7 @@ namespace tl121pet.Services.Services
         {
             List<Claim> claims = new List<Claim> {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, "Admin")
+                new Claim(ClaimTypes.Role, _adminRepository.GetRoleNameById(user.RoleId))
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
@@ -70,18 +69,16 @@ namespace tl121pet.Services.Services
 
         public User? Login(UserLoginRequest request)
         {
-            User user = _userRepository.GetUserByEmail(request.Email);
+            User user = _adminRepository.GetUserByEmail(request.Email);
             if (user == null)
                 return null;
 
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 string token = CreateToken(user);
+                
+                //temporary
                 Role = "Admin";
-                //_httpContextAccessor.HttpContext.Session.SetString("JWToken", token);
-                //_httpContextAccessor.HttpContext.Request.Headers.Authorization = $"Bearer {token}";
-                //HttpClient client = new HttpClient();
-                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
                 return user;
             }
 
@@ -90,7 +87,7 @@ namespace tl121pet.Services.Services
 
         public void Register(UserRegisterRequest request)
         {
-            User existsUser = _userRepository.GetUserByEmail(request.Email);
+            User existsUser = _adminRepository.GetUserByEmail(request.Email);
             if (existsUser != null)
                 return;
 
@@ -101,7 +98,7 @@ namespace tl121pet.Services.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt
             };
-            _userRepository.CreateUser(newUser);
+            _adminRepository.CreateUser(newUser);
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
