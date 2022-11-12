@@ -135,4 +135,10 @@
   <data name="MeetingTypes" xml:space="preserve">
     <value>Типы встреч</value>
   </data>
+  <data name="Role" xml:space="preserve">
+    <value>Роли</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Пользователи</value>
+  </data>
 </root>

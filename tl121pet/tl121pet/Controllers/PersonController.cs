@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
@@ -8,6 +9,7 @@ using tl121pet.ViewModels;
 
 namespace tl121pet.Controllers
 {
+    [Authorize]
     public class PersonController : Controller
     {
         private IPeopleRepository _peopleRepository;
@@ -79,6 +81,7 @@ namespace tl121pet.Controllers
             return "Ok";
         }
 
+        [Authorize]
         [HttpGet("/api/person/peoplelist")]
         public List<Person> GetPeopleList()
         {

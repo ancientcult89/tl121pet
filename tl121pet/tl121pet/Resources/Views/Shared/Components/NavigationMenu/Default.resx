@@ -115,4 +115,10 @@
   <data name="MeetingTypes" xml:space="preserve">
     <value>Meeting Types</value>
   </data>
+  <data name="Role" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Users</value>
+  </data>
 </root>

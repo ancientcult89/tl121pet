@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using tl121pet.DAL.Data;
@@ -11,9 +12,10 @@ using tl121pet.DAL.Data;
 namespace tl121pet.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221106034753_Users")]
+    partial class Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -183,23 +185,6 @@ namespace tl121pet.Migrations
                     b.ToTable("ProjectTeams");
                 });
 
-            modelBuilder.Entity("tl121pet.Entities.Models.Role", b =>
-                {
-                    b.Property<int>("RoleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RoleId"));
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("RoleId");
-
-                    b.ToTable("Roles");
-                });
-
             modelBuilder.Entity("tl121pet.Entities.Models.Skill", b =>
                 {
                     b.Property<long>("SkillId")
@@ -287,9 +272,6 @@ namespace tl121pet.Migrations
                     b.Property<DateTime?>("ResetTokenExpired")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -301,8 +283,6 @@ namespace tl121pet.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("RoleId");
 
                     b.ToTable("Users");
                 });
@@ -376,17 +356,6 @@ namespace tl121pet.Migrations
                     b.Navigation("SkillGroup");
 
                     b.Navigation("SkillType");
-                });
-
-            modelBuilder.Entity("tl121pet.Entities.Models.User", b =>
-                {
-                    b.HasOne("tl121pet.Entities.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.Meeting", b =>

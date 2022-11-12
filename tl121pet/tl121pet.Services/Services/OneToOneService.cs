@@ -18,6 +18,10 @@ namespace tl121pet.Services.Services
             _peopleRepository = peopleRepository;
             _mailService = mailService;
         }
+
+        //TODO: дедлайн знает о репозитории людей и встреч. переделать
+        //, пусть принимает айдишку? или последний 1-2-1? сильно завязано на репозитории,
+        //может вынести в датаконтракт, к-й прилетает из контроллера? или принимаем на вход пользователя и встречу, что облегчит написание теста?
         public List<OneToOneDeadline> GetDeadLines()
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
@@ -40,6 +44,7 @@ namespace tl121pet.Services.Services
             return deadLines;
         }
 
+        //TODO: рефакторим следующее: на вход подаём объекты пользователя, заметок и целей, внутри метода их не вычисляем!!!
         public string GenerateFollowUp(Guid meetingId, long personId)
         {
             string result = "";
@@ -89,6 +94,7 @@ namespace tl121pet.Services.Services
             return (alert, datediff);
         }
 
+        //TODO: на вход должнен подаваться айдишка встречи и уже готовая почта
         public void SendFollowUp(Guid meetingId, long personId)
         { 
             MailRequest mail = new MailRequest();

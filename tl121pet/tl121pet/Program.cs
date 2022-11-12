@@ -10,11 +10,46 @@ using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
+
+//auth
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opts => {
+    opts.RequireHttpsMetadata = false;
+    opts.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+builder.Services.ConfigureApplicationCookie(opts => {
+    opts.LoginPath = "/Auth/Login";
+});
+
+
 builder.Services.AddControllersWithViews();
+builder.Services.AddSession();
+
+builder.Services.AddSwaggerGen(opts => {
+    opts.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Description = "Standart Authorization header using the Bearer scheme (\"bearer {token}\")",
+        In = ParameterLocation.Header,
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey
+    });
+    opts.OperationFilter<SecurityRequirementsOperationFilter>();
+});
 
 builder.Services.AddLocalization(opts =>  opts.ResourcesPath = "Resources");
 builder.Services.Configure<RequestLocalizationOptions>(options => {
@@ -28,14 +63,19 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
     options.SupportedUICultures = supportedCultures;
 });
 builder.Services.AddMvc().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+builder.Services.AddHttpClient();
 
 builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IOneToOneService, OneToOneService>();
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddTransient<IMailService, MailService>();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -46,7 +86,31 @@ app.UseRouting();
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 
+#region auth
+app.UseSession();
+app.Use(async (context, next) =>
+{
+    var token = context.Session.GetString("Token");
+    if (!string.IsNullOrEmpty(token))
+    {
+        context.Request.Headers.Add("Authorization", "Bearer " + token);
+    }
+    await next();
+});
+app.UseStatusCodePages(async context => { 
+    var responce = context.HttpContext.Response;
+    if (responce.StatusCode == (int)HttpStatusCode.Unauthorized || responce.StatusCode == (int)HttpStatusCode.Forbidden)
+        responce.Redirect("/auth/AccessDenied");
+});
+app.UseAuthentication();
 app.UseAuthorization();
+#endregion auth
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.MapControllerRoute(
     name: "default",
@@ -54,5 +118,6 @@ app.MapControllerRoute(
 
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
 SeedData.SeedDatabase(context);
+
 
 app.Run();

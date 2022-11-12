@@ -1,0 +1,41 @@
+﻿@model List<User>
+@inject IViewLocalizer Localizer
+
+<div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>@Localizer["Name"]</th>
+                <th>@Localizer["Email"]</th>
+                <th>@Localizer["Role"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(User u in Model ?? Enumerable.Empty<User>())
+            {
+                <form asp-action="delete" method="post" asp-route-id="@u.Id">
+                    <tr class="">
+                        <td>@u.UserName</td>
+                        <td>
+                            @u.Email
+                        </td>
+                        <td>
+                            @u.Role?.RoleName
+                        </td>
+                        <td class="text-center">
+                            <form>
+                                <input type="hidden" name="Id" value="@u.Id" />
+                                <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@u.Id" >@Localizer["Details"]</a>
+                                <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@u.Id" >@Localizer["Edit"]</a>
+                                <button type="submit" class="btn btn-sm btn-danger">@Localizer["Delete"]</button>
+                            </form>
+                        </td>
+                    </tr>
+                </form>
+            }
+        </tbody>
+    </table>
+
+    <a class="btn btn-sm btn-primary p-2" asp-action="Create" >@Localizer["Create"]</a>
+</div>
