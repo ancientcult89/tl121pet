@@ -97,31 +97,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Home</value>
-  </data>
-  <data name="OneToOneDeadlines" xml:space="preserve">
-    <value>1-2-1 Deadlines</value>
-  </data>
-  <data name="Persons" xml:space="preserve">
-    <value>Persons</value>
-  </data>
-  <data name="Meetings" xml:space="preserve">
-    <value>Meetings</value>
-  </data>
-  <data name="Grade" xml:space="preserve">
-    <value>Grade</value>
-  </data>
-  <data name="MeetingTypes" xml:space="preserve">
-    <value>Meeting Types</value>
-  </data>
-  <data name="Role" xml:space="preserve">
-    <value>Roles</value>
-  </data>
-  <data name="User" xml:space="preserve">
-    <value>Users</value>
-  </data>
-  <data name="ProjectTeam" xml:space="preserve">
-    <value>Project Teams</value>
+  <data name="ProjectTeamName" xml:space="preserve">
+    <value>Project Team Name</value>
   </data>
 </root>

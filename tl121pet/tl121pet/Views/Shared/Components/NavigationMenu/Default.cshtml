@@ -37,4 +37,8 @@
         asp-action="UserList" asp-controller="User">
             @Localizer["User"]
     </a>
+    <a class="btn @("ProjectTeam" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="ProjectTeamList" asp-controller="ProjectTeam">
+            @Localizer["ProjectTeam"]
+    </a>
 </div>

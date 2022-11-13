@@ -16,6 +16,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
+using tl121pet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,7 +38,10 @@ builder.Services.ConfigureApplicationCookie(opts => {
 });
 
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews().AddDataAnnotationsLocalization(opts => {
+    opts.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedListResource));
+    opts.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedEditFormResource));
+});
 builder.Services.AddSession();
 
 builder.Services.AddSwaggerGen(opts => {
