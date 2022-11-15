@@ -1,4 +1,5 @@
-﻿using tl121pet.DAL.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 
@@ -38,6 +39,16 @@ namespace tl121pet.DAL.Repositories
         {
             _dataContext.ProjectTeams.Update(pt);
             _dataContext.SaveChanges();
+        }
+
+        public string GetPersonsProjects(long id)
+        {
+            string projectsList = "";
+            List<ProjectMember> projectMemberList = _dataContext.ProjectMembers.Include(p => p.ProjectTeam).Where(pm => pm.PersonId == id).ToList();
+            foreach (ProjectMember pm in projectMemberList) {
+                projectsList += $"{pm.ProjectTeam.ProjectTeamName}; ";
+            }
+            return projectsList;
         }
     }
 }
