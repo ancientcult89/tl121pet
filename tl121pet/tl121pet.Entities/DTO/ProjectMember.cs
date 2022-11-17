@@ -3,7 +3,7 @@
     public class ProjectMemberDTO
     {
         public long PersonId { get; set; }
-        string PersonName { get; set; } = string.Empty;
-        string Projects { get; set; } = string.Empty;
+        public string PersonName { get; set; } = string.Empty;
+        public string Projects { get; set; } = string.Empty;
     }
 }

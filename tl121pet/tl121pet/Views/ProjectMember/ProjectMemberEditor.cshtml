@@ -1,5 +1,40 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
+﻿@model ProjectMemberEditFormVM
+@inject IViewLocalizer Localizer
+
+<div class="col-sm">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>@Localizer["Projects"]</th>
+                @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
+                {
+                        <th></th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ProjectTeam pt in Model.ProjectTeams ?? new List<ProjectTeam>())
+            {
+                    <tr class="">
+                        <td>
+                            @pt.ProjectTeamName                                                                            
+                        </td>
+@*                        <td class="text-center">
+                            <form asp-action="DeleteMembership" method="post" asp-route-ptId="@pt.ProjectTeamId", asp-route-personId="@Model.SelectedItem">
+                                <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">Delete</button>
+                            </form>
+                        </td>*@
+                    </tr>
+            }
+        </tbody>
+    </table>
+    <form asp-action="AddNote" method="post" hidden="@Model.IsReadonly">
+@*        <input class="form-control" asp-for="SelectedItem.MeetingId" disabled="@Model.IsReadonly" hidden/>
+        <input class="form-control" asp-for="NewNote" disabled="@Model.IsReadonly"/>
+        <input class="form-check-input mt-3 mb-3" asp-for="NewNoteFeedbackRequires" disabled="@Model.IsReadonly"/>
+        <label class="mt-3 mb-3">@Localizer["FeedbackRequired"]</label>*@
+        <button class="btn btn-primary mt-2" type="submit">
+            @Localizer["AddNote"]
+        </button>
+    </form>
+</div>

@@ -44,11 +44,30 @@ namespace tl121pet.DAL.Repositories
         public string GetPersonsProjects(long id)
         {
             string projectsList = "";
-            List<ProjectMember> projectMemberList = _dataContext.ProjectMembers.Include(p => p.ProjectTeam).Where(pm => pm.PersonId == id).ToList();
+            List<ProjectMember> projectMemberList = _dataContext.ProjectMembers
+                .Include(p => p.ProjectTeam)
+                .Where(pm => pm.PersonId == id)
+                .OrderBy(pm => pm.ProjectTeam.ProjectTeamName)
+                .ToList();
             foreach (ProjectMember pm in projectMemberList) {
                 projectsList += $"{pm.ProjectTeam.ProjectTeamName}; ";
             }
             return projectsList;
+        }
+
+        public List<ProjectTeam> GetPersonMembership(long id)
+        {
+            List<ProjectTeam> result = new List<ProjectTeam>();
+            var selectedTeams = from pt in _dataContext.ProjectTeams
+                                join pm in _dataContext.ProjectMembers on pt.ProjectTeamId equals pm.ProjectTeamId
+                                where pm.PersonId == id
+                                select pt;
+
+            foreach (ProjectTeam pm in selectedTeams) {
+                result.Add(pm);
+            }
+
+            return result;
         }
     }
 }

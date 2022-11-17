@@ -10,5 +10,6 @@ namespace tl121pet.DAL.Interfaces
         public void UpdateProjectTeam(ProjectTeam pt);
         public void DeleteProjectTeam(long id);
         public string GetPersonsProjects(long id);
+        public List<ProjectTeam> GetPersonMembership(long id);
     }
 }
