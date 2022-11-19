@@ -5,8 +5,8 @@ by editing this MSBuild file. In order to learn more about this please visit htt
 -->
 <Project>
   <PropertyGroup>
-    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAq3byZb2j1UKdlu0Vj8IuMgAAAAACAAAAAAAQZgAAAAEAACAAAABf15+PKqQta+NgqloJsn6hjHxNMuducn71aJeBOMELowAAAAAOgAAAAAIAACAAAACiADW4BwVUJNtOpphhGG8vOxFvASPGAQhu+qCn6pBPNyAAAABNbxLiNA/JISgty5VVRzoA3EhqV/n0BM/RIjt/dhu740AAAACq0yXqLL9SgKhDF8+q7Hmu22baFUvf2sCKE7v9+gk4cHP4cQzRSU5jFkt9qkPtuXDaSjJs89HeCDNKX9RJxbPE</EncryptedPassword>
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAq3byZb2j1UKdlu0Vj8IuMgAAAAACAAAAAAAQZgAAAAEAACAAAADEyQeuQ5oL/Q5uCATiTELi2PntlgUh8d2yWPSEbA/0ZQAAAAAOgAAAAAIAACAAAADK6/7HSb30WKMOPbF8VFRMmx8XrQFfiXYFEH6u+tOofSAAAACzRUJWIsUoXIKgM2eTQHlHg0jEKJs2VVZnXFvFTTYyVEAAAAAfcN1QKZ1/aCy7jmkgSbizjuQwlqDBEmgbpJQrAfodWPV75gleuF+IEq+Lj65S8YXzS2bdDCFpGwLr5i+0cMvv</EncryptedPassword>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <History>False|2022-11-01T23:55:48.3949018Z;False|2022-11-02T06:48:35.5485226+07:00;</History>
+    <History>True|2022-11-12T04:42:16.1696336Z;</History>
   </PropertyGroup>
 </Project>

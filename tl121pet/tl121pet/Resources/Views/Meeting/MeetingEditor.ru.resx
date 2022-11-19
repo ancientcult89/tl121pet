@@ -153,4 +153,10 @@
   <data name="Create" xml:space="preserve">
     <value>Создание</value>
   </data>
+  <data name="ChooseAPerson" xml:space="preserve">
+    <value>Выберите сотрудника</value>
+  </data>
+  <data name="ChooseMeetingType" xml:space="preserve">
+    <value>Выберите тип встречи</value>
+  </data>
 </root>

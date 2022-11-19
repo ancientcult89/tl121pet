@@ -97,46 +97,22 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.3500.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MeetingPlanDate" xml:space="preserve">
-    <value>Meeting Plan Date</value>
-  </data>
-  <data name="MeetingDate" xml:space="preserve">
-    <value>Meeting Fact Date</value>
-  </data>
-  <data name="MeetingType" xml:space="preserve">
-    <value>Meeting Type</value>
-  </data>
-  <data name="Person" xml:space="preserve">
-    <value>Person</value>
-  </data>
-  <data name="FollowUpIsSended" xml:space="preserve">
-    <value>Follow-up is sended</value>
-  </data>
-  <data name="GenerateFollowUp" xml:space="preserve">
-    <value>Generate Follow-Up</value>
-  </data>
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
   <data name="Back" xml:space="preserve">
     <value>Back</value>
   </data>
-  <data name="Details" xml:space="preserve">
-    <value>Details</value>
-  </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
-  </data>
-  <data name="Process" xml:space="preserve">
-    <value>Process</value>
   </data>
   <data name="Create" xml:space="preserve">
     <value>Create</value>
   </data>
-  <data name="ChooseAPerson" xml:space="preserve">
-    <value>Choose a Person</value>
+  <data name="Process" xml:space="preserve">
+    <value>Process</value>
   </data>
-  <data name="ChooseMeetingType" xml:space="preserve">
-    <value>Choose a Meeting Type</value>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
   </data>
 </root>

@@ -121,4 +121,10 @@
   <data name="User" xml:space="preserve">
     <value>Users</value>
   </data>
+  <data name="ProjectTeam" xml:space="preserve">
+    <value>Project Teams</value>
+  </data>
+  <data name="ProjectMember" xml:space="preserve">
+    <value>Project Members</value>
+  </data>
 </root>

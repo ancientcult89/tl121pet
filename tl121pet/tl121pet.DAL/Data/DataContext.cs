@@ -22,5 +22,6 @@ namespace tl121pet.DAL.Data
         public DbSet<MeetingNote> MeetingNotes => Set<MeetingNote>();
         public DbSet<User> Users => Set<User>();
         public DbSet<Role> Roles => Set<Role>();
+        public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
     }
 }

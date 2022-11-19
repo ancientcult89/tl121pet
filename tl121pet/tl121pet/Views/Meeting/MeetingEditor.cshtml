@@ -35,7 +35,7 @@
                 <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
             </div>
             <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(_meetingRepository.GetMeetingTypes(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
-                <option value="" disabled selected>Choose a Meeting Type</option>
+                <option value="" disabled selected>@Localizer["ChooseMeetingType"]</option>
             </select>
         </div>
         <div class="form-group">
@@ -44,7 +44,7 @@
                 <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>
             </div>
             <select asp-for="SelectedItem.PersonId" class="form-control" asp-items="@(new SelectList(_peopleRepository.GetInitials(), "PersonId", "Initials"))" disabled="@Model.IsReadonly">
-                <option value="" disabled selected>Choose a Person</option>
+                <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
             </select>
         </div>
         <div class="form-check mt-3 mb-3">

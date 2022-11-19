@@ -1,0 +1,28 @@
+﻿@model List<ProjectMemberDTO>
+@inject IViewLocalizer Localizer
+@inject IHtmlLocalizer<SharedListResource> ListLocalizer
+
+<div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <table class="table table-sm table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>@Localizer["PersonName"]</th>
+                <th>@Localizer["Projects"]</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(ProjectMemberDTO pm in Model ?? Enumerable.Empty<ProjectMemberDTO>())
+            {
+                <tr class="">
+                    <td>@pm.PersonName</td>
+                    <td>@pm.Projects</td>
+                    <td class="text-center">
+                        <a class="btn btn-sm btn-primary" asp-action="Details" asp-route-id="@pm.PersonId" >@ListLocalizer["Details"]</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@pm.PersonId" >@ListLocalizer["Edit"]</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
