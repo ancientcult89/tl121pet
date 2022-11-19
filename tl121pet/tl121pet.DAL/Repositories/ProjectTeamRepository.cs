@@ -69,5 +69,24 @@ namespace tl121pet.DAL.Repositories
 
             return result;
         }
+
+        public void DeleteMembership(long userId, long projectTeamId)
+        { 
+            ProjectMember pm = _dataContext.ProjectMembers
+                .Where(p => p.ProjectTeamId == projectTeamId && p.PersonId == userId)
+                .FirstOrDefault();
+            _dataContext.ProjectMembers.Remove(pm);
+            _dataContext.SaveChanges();
+        }
+
+        public void AddMembership(long userId, long projectTeamId)
+        {
+            ProjectMember pm = new ProjectMember() { 
+                PersonId = userId,
+                ProjectTeamId = projectTeamId
+            };
+            _dataContext.ProjectMembers.Add(pm);
+            _dataContext.SaveChanges();
+        }
     }
 }

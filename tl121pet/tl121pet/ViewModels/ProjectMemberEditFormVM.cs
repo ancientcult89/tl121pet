@@ -3,8 +3,9 @@ using tl121pet.Entities.Models;
 
 namespace tl121pet.ViewModels
 {
-    public class ProjectMemberEditFormVM : SimpleEditFormVM<long>
+    public class ProjectMemberEditFormVM : SimpleEditFormVM<Person>
     {
         public List<ProjectTeam>? ProjectTeams { get; set; }
+        public long NewProjectTeamId { get; set; }
     }
 }
