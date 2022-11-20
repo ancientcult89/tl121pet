@@ -48,7 +48,15 @@ namespace tl121pet.Services.Services
         public string GenerateFollowUp(Guid meetingId, long personId)
         {
             string result = "";
-            result = $"{_peopleRepository.GetPerson(personId).FirstName}, спасибо за проведённую встречу!\n\n" ;
+            result = $"{_peopleRepository.GetPerson(personId).FirstName}, спасибо за проведённую встречу!\n\n";
+            result += GetMeetingNoteAndGoals(meetingId);
+            result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
+            return result;
+        }
+
+        public string GetMeetingNoteAndGoals(Guid meetingId)
+        {
+            string result = "";
             List<MeetingNote> notes = _meetingRepository.GetMeetingFeedbackRequiredNotes(meetingId);
             if (notes.Count() > 0)
             {
@@ -68,7 +76,7 @@ namespace tl121pet.Services.Services
                     result += $"\t- {mg.MeetingGoalDescription};\n";
                 }
             }
-            result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
+
             return result;
         }
 

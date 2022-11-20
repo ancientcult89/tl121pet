@@ -10,5 +10,6 @@ namespace tl121pet.ViewModels
 
         public List<MeetingGoal>? MeetingGoals { get; set; }
         public string? NewGoal { get; set; } = "";
+        public string? PreviousMeetingNotesAndGoals { get; set; } = "";
     }
 }
