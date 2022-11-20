@@ -137,5 +137,14 @@ namespace tl121pet.DAL.Repositories
             _dataContext.MeetingGoals.Update(mg);
             _dataContext.SaveChanges();
         }
+
+        public Guid? GetPreviousMeetingId(Guid currnetMeetingId, long personId)
+        {
+            Meeting previousMeeting = _dataContext.Meetings
+                .OrderByDescending(p => p.MeetingDate)
+                .Where(p => p.PersonId == personId && p.MeetingId != currnetMeetingId)
+                .FirstOrDefault();
+            return previousMeeting?.MeetingId;
+        }
     }
 }

@@ -8,5 +8,6 @@ namespace tl121pet.Services.Interfaces
         public List<OneToOneDeadline> GetDeadLines();
         public string GenerateFollowUp(Guid meetingId, long personId);
         public void SendFollowUp(Guid meetingId, long personId);
+        public string GetMeetingNoteAndGoals(Guid meetingId);
     }
 }

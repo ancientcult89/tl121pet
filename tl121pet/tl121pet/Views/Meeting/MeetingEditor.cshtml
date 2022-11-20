@@ -1,5 +1,6 @@
 ﻿@inject IMeetingRepository _meetingRepository
 @inject IPeopleRepository _peopleRepository
+@inject IOneToOneService _oneToOneService
 @model MeetingEditFormVM
 @inject IViewLocalizer Localizer
 @*<partial name="_Validation"></partial>*@
@@ -73,12 +74,25 @@
         </a>
     </form>
     <p></p>
+    <hr></hr>
 
     @if (@Model.Mode == FormMode.Process || @Model.Mode == FormMode.Details)
     {
         <div class="container" >
+            @if (Model.Mode == FormMode.Process)
+            {
+                <div class="row">
+                    <pre>@Model.PreviousMeetingNotesAndGoals</pre>
+                </div>
+                <hr></hr>                
+            }
             <div class="row">
                 <partial name="MeetingNotesList" disabled="@Model.IsReadonly"/>
+                @*<partial name="MeetingGoalsList" disabled="@Model.IsReadonly"/>*@
+            </div>
+            <hr></hr>
+            <div class="row">
+@*                <partial name="MeetingNotesList" disabled="@Model.IsReadonly"/>*@
                 <partial name="MeetingGoalsList" disabled="@Model.IsReadonly"/>
             </div>
         </div>

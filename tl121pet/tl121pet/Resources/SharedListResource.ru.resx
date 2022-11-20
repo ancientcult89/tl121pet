@@ -129,4 +129,7 @@
   <data name="Create" xml:space="preserve">
     <value>Создать</value>
   </data>
+  <data name="Modify" xml:space="preserve">
+    <value>Изменить</value>
+  </data>
 </root>

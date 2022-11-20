@@ -87,13 +87,35 @@ namespace tl121pet.Controllers
 
         public IActionResult Process(Guid id)
         {
-            return View("MeetingEditor", new MeetingEditFormVM() { 
-                SelectedItem = _dataContext.Meetings.Find(id) ?? new Meeting()
-                , Mode = FormMode.Process 
-                , MeetingNotes = _meetingRepository.GetMeetingNotes(id)
-                , MeetingGoals = _meetingRepository.GetMeetingGoals(id)
+            Meeting currMeeting = _dataContext.Meetings.Find(id) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            return View("MeetingEditor", new MeetingEditFormVM()
+            {
+                SelectedItem = currMeeting
+                ,
+                Mode = FormMode.Process
+                ,
+                MeetingNotes = _meetingRepository.GetMeetingNotes(id)
+                ,
+                MeetingGoals = _meetingRepository.GetMeetingGoals(id)
+                ,
+                PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
+
+        private string GetPreviousNotesAnfGoals(Meeting currMeeting)
+        {
+            string prevNotesAndGoals = "";
+            Guid? previousMeetingGuid = _meetingRepository.GetPreviousMeetingId(currMeeting.MeetingId, currMeeting.PersonId);
+            if (previousMeetingGuid != null)
+            {
+                prevNotesAndGoals = _oneToOneService.GetMeetingNoteAndGoals((Guid)previousMeetingGuid);
+            }
+
+            return prevNotesAndGoals;
+        }
+
         [HttpPost]
         public IActionResult Process([FromForm] MeetingEditFormVM meetingVM)
         {
@@ -137,40 +159,53 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddNote([FromForm] MeetingEditFormVM vm)
         {
+            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
 
             _meetingRepository.AddNote(vm.SelectedItem.MeetingId, vm.NewNote, vm.NewNoteFeedbackRequires);
             
             return View("MeetingEditor", new MeetingEditFormVM() { 
-                SelectedItem = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting()
+                SelectedItem = currMeeting
                 , Mode = FormMode.Process
                 , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
                 , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
+                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
 
         [HttpPost]
         public IActionResult UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
         {
+            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
 
             _meetingRepository.UpdateNote(noteId, MeetingNoteContent, FeedbackRequired);
 
             return View("MeetingEditor", new MeetingEditFormVM()
             {
-                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
+                SelectedItem = currMeeting,
                 Mode = FormMode.Process,
                 MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
-                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId),
+                PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
 
         public IActionResult DeleteNote(Guid noteId, Guid meetingId)
-        { 
+        {
+            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+
             _meetingRepository.DeleteNote(noteId);
             return View("MeetingEditor", new MeetingEditFormVM() { 
-                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting()
+                SelectedItem = currMeeting
                 , Mode = FormMode.Process 
                 , MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId)
                 , MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
         #endregion MeetingNotes
@@ -179,20 +214,28 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddGoal([FromForm] MeetingEditFormVM vm)
         {
+            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+
             _meetingRepository.AddGoal(vm.SelectedItem.MeetingId, vm.NewGoal);
 
             return View("MeetingEditor", new MeetingEditFormVM()
             {
-                SelectedItem = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting()
+                SelectedItem = currMeeting
                 , Mode = FormMode.Process
                 , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
                 , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
+                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
 
         [HttpPost]
         public IActionResult UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
+            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
 
             _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
 
@@ -201,19 +244,26 @@ namespace tl121pet.Controllers
                 SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
                 Mode = FormMode.Process,
                 MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
-                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId),
+                PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
 
         public IActionResult DeleteGoal(Guid goalId, Guid meetingId)
         {
+            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            string prevNotesAndGoals = "";
+            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+
             _meetingRepository.DeleteGoal(goalId);
+
             return View("MeetingEditor", new MeetingEditFormVM()
             {
-                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting()
+                SelectedItem = currMeeting
                 , Mode = FormMode.Process
                 , MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId)
                 , MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
         #endregion MeetingGoals
