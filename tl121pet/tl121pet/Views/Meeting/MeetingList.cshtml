@@ -1,4 +1,5 @@
 ﻿@inject IViewLocalizer Localizer
+@inject IPeopleRepository _peopleRepository
 
 @model List<Meeting>
 @{
@@ -6,6 +7,14 @@
 }
 
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
+    <form>
+        <select asp-for="@Model.First().PersonId" class="form-control" asp-items="@(new SelectList(_peopleRepository.GetInitials(), "PersonId", "Initials"))">
+            <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
+        </select>
+        <button type="submit" class="btn btn-sm btn-primary p-2 mt-2">@Localizer["Filter"]</button>
+        <a class="btn btn-sm btn-success p-2 mt-2" asp-action="MeetingList" >@Localizer["Clear"]</a>
+    </form>    
+    <p></p>
     <table class="table table-sm table-bordered table-striped">
         <thead>
             <tr>

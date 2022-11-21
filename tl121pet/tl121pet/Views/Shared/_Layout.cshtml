@@ -12,18 +12,18 @@
         <div class="bg-dark text-white p-2">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col navbar-brand col-10">TeamLead Helper</div>
+                    <div class="col navbar-brand col-9">TeamLead Helper</div>
                     <form asp-action="SetLanguage" asp-controller="Home" class="col-sm">
                         <div class="row">
                             <select onchange="OnSelected" class="col-sm form-select" onclick="OnSelected" name="lang">
                                 <option value="ru-RU">ru-RU</option>
                                 <option value="en-US">en-US</option>
                             </select>
-                            <button class="col-sm btn btn-sm btn-info" type="submit">Ok</button>                            
+                            <button class="col-sm btn btn-sm btn-info p-2" type="submit">Ok</button>                            
                         </div>
                     </form>
                     <form asp-action="Logout" asp-controller="Auth" class="col-sm">
-                            <button class="col-sm btn btn-sm btn-danger" type="submit">Logout</button>                            
+                            <button class="btn btn-sm btn-danger p-2" type="submit">Logout</button>                            
                     </form>
                 </div>
             </div>
