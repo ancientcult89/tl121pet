@@ -51,6 +51,12 @@ namespace tl121pet.DAL.Data
                 Role role1 = new Role() { RoleName = "Admin" };
                 dataContext.Roles.Add(role1);
                 dataContext.SaveChanges(true);
+            }
+            if (dataContext.Users.Count() == 0)
+            {
+                Role role1 = new Role() { RoleName = "Admin" };
+                dataContext.Roles.Add(role1);
+                dataContext.SaveChanges(true);
 
                 CreatePasswordHash("admin", out byte[] passwordHash, out byte[] passwordSalt);
                 User newUser = new User
@@ -63,7 +69,6 @@ namespace tl121pet.DAL.Data
                 };
                 dataContext.Users.Add(newUser);
                 dataContext.SaveChanges();
-
             }
         }
 
