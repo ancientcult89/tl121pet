@@ -25,12 +25,13 @@ namespace tl121pet.Controllers
             _oneToOneService = oneToOneService;
         }
         #region Meeting
-        public IActionResult MeetingList()
+        public IActionResult MeetingList(long? personId = null)
         {
             return View("MeetingList", _dataContext.Meetings
                 .Include(p => p.MeetingNotes)
                 .Include(p => p.Person)
                 .Include(p => p.MeetingType)
+                .Where(p => personId == null || p.PersonId == personId)
                 .OrderByDescending(p => p.MeetingPlanDate.Date)
                 .OrderByDescending(p => p.MeetingDate)
                 .ToList());

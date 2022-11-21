@@ -147,4 +147,13 @@
   <data name="Delete" xml:space="preserve">
     <value>Удалить</value>
   </data>
+  <data name="ChooseAPerson" xml:space="preserve">
+    <value>Выберите сотрудника</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Фильтровать</value>
+  </data>
+  <data name="Clear" xml:space="preserve">
+    <value>Очистить</value>
+  </data>
 </root>
