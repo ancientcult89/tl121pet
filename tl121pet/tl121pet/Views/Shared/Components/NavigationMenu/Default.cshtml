@@ -44,5 +44,9 @@
     <a class="btn @("ProjectMember" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
         asp-action="ProjectMemberList" asp-controller="ProjectMember">
             @Localizer["ProjectMember"]
+    </a>    
+    <a class="btn @("UserProjectMembership" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="UserProjectMemberList" asp-controller="UserProjectMembership">
+            @Localizer["UserProjectMember"]
     </a>
 </div>

@@ -88,5 +88,21 @@ namespace tl121pet.DAL.Repositories
             _dataContext.ProjectMembers.Add(pm);
             _dataContext.SaveChanges();
         }
+
+        public List<ProjectTeam> GetUserMembership(long id)
+        {
+            List<ProjectTeam> result = new List<ProjectTeam>();
+            var selectedTeams = from pt in _dataContext.ProjectTeams
+                                join up in _dataContext.UserProjects on pt.ProjectTeamId equals up.ProjectTeamId
+                                where up.UserId == id
+                                select pt;
+
+            foreach (ProjectTeam pm in selectedTeams)
+            {
+                result.Add(pm);
+            }
+
+            return result;
+        }
     }
 }
