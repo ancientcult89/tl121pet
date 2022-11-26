@@ -9,7 +9,7 @@
 
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
     <form>
-        <select asp-for="@Model.First().PersonId" class="form-control" asp-items="@(new SelectList(_personService.GetInitials(), "PersonId", "Initials"))">
+        <select asp-for="@Model.FirstOrDefault().PersonId" class="form-control" asp-items="@(new SelectList(_personService.GetInitials(), "PersonId", "Initials"))">
             <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
         </select>
         <button type="submit" class="btn btn-sm btn-primary p-2 mt-2">@Localizer["Filter"]</button>

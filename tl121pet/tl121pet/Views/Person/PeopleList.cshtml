@@ -1,5 +1,6 @@
 ﻿@model List<Person>
 @inject IViewLocalizer Localizer
+@inject IProjectTeamRepository _projectTeamRepository
 @{
     ViewData["Title"] = @Localizer["Title"];
 }
@@ -25,7 +26,7 @@
                             @p.Grade?.GradeName
                         </td>
                         <td>
-                            Placeholder
+                            @_projectTeamRepository.GetPersonsProjects(p.PersonId)
                         </td>
                         <td class="text-center">
                             <form>
