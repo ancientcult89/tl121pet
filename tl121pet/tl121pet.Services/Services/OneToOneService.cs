@@ -1,4 +1,5 @@
-﻿using tl121pet.DAL.Interfaces;
+﻿using tl121pet.DAL.Data;
+using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
@@ -12,11 +13,16 @@ namespace tl121pet.Services.Services
         private IPeopleRepository _peopleRepository;
         private IMeetingRepository _meetingRepository;
         private IMailService _mailService;
-        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService)
+        private readonly IPersonService _personService;
+        private readonly DataContext _dataContext;
+
+        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService, DataContext dataContext)
         { 
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
             _mailService = mailService;
+            _personService = personService;
+            _dataContext = dataContext;
         }
 
         //TODO: дедлайн знает о репозитории людей и встреч. переделать
@@ -25,7 +31,8 @@ namespace tl121pet.Services.Services
         public List<OneToOneDeadline> GetDeadLines()
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
-            foreach (Person p in _peopleRepository.GetPeople())
+
+            foreach (Person p in _personService.GetPeople())
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();

@@ -14,27 +14,23 @@ namespace tl121pet.Controllers
     public class MeetingController : Controller
     {
         private IMeetingRepository _meetingRepository;
+        private readonly IMeetingService _meetingService;
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
         public MeetingController(DataContext dataContext, 
             IMeetingRepository meetingRepository, 
+            IMeetingService meetingService,
             IOneToOneService oneToOneService)
         {
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
+            _meetingService = meetingService;
             _oneToOneService = oneToOneService;
         }
         #region Meeting
         public IActionResult MeetingList(long? personId = null)
         {
-            return View("MeetingList", _dataContext.Meetings
-                .Include(p => p.MeetingNotes)
-                .Include(p => p.Person)
-                .Include(p => p.MeetingType)
-                .Where(p => personId == null || p.PersonId == personId)
-                .OrderByDescending(p => p.MeetingPlanDate.Date)
-                .OrderByDescending(p => p.MeetingDate)
-                .ToList());
+            return View("MeetingList", _meetingService.GetMeetings(personId));
         }
         public IActionResult Details(Guid id)
         {

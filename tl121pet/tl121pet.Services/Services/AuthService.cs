@@ -39,7 +39,8 @@ namespace tl121pet.Services.Services
         {
             List<Claim> claims = new List<Claim> {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, _adminRepository.GetRoleNameById(user.RoleId))
+                new Claim(ClaimTypes.Role, _adminRepository.GetRoleNameById(user.RoleId)),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
@@ -65,6 +66,18 @@ namespace tl121pet.Services.Services
             }
             else
                 return "no role";
+        }
+
+        public long? GetMyUserId()
+        {
+            var result = string.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return  Convert.ToInt64(result);
+            }
+            else
+                return null;
         }
 
         public User? Login(UserLoginRequest request)
