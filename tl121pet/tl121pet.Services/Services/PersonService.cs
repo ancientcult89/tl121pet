@@ -41,7 +41,8 @@ namespace tl121pet.Services.Services
 
             foreach (var person in persons)
             {
-                people.Add(person);
+                if(!people.Contains(person))
+                    people.Add(person);
             }
 
             return people;
