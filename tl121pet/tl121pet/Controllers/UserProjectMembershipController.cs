@@ -2,6 +2,8 @@
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
+using tl121pet.Storage;
+using tl121pet.ViewModels;
 
 namespace tl121pet.Controllers
 {
@@ -21,7 +23,7 @@ namespace tl121pet.Controllers
             List<User> users = _adminRepository.GetUserList();
             foreach (User user in users)
             {
-                string projects = _projectTeamRepository.GetPersonsProjects(user.Id);
+                string projects = _projectTeamRepository.GetUserProjects(user.Id);
                 userProjectMembers.Add(new UserProjectMemberDTO()
                 {
                     UserId = user.Id,
@@ -33,52 +35,50 @@ namespace tl121pet.Controllers
             return View("UserProjectMemberList", userProjectMembers);
         }
 
-        //public IActionResult Details(long id)
-        //{
-        //    ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
-        //    {
-        //        SelectedItem = _peopleRepository.GetPerson(id)
-        //        ,
-        //        ProjectTeams = _projectTeamRepository.GetPersonMembership(id)
-        //        ,
-        //        Mode = FormMode.Details
-        //    };
-        //    return View("ProjectMemberEditor", vm);
-        //}
+        public IActionResult Details(long id)
+        {
+            UserMemberEditFormVM vm = new UserMemberEditFormVM()
+            {
+                SelectedItem = _adminRepository.GetUserById(id)                
+                , ProjectTeams = _projectTeamRepository.GetUserMembership(id)
+                , Mode = FormMode.Details
+            };
+            return View("UserMembershipEditor", vm);
+        }
 
-        //public IActionResult Edit(long id)
-        //{
-        //    ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
-        //    {
-        //        SelectedItem = _peopleRepository.GetPerson(id),
-        //        ProjectTeams = _projectTeamRepository.GetPersonMembership(id),
-        //        Mode = FormMode.Edit
-        //    };
-        //    return View("ProjectMemberEditor", vm);
-        //}
+        public IActionResult Edit(long id)
+        {
+            UserMemberEditFormVM vm = new UserMemberEditFormVM()
+            {
+                SelectedItem = _adminRepository.GetUserById(id),
+                ProjectTeams = _projectTeamRepository.GetUserMembership(id),
+                Mode = FormMode.Edit
+            };
+            return View("UserMembershipEditor", vm);
+        }
 
-        //[HttpPost]
-        //public IActionResult AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
-        //{
-        //    _projectTeamRepository.AddMembership(personId, vm.NewProjectTeamId);
+        [HttpPost]
+        public IActionResult AddMembership([FromForm] UserMemberEditFormVM vm, long userId)
+        {
+            _projectTeamRepository.AddUserMembership(userId, vm.NewProjectTeamId);
 
-        //    vm.SelectedItem = _peopleRepository.GetPerson(personId);
-        //    vm.ProjectTeams = _projectTeamRepository.GetPersonMembership(personId);
-        //    vm.Mode = FormMode.Edit;
+            vm.SelectedItem = _adminRepository.GetUserById(userId);
+            vm.ProjectTeams = _projectTeamRepository.GetUserMembership(userId);
+            vm.Mode = FormMode.Edit;
 
-        //    return View("ProjectMemberEditor", vm);
-        //}
+            return View("UserMembershipEditor", vm);
+        }
 
-        //public IActionResult DeleteMembership(long ptId, long personId)
-        //{
-        //    _projectTeamRepository.DeleteMembership(personId, ptId);
-        //    ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
-        //    {
-        //        SelectedItem = _peopleRepository.GetPerson(personId),
-        //        ProjectTeams = _projectTeamRepository.GetPersonMembership(personId),
-        //        Mode = FormMode.Edit
-        //    };
-        //    return View("ProjectMemberEditor", vm);
-        //}
+        public IActionResult DeleteMembership(long ptId, long userId)
+        {
+            _projectTeamRepository.DeleteUserMembership(userId, ptId);
+            UserMemberEditFormVM vm = new UserMemberEditFormVM()
+            {
+                SelectedItem = _adminRepository.GetUserById(userId),
+                ProjectTeams = _projectTeamRepository.GetUserMembership(userId),
+                Mode = FormMode.Edit
+            };
+            return View("UserMembershipEditor", vm);
+        }
     }
 }
