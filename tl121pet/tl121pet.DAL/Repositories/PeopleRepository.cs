@@ -35,20 +35,20 @@ namespace tl121pet.DAL.Repositories
         }
 
         public List<Person> GetPeople()
-        { 
+        {
             return _dataContext.People.ToList();
         }
 
-        public List<PersonInitials> GetInitials()
-        {
-            List<PersonInitials> personInitials = new List<PersonInitials>();
-            personInitials = (List<PersonInitials>)_dataContext.People.Select(p => 
-                new PersonInitials { 
-                    PersonId = p.PersonId, 
-                    Initials = p.FirstName + " " + p.LastName + " " + p.SurName
-            }).ToList();
-            return personInitials;
-        }
+        //public List<PersonInitials> GetInitials()
+        //{
+        //    List<PersonInitials> personInitials = new List<PersonInitials>();
+        //    personInitials = (List<PersonInitials>)_dataContext.People.Select(p => 
+        //        new PersonInitials { 
+        //            PersonId = p.PersonId, 
+        //            Initials = p.FirstName + " " + p.LastName + " " + p.SurName
+        //    }).ToList();
+        //    return personInitials;
+        //}
 
         public Person GetPerson(long id)
         {

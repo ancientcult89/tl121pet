@@ -69,16 +69,20 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
 builder.Services.AddMvc().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 builder.Services.AddHttpClient();
 
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+
 builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<IMeetingRepository, MeetingRepository>();
 builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IOneToOneService, OneToOneService>();
-builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 builder.Services.AddTransient<IMailService, MailService>();
-
+builder.Services.AddScoped<IMeetingService, MeetingService>();
+builder.Services.AddScoped<IPersonService, PersonService>();
+builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+
 builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();

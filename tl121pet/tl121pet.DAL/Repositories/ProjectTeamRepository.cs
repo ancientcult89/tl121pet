@@ -70,7 +70,7 @@ namespace tl121pet.DAL.Repositories
             return result;
         }
 
-        public void DeleteMembership(long userId, long projectTeamId)
+        public void DeletePersonMembership(long userId, long projectTeamId)
         { 
             ProjectMember pm = _dataContext.ProjectMembers
                 .Where(p => p.ProjectTeamId == projectTeamId && p.PersonId == userId)
@@ -79,7 +79,7 @@ namespace tl121pet.DAL.Repositories
             _dataContext.SaveChanges();
         }
 
-        public void AddMembership(long userId, long projectTeamId)
+        public void AddPersonMembership(long userId, long projectTeamId)
         {
             ProjectMember pm = new ProjectMember() { 
                 PersonId = userId,
@@ -87,6 +87,57 @@ namespace tl121pet.DAL.Repositories
             };
             _dataContext.ProjectMembers.Add(pm);
             _dataContext.SaveChanges();
+        }
+
+        public List<ProjectTeam> GetUserMembership(long id)
+        {
+            List<ProjectTeam> result = new List<ProjectTeam>();
+            var selectedTeams = from pt in _dataContext.ProjectTeams
+                                join up in _dataContext.UserProjects on pt.ProjectTeamId equals up.ProjectTeamId
+                                where up.UserId == id
+                                select pt;
+
+            foreach (ProjectTeam pm in selectedTeams)
+            {
+                result.Add(pm);
+            }
+
+            return result;
+        }
+
+        public void DeleteUserMembership(long userId, long projectTeamId)
+        {
+            UserProject up = _dataContext.UserProjects
+                .Where(p => p.ProjectTeamId == projectTeamId && p.UserId == userId)
+                .FirstOrDefault();
+            _dataContext.UserProjects.Remove(up);
+            _dataContext.SaveChanges();
+        }
+
+        public void AddUserMembership(long userId, long projectTeamId)
+        {
+            UserProject up = new UserProject()
+            {
+                UserId = userId,
+                ProjectTeamId = projectTeamId
+            };
+            _dataContext.UserProjects.Add(up);
+            _dataContext.SaveChanges();
+        }
+
+        public string GetUserProjects(long userId)
+        {
+            string projectsList = "";
+            List<UserProject> userMemberList = _dataContext.UserProjects
+                .Include(p => p.ProjectTeam)
+                .Where(pm => pm.UserId == userId)
+                .OrderBy(pm => pm.ProjectTeam.ProjectTeamName)
+                .ToList();
+            foreach (UserProject up in userMemberList)
+            {
+                projectsList += $"{up.ProjectTeam.ProjectTeamName}; ";
+            }
+            return projectsList;
         }
     }
 }

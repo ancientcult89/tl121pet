@@ -117,37 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Home" xml:space="preserve">
-    <value>Домой</value>
+  <data name="Username" xml:space="preserve">
+    <value>Имя пользователя</value>
   </data>
-  <data name="OneToOneDeadlines" xml:space="preserve">
-    <value>Сроки проведения 1-2-1</value>
+  <data name="Email" xml:space="preserve">
+    <value>Электронная почта</value>
   </data>
-  <data name="Persons" xml:space="preserve">
-    <value>Сотрудники</value>
-  </data>
-  <data name="Meetings" xml:space="preserve">
-    <value>Встречи</value>
-  </data>
-  <data name="Grade" xml:space="preserve">
-    <value>Грейд</value>
-  </data>
-  <data name="MeetingTypes" xml:space="preserve">
-    <value>Типы встреч</value>
-  </data>
-  <data name="Role" xml:space="preserve">
-    <value>Роли</value>
-  </data>
-  <data name="User" xml:space="preserve">
-    <value>Пользователи</value>
-  </data>
-  <data name="ProjectTeam" xml:space="preserve">
+  <data name="Projects" xml:space="preserve">
     <value>Проекты</value>
-  </data>
-  <data name="ProjectMember" xml:space="preserve">
-    <value>Проекты сотрудников</value>
-  </data>
-  <data name="UserProjectMember" xml:space="preserve">
-    <value>Проекты пользователей</value>
   </data>
 </root>

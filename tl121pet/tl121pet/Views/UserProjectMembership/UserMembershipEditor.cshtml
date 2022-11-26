@@ -1,10 +1,10 @@
-﻿@model ProjectMemberEditFormVM
+﻿@model UserMemberEditFormVM
 @inject IViewLocalizer Localizer
 @inject IHtmlLocalizer<SharedListResource> ListLocalizer
 @inject IHtmlLocalizer<SharedEditFormResource> EditFormLocalizer
-@inject IProjectService _projectService
+@inject IProjectTeamRepository _projectTeamRepository
 
-<h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@(Model.SelectedItem.FirstName + " " + Model.SelectedItem.LastName)</h5>
+<h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@(Model.SelectedItem.UserName + " " + Model.SelectedItem.Email)</h5>
 <div class="col-sm">
     <table class="table table-sm table-bordered table-striped">
         <thead>
@@ -26,7 +26,7 @@
                     @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
                     {
                         <td class="text-center">
-                            <form asp-action="DeleteMembership" method="post" asp-route-ptId="@pt.ProjectTeamId", asp-route-personId="@Model.SelectedItem.PersonId">
+                            <form asp-action="DeleteMembership" method="post" asp-route-ptId="@pt.ProjectTeamId", asp-route-userId="@Model.SelectedItem.Id">
                                 <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">@ListLocalizer["Delete"]</button>
                             </form>
                         </td>                           
@@ -35,15 +35,15 @@
             }
         </tbody>
     </table>
-    <a class="btn btn-secondary mt-2" asp-action="ProjectMemberList">@EditFormLocalizer["Back"]</a>
+    <a class="btn btn-secondary mt-2" asp-action="UserProjectMemberList">@EditFormLocalizer["Back"]</a>
     <p></p>
-    <form asp-action="AddMembership" method="post" hidden="@Model.IsReadonly" asp-route-personId="@Model.SelectedItem.PersonId">
+    <form asp-action="AddMembership" method="post" hidden="@Model.IsReadonly" asp-route-userId="@Model.SelectedItem.Id">
         <div class="form-group">
             <label>@Localizer["ProjectTeams"]</label>
             <div>
-                <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>
+                <span asp-validation-for="SelectedItem.Id" class="text-danger"></span>
             </div>
-            <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectService.GetFilteredProjects(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
+            <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectTeamRepository.GetAllTeams(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseAProjectTeam"]</option>
             </select>
         </div>

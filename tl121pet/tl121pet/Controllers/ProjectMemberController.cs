@@ -59,7 +59,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
         {
-            _projectTeamRepository.AddMembership(personId, vm.NewProjectTeamId);
+            _projectTeamRepository.AddPersonMembership(personId, vm.NewProjectTeamId);
 
             vm.SelectedItem = _peopleRepository.GetPerson(personId);
             vm.ProjectTeams = _projectTeamRepository.GetPersonMembership(personId);
@@ -70,7 +70,7 @@ namespace tl121pet.Controllers
 
         public IActionResult DeleteMembership(long ptId, long personId)
         {
-            _projectTeamRepository.DeleteMembership(personId, ptId);
+            _projectTeamRepository.DeletePersonMembership(personId, ptId);
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
                 SelectedItem = _peopleRepository.GetPerson(personId),

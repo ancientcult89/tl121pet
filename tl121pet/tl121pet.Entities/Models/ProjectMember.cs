@@ -1,5 +1,8 @@
 ﻿namespace tl121pet.Entities.Models
 {
+    /// <summary>
+    /// Person project membership
+    /// </summary>
     public class ProjectMember
     {
         public long ProjectMemberId { get; set; }

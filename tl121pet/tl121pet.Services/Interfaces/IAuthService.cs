@@ -6,6 +6,7 @@ namespace tl121pet.Services.Interfaces
     public interface IAuthService
     {
         public string GetMyRole();
+        public long? GetMyUserId();
         public void Register(UserRegisterRequest request);
         public User? Login(UserLoginRequest request);
         public string CreateToken(User user);
