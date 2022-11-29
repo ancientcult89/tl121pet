@@ -25,13 +25,16 @@ namespace tl121pet.Services.Services
                           join m in _dataContext.Meetings on p.PersonId equals m.PersonId
                           join mt in _dataContext.MeetingTypes on m.MeetingTypeId equals mt.MeetingTypeId
                           where (personId == null || p.PersonId == personId) && (up.UserId == userId)
+                          orderby m.MeetingDate descending, m.MeetingPlanDate descending, p.FirstName, p.LastName
                           select new { m, mt, p };
             foreach (var m in meetings)
             {
                 Meeting meeting = m.m;
                 meeting.MeetingType = m.mt;
                 meeting.Person = m.p;
-                meetingsRes.Add(meeting);
+
+                if(!meetingsRes.Contains(meeting))
+                    meetingsRes.Add(meeting);
             }
             return meetingsRes;
         }
