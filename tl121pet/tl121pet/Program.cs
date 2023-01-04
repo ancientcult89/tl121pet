@@ -5,7 +5,6 @@ using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.DAL.Repositories;
 using tl121pet.Entities.Infrastructure;
-using System.Configuration;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;

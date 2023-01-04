@@ -55,7 +55,8 @@ namespace tl121pet.Services.Services
         public string GenerateFollowUp(Guid meetingId, long personId)
         {
             string result = "";
-            result = $"{_peopleRepository.GetPerson(personId).FirstName}, спасибо за проведённую встречу!\n\n";
+            Person person = _peopleRepository.GetPerson(personId);
+            result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
             result += GetMeetingNoteAndGoals(meetingId);
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
             return result;

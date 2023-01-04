@@ -36,6 +36,13 @@
             <input class="form-control" asp-for="SelectedItem.SurName" disabled="@Model.IsReadonly"/>
         </div>
         <div class="form-group">
+            <label asp-for="SelectedItem.ShortName">@Localizer["ShortName"]</label>
+            <div>
+                <span asp-validation-for="SelectedItem.ShortName" class="text-danger"></span>
+            </div>
+            <input class="form-control" asp-for="SelectedItem.ShortName" disabled="@Model.IsReadonly"/>
+        </div>
+        <div class="form-group">
             <label asp-for="SelectedItem.Email">@Localizer["Email"]</label>
             <div>
                 <span asp-validation-for="SelectedItem.Email" class="text-danger"></span>

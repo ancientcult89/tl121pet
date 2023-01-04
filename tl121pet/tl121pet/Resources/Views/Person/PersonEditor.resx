@@ -130,4 +130,7 @@
   <data name="Back" xml:space="preserve">
     <value>Back</value>
   </data>
+  <data name="ShortName" xml:space="preserve">
+    <value>ShortName</value>
+  </data>
 </root>

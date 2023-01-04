@@ -1,4 +1,5 @@
 ﻿using tl121pet.DAL.Data;
+using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -9,11 +10,15 @@ namespace tl121pet.Services.Services
     {
         private readonly DataContext _dataContext;
         private readonly IAuthService _authService;
+        private readonly IAdminRepository _adminRepository;
+        private readonly IPeopleRepository _peopleRepository;
 
-        public PersonService(DataContext dataContext, IAuthService authService)
+        public PersonService(DataContext dataContext, IAuthService authService, IAdminRepository adminRepository, IPeopleRepository peopleRepository)
         {
             _dataContext = dataContext;
             _authService = authService;
+            _adminRepository = adminRepository;
+            _peopleRepository = peopleRepository;
         }
 
         public List<PersonInitials> GetInitials()
@@ -23,7 +28,7 @@ namespace tl121pet.Services.Services
                 new PersonInitials
                 {
                     PersonId = p.PersonId,
-                    Initials = p.FirstName + " " + p.LastName + " " + p.SurName
+                    Initials = p.LastName + " " + p.FirstName + " " + p.SurName
                 }).ToList();
             return personInitials;
         }
@@ -32,20 +37,24 @@ namespace tl121pet.Services.Services
         {
             List<Person> people = new List<Person>();
             long? userId = _authService.GetMyUserId();
-
-            var persons = from up in _dataContext.UserProjects
-                          join pp in _dataContext.ProjectMembers on up.ProjectTeamId equals pp.ProjectTeamId
-                          join p in _dataContext.People on pp.PersonId equals p.PersonId
-                          where up.UserId == userId
-                          select p;
-
-            foreach (var person in persons)
+            List<ProjectTeam> projects = new List<ProjectTeam>();
+            if (userId != null)
             {
-                if(!people.Contains(person))
-                    people.Add(person);
+                projects = _adminRepository.GetUserProjects((long)userId);
+                people = GetPeopleFilteredByProjects(projects);
             }
 
             return people;
+        }
+
+        private List<Person> GetPeopleFilteredByProjects(List<ProjectTeam> projects)
+        {
+            List<Person> peopleFiltered = new List<Person>();
+            foreach (ProjectTeam pt in projects)
+            {
+                peopleFiltered.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
+            }
+            return peopleFiltered;
         }
     }
 }

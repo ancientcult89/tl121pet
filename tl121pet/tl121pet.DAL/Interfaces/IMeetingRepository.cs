@@ -5,6 +5,7 @@ namespace tl121pet.DAL.Interfaces
     public interface IMeetingRepository
     {
         public Guid? GetPreviousMeetingId(Guid currnetMeetingId, long personId);
+        public List<Meeting> GetMeetingsByPersonId(long personId);
         public void CreateMeetingType(MeetingType mt);
         public void UpdateMeetingType(MeetingType mt);
         public void DeleteMeetingType(int id);

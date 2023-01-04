@@ -150,4 +150,7 @@
   <data name="Save" xml:space="preserve">
     <value>Сохранить</value>
   </data>
+  <data name="ShortName" xml:space="preserve">
+    <value>Сокращённое имя</value>
+  </data>
 </root>
