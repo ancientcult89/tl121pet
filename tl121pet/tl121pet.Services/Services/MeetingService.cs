@@ -18,7 +18,8 @@ namespace tl121pet.Services.Services
         {
             List<Meeting> meetingsRes = new List<Meeting>();
             long? userId = _authService.GetMyUserId();
-
+            //TODO: разделить большой тяжелый запрос на несколько мелких(часть уже сделана): получить проекты пользователя, 
+            // получить пользователей по проектам, получить встречи пользователей, получить типы встречь пользователей
             var meetings = from up in _dataContext.UserProjects
                           join pp in _dataContext.ProjectMembers on up.ProjectTeamId equals pp.ProjectTeamId
                           join p in _dataContext.People on pp.PersonId equals p.PersonId
