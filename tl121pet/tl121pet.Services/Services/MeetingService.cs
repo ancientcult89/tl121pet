@@ -1,4 +1,5 @@
 ﻿using tl121pet.DAL.Data;
+using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -6,38 +7,61 @@ namespace tl121pet.Services.Services
 {
     public class MeetingService : IMeetingService
     {
-        private readonly DataContext _dataContext;
-        private readonly IAuthService _authService;
 
-        public MeetingService(DataContext dataContext, IAuthService authService)
+        private readonly IAuthService _authService;
+        private readonly IPeopleRepository _peopleRepository;
+        private readonly IMeetingRepository _meetingRepository;
+        private readonly IAdminRepository _adminRepository;
+
+        public MeetingService(IAuthService authService
+            , IPeopleRepository peopleRepository
+            , IMeetingRepository meetingRepository
+            , IAdminRepository adminRepository)
         {
-           _dataContext = dataContext;
-           _authService = authService;
+            _authService = authService;
+            _peopleRepository = peopleRepository;
+            _meetingRepository = meetingRepository;
+            _adminRepository = adminRepository;
         }
         public List<Meeting> GetMeetings(long? personId)
         {
             List<Meeting> meetingsRes = new List<Meeting>();
             long? userId = _authService.GetMyUserId();
-            //TODO: разделить большой тяжелый запрос на несколько мелких(часть уже сделана): получить проекты пользователя, 
-            // получить пользователей по проектам, получить встречи пользователей, получить типы встречь пользователей
-            var meetings = from up in _dataContext.UserProjects
-                          join pp in _dataContext.ProjectMembers on up.ProjectTeamId equals pp.ProjectTeamId
-                          join p in _dataContext.People on pp.PersonId equals p.PersonId
-                          join m in _dataContext.Meetings on p.PersonId equals m.PersonId
-                          join mt in _dataContext.MeetingTypes on m.MeetingTypeId equals mt.MeetingTypeId
-                          where (personId == null || p.PersonId == personId) && (up.UserId == userId)
-                          orderby m.MeetingDate descending, m.MeetingPlanDate descending, p.FirstName, p.LastName
-                          select new { m, mt, p };
-            foreach (var m in meetings)
+            if (userId != null)
             {
-                Meeting meeting = m.m;
-                meeting.MeetingType = m.mt;
-                meeting.Person = m.p;
-
-                if(!meetingsRes.Contains(meeting))
-                    meetingsRes.Add(meeting);
+                List<Person> people = new List<Person>();
+                List<ProjectTeam> projects = new List<ProjectTeam>();
+                projects = _adminRepository.GetUserProjects((long)userId);
+                people = GetPeopleByProjects(projects, personId);
+                meetingsRes = GetMeetingsByPerson(people);
             }
+            
             return meetingsRes;
+        }
+
+        private List<Person> GetPeopleByProjects(List<ProjectTeam> projects, long? personId)
+        {
+            List<Person> personByProjects = new List<Person>();
+
+            foreach (ProjectTeam pt in projects)
+            {
+                personByProjects.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
+            }
+
+            if (personId != null)
+                personByProjects = personByProjects.Where(p => p.PersonId == (long)personId).ToList();
+
+            return personByProjects;
+        }
+
+        private List<Meeting> GetMeetingsByPerson(List<Person> people)
+        {
+            List<Meeting> meetingsByPerson = new List<Meeting>();
+            foreach (Person person in people)
+            {
+                meetingsByPerson.AddRange(_meetingRepository.GetMeetingsByPersonId(person.PersonId));
+            }
+            return meetingsByPerson;
         }
     }
 }

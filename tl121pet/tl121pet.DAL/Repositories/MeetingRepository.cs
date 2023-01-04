@@ -1,4 +1,5 @@
-﻿using tl121pet.DAL.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 
@@ -145,6 +146,14 @@ namespace tl121pet.DAL.Repositories
                 .Where(p => p.PersonId == personId && p.MeetingId != currnetMeetingId)
                 .FirstOrDefault();
             return previousMeeting?.MeetingId;
+        }
+
+        public List<Meeting> GetMeetingsByPersonId(long personId)
+        {
+            return _dataContext.Meetings
+                .Include(mt => mt.MeetingType)
+                .Where(mt => mt.PersonId == personId)
+                .ToList();
         }
     }
 }

@@ -41,13 +41,20 @@ namespace tl121pet.Services.Services
             if (userId != null)
             {
                 projects = _adminRepository.GetUserProjects((long)userId);
-                foreach (ProjectTeam pt in projects)
-                {
-                    people.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
-                }
+                people = GetPeopleFilteredByProjects(projects);
             }
 
             return people;
+        }
+
+        private List<Person> GetPeopleFilteredByProjects(List<ProjectTeam> projects)
+        {
+            List<Person> peopleFiltered = new List<Person>();
+            foreach (ProjectTeam pt in projects)
+            {
+                peopleFiltered.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
+            }
+            return peopleFiltered;
         }
     }
 }
