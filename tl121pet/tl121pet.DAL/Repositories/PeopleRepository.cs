@@ -39,20 +39,26 @@ namespace tl121pet.DAL.Repositories
             return _dataContext.People.ToList();
         }
 
-        //public List<PersonInitials> GetInitials()
-        //{
-        //    List<PersonInitials> personInitials = new List<PersonInitials>();
-        //    personInitials = (List<PersonInitials>)_dataContext.People.Select(p => 
-        //        new PersonInitials { 
-        //            PersonId = p.PersonId, 
-        //            Initials = p.FirstName + " " + p.LastName + " " + p.SurName
-        //    }).ToList();
-        //    return personInitials;
-        //}
-
         public Person GetPerson(long id)
         {
             return _dataContext.People.Find(id) ?? new Person();
+        }
+
+        public List<Person> GetPeopleFilteredByProject(long projectTeam)
+        {
+            List<Person> filteredPeople = new List<Person>();
+
+            var people = from p in _dataContext.People
+                         join up in _dataContext.ProjectMembers on p.PersonId equals up.PersonId
+                         where up.ProjectTeamId == projectTeam
+                         select p;
+
+            foreach(var p in people)
+            {
+                filteredPeople.Add(p);
+            }
+
+            return filteredPeople;
         }
     }
 }

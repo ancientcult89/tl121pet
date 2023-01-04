@@ -43,6 +43,14 @@ namespace tl121pet.DAL.Repositories
             _dataContext.SaveChanges();
         }
 
+        public int GetRoleIdByName(string roleName)
+        {
+            return _dataContext.Roles
+                .Where(p => p.RoleName == roleName)
+                .Select(p => p.RoleId)
+                .FirstOrDefault();
+        }
+
         public List<Role> GetRoleList()
         {
             return _dataContext.Roles.ToList();
@@ -66,6 +74,23 @@ namespace tl121pet.DAL.Repositories
         public List<User> GetUserList()
         {
             return _dataContext.Users.Include(p => p.Role).ToList();
+        }
+
+        public List<ProjectTeam> GetUserProjects(long userId)
+        {
+            List<ProjectTeam> usersProjects = new List<ProjectTeam>();
+
+            var projects = from proj in _dataContext.ProjectTeams
+                           join usrproj in _dataContext.UserProjects on proj.ProjectTeamId equals usrproj.ProjectTeamId
+                           where usrproj.UserId == userId
+                           select proj;
+
+            foreach (var proj in projects) 
+            { 
+                usersProjects.Add(proj);
+            }
+
+            return usersProjects;
         }
 
         public void UpdateRole(Role role)
