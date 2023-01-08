@@ -2,6 +2,6 @@
 {
     public class GoalEditListVM : SimpleEditFormVM<Guid>
     {
-        public string? NewGoal { get; set; } = "";
+        public string NewGoal { get; set; } = "";
     }
 }

@@ -149,8 +149,8 @@ namespace tl121pet.Controllers
         public IActionResult AddNote([FromForm] NoteEditListVM vm)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
-
-            _meetingRepository.AddNote(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
+            if(ModelState.IsValid)
+                _meetingRepository.AddNote(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
             
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
                 SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting), 
@@ -190,7 +190,8 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
 
-            _meetingRepository.AddGoal(vm.SelectedItem, vm.NewGoal);
+            if (ModelState.IsValid)
+                _meetingRepository.AddGoal(vm.SelectedItem, vm.NewGoal);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
