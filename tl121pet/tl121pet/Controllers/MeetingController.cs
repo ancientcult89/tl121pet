@@ -118,7 +118,7 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] MeetingEditFormVM meetingVM)
+        public IActionResult Edit([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
@@ -130,8 +130,7 @@ namespace tl121pet.Controllers
                 editedMeeting.PersonId = meetingVM.SelectedItem.PersonId;
 
                 _meetingRepository.UpdateMeeting(editedMeeting);
-                meetingVM.MeetingNotes = _meetingRepository.GetMeetingNotes(meetingVM.SelectedItem.MeetingId);
-                meetingVM.MeetingGoals = _meetingRepository.GetMeetingGoals(meetingVM.SelectedItem.MeetingId);
+
                 return View("MeetingEditor", meetingVM);
             }
             return View("MeetingEditor", meetingVM);
@@ -225,8 +224,6 @@ namespace tl121pet.Controllers
         public IActionResult DeleteGoal(Guid goalId, Guid meetingId)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.DeleteGoal(goalId);
 

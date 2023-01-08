@@ -26,7 +26,7 @@
                             <td><button type="submit" class="btn btn-sm btn-info" hidden="@Model.IsReadonly">@Localizer["Modify"]</button></td>
                     </form>
                     <td class="text-center">
-                        <form asp-action="DeleteGoal" method="post" asp-route-noteId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
+                        <form asp-action="DeleteGoal" method="post" asp-route-goalId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
                             <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">@Localizer["Delete"]</button>
                         </form>
                     </td>
