@@ -12,12 +12,12 @@ namespace tl121pet.Entities.Models
         public DateTime? MeetingDate { get; set; }
 
         public int MeetingTypeId { get; set; }
-        public MeetingType? MeetingType { get; set; }
+        public MeetingType MeetingType { get; set; }
 
         public bool FollowUpIsSended { get; set; } = false;
 
         public long PersonId { get; set; }
-        public Person? Person { get; set; }
+        public Person Person { get; set; }
 
         public List<MeetingGoal> MeetingGoals { get; set; }
         public List<MeetingNote> MeetingNotes { get; set; }

@@ -14,6 +14,7 @@
         </select>
         <button type="submit" class="btn btn-sm btn-primary p-2 mt-2">@Localizer["Filter"]</button>
         <a class="btn btn-sm btn-success p-2 mt-2" asp-action="MeetingList" >@Localizer["Clear"]</a>
+        <a class="btn btn-sm btn-primary p-2 mt-2" asp-action="Create" >@Localizer["Create"]</a>
     </form>    
     <p></p>
     <table class="table table-sm table-bordered table-striped">
@@ -51,5 +52,4 @@
             }
         </tbody>
     </table>
-    <a class="btn btn-sm btn-primary p-2" asp-action="Create" >@Localizer["Create"]</a>
 </div>

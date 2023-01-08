@@ -2,13 +2,13 @@
 @inject IPeopleRepository _peopleRepository
 @inject IPersonService _personService
 @inject IOneToOneService _oneToOneService
-@model MeetingEditFormVM
+@model SimpleEditFormVM<MeetingDTO>
 @inject IViewLocalizer Localizer
-@*<partial name="_Validation"></partial>*@
+<partial name="_Validation"></partial>
 
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Localizer[Model.Mode.ToString()]</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
-
+@*    <div asp-validation-summary="All" class="text-danger"></div>*@
     <form asp-action="@Model.Mode" method="post">
         @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
@@ -37,7 +37,7 @@
                 <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
             </div>
             <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(_meetingRepository.GetMeetingTypes(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
-                <option value="" disabled selected>@Localizer["ChooseMeetingType"]</option>
+                <option disabled selected>@Localizer["ChooseMeetingType"]</option>
             </select>
         </div>
         <div class="form-group">
@@ -83,18 +83,28 @@
             @if (Model.Mode == FormMode.Process)
             {
                 <div class="row">
-                    <pre>@Model.PreviousMeetingNotesAndGoals</pre>
+                    <pre>@(_oneToOneService.GetPreviousMeetingNoteAndGoals(Model.SelectedItem.MeetingId, Model.SelectedItem.PersonId))</pre>
                 </div>
                 <hr></hr>                
             }
             <div class="row">
-                <partial name="MeetingNotesList" disabled="@Model.IsReadonly"/>
-                @*<partial name="MeetingGoalsList" disabled="@Model.IsReadonly"/>*@
+                <partial name="MeetingNotesList" 
+                    disabled="@Model.IsReadonly" 
+                    model="@(new NoteEditListVM(){
+                        IsNewRecord = Model.IsNewRecord,
+                        SelectedItem = Model.SelectedItem.MeetingId,
+                        Mode = Model.Mode
+                })"/>
             </div>
             <hr></hr>
             <div class="row">
-@*                <partial name="MeetingNotesList" disabled="@Model.IsReadonly"/>*@
-                <partial name="MeetingGoalsList" disabled="@Model.IsReadonly"/>
+                <partial name="MeetingGoalsList" 
+                    disabled="@Model.IsReadonly"
+                    model="@(new GoalEditListVM(){
+                        IsNewRecord = Model.IsNewRecord,
+                        SelectedItem = Model.SelectedItem.MeetingId,
+                        Mode = Model.Mode
+                })"/>
             </div>
         </div>
     }

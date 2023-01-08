@@ -1,8 +1,9 @@
-﻿using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.DTO;
+using tl121pet.Entities.Models;
 
 namespace tl121pet.ViewModels
 {
-    public class MeetingEditFormVM : SimpleEditFormVM<Meeting>
+    public class MeetingEditFormVM : SimpleEditFormVM<MeetingDTO>
     {
         public List<MeetingNote>? MeetingNotes { get; set; }
         public string? NewNote { get; set; } = "";

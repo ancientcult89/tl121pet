@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
@@ -7,6 +6,8 @@ using tl121pet.Storage;
 using tl121pet.ViewModels;
 using tl121pet.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using tl121pet.Entities.DTO;
+using tl121pet.Entities.Infrastructure;
 
 namespace tl121pet.Controllers
 {
@@ -34,11 +35,9 @@ namespace tl121pet.Controllers
         }
         public IActionResult Details(Guid id)
         {
-            return View("MeetingEditor", new MeetingEditFormVM() { 
-                SelectedItem = _dataContext.Meetings.Find(id) ?? new Meeting(), 
-                Mode = FormMode.Details,
-                MeetingNotes = _meetingRepository.GetMeetingNotes(id),
-                MeetingGoals = _meetingRepository.GetMeetingGoals(id)
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
+                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO(), 
+                Mode = FormMode.Details
             });
         }
 
@@ -56,92 +55,86 @@ namespace tl121pet.Controllers
         public IActionResult FollowUp(Guid meetingId, FormMode mode, long personId)
         {
             _oneToOneService.SendFollowUp(meetingId, personId);
-            return View("MeetingEditor", new MeetingEditFormVM()
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
-                Mode = mode,
-                MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
-                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
+                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),
+                Mode = mode
             });
         }
 
         public IActionResult Create()
         {
-            return View("MeetingEditor", new MeetingEditFormVM() { SelectedItem = new Meeting(), Mode = FormMode.Create });
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { SelectedItem = new MeetingDTO(), Mode = FormMode.Create });
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] MeetingEditFormVM meetingVM)
+        public IActionResult Create([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
-            //if (ModelState.IsValid)
-            //{
-                _meetingRepository.CreateMeeting(meetingVM.SelectedItem);
+            if (ModelState.IsValid)
+            {
+                _meetingRepository.CreateMeeting(AutomapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
                 meetingVM.Mode = FormMode.Edit;
                 return View("MeetingEditor", meetingVM);
-            //}
-            //return View("MeetingEditor", meetingVM);
+            }
+            meetingVM.Mode = FormMode.Create;
+            return View("MeetingEditor", meetingVM);
         }
 
         public IActionResult Process(Guid id)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(id) ?? new Meeting();
             string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
-            return View("MeetingEditor", new MeetingEditFormVM()
+            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = currMeeting
-                ,
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
-                ,
-                MeetingNotes = _meetingRepository.GetMeetingNotes(id)
-                ,
-                MeetingGoals = _meetingRepository.GetMeetingGoals(id)
-                ,
-                PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
 
-        private string GetPreviousNotesAnfGoals(Meeting currMeeting)
-        {
-            string prevNotesAndGoals = "";
-            Guid? previousMeetingGuid = _meetingRepository.GetPreviousMeetingId(currMeeting.MeetingId, currMeeting.PersonId);
-            if (previousMeetingGuid != null)
-            {
-                prevNotesAndGoals = _oneToOneService.GetMeetingNoteAndGoals((Guid)previousMeetingGuid);
-            }
-
-            return prevNotesAndGoals;
-        }
-
         [HttpPost]
-        public IActionResult Process([FromForm] MeetingEditFormVM meetingVM)
+        public IActionResult Process([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
-            //if (ModelState.IsValid)
-            //{
-                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+            if (ModelState.IsValid)
+            {
+                Meeting editedMeeting = _dataContext.Meetings.Find(meetingVM.SelectedItem.MeetingId);
+                editedMeeting.MeetingPlanDate = meetingVM.SelectedItem.MeetingPlanDate;
+                editedMeeting.MeetingDate = meetingVM.SelectedItem.MeetingDate;
+                editedMeeting.MeetingTypeId = meetingVM.SelectedItem.MeetingTypeId;
+                editedMeeting.FollowUpIsSended = meetingVM.SelectedItem.FollowUpIsSended;
+                editedMeeting.PersonId = meetingVM.SelectedItem.PersonId;
+
+                _meetingRepository.UpdateMeeting(editedMeeting);
                 meetingVM.Mode = FormMode.Process;
-                meetingVM.MeetingNotes = _meetingRepository.GetMeetingNotes(meetingVM.SelectedItem.MeetingId);
-                meetingVM.MeetingGoals = _meetingRepository.GetMeetingGoals(meetingVM.SelectedItem.MeetingId);
                 return View("MeetingEditor", meetingVM);
-            //}
-            //return View("MeetingEditor", meetingVM);
         }
+            return View("MeetingEditor", meetingVM);
+    }
         public IActionResult Edit(Guid id)
         {
-            return View("MeetingEditor", new MeetingEditFormVM() { SelectedItem = _dataContext.Meetings.Find(id) ?? new Meeting(), Mode = FormMode.Edit });
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
+                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO()
+                , Mode = FormMode.Edit });
         }
 
         [HttpPost]
         public IActionResult Edit([FromForm] MeetingEditFormVM meetingVM)
         {
-            //if (ModelState.IsValid)
-            //{
-                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+            if (ModelState.IsValid)
+            {
+                Meeting editedMeeting = _dataContext.Meetings.Find(meetingVM.SelectedItem.MeetingId);
+                editedMeeting.MeetingPlanDate = meetingVM.SelectedItem.MeetingPlanDate;
+                editedMeeting.MeetingDate = meetingVM.SelectedItem.MeetingDate;
+                editedMeeting.MeetingTypeId = meetingVM.SelectedItem.MeetingTypeId;
+                editedMeeting.FollowUpIsSended = meetingVM.SelectedItem.FollowUpIsSended;
+                editedMeeting.PersonId = meetingVM.SelectedItem.PersonId;
+
+                _meetingRepository.UpdateMeeting(editedMeeting);
                 meetingVM.MeetingNotes = _meetingRepository.GetMeetingNotes(meetingVM.SelectedItem.MeetingId);
                 meetingVM.MeetingGoals = _meetingRepository.GetMeetingGoals(meetingVM.SelectedItem.MeetingId);
                 return View("MeetingEditor", meetingVM);
-            //}
-            //return View("MeetingEditor", meetingVM);
+            }
+            return View("MeetingEditor", meetingVM);
         }
 
         [HttpPost]
@@ -154,20 +147,15 @@ namespace tl121pet.Controllers
 
         #region MeetingNotes
         [HttpPost]
-        public IActionResult AddNote([FromForm] MeetingEditFormVM vm)
+        public IActionResult AddNote([FromForm] NoteEditListVM vm)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
 
-            _meetingRepository.AddNote(vm.SelectedItem.MeetingId, vm.NewNote, vm.NewNoteFeedbackRequires);
+            _meetingRepository.AddNote(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
             
-            return View("MeetingEditor", new MeetingEditFormVM() { 
-                SelectedItem = currMeeting
-                , Mode = FormMode.Process
-                , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
-                , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
-                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting), 
+                Mode = FormMode.Process
             });
         }
 
@@ -176,17 +164,14 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
             string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.UpdateNote(noteId, MeetingNoteContent, FeedbackRequired);
 
-            return View("MeetingEditor", new MeetingEditFormVM()
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = currMeeting,
-                Mode = FormMode.Process,
-                MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
-                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId),
-                PreviousMeetingNotesAndGoals = prevNotesAndGoals
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                Mode = FormMode.Process
             });
         }
 
@@ -194,36 +179,30 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
             string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.DeleteNote(noteId);
-            return View("MeetingEditor", new MeetingEditFormVM() { 
-                SelectedItem = currMeeting
-                , Mode = FormMode.Process 
-                , MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId)
-                , MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
-                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting)
+                , Mode = FormMode.Process
             });
         }
         #endregion MeetingNotes
 
         #region MeetingGoals
         [HttpPost]
-        public IActionResult AddGoal([FromForm] MeetingEditFormVM vm)
+        public IActionResult AddGoal([FromForm] GoalEditListVM vm)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem.MeetingId) ?? new Meeting();
+            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
             string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
-            _meetingRepository.AddGoal(vm.SelectedItem.MeetingId, vm.NewGoal);
+            _meetingRepository.AddGoal(vm.SelectedItem, vm.NewGoal);
 
-            return View("MeetingEditor", new MeetingEditFormVM()
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = currMeeting
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting)
                 , Mode = FormMode.Process
-                , MeetingNotes = _meetingRepository.GetMeetingNotes(vm.SelectedItem.MeetingId)
-                , MeetingGoals = _meetingRepository.GetMeetingGoals(vm.SelectedItem.MeetingId)
-                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
 
@@ -232,17 +211,14 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
             string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
 
-            return View("MeetingEditor", new MeetingEditFormVM()
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = _dataContext.Meetings.Find(meetingId) ?? new Meeting(),
-                Mode = FormMode.Process,
-                MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId),
-                MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId),
-                PreviousMeetingNotesAndGoals = prevNotesAndGoals
+                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),
+                Mode = FormMode.Process
             });
         }
 
@@ -250,17 +226,14 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
             string prevNotesAndGoals = "";
-            prevNotesAndGoals = GetPreviousNotesAnfGoals(currMeeting);
+            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.DeleteGoal(goalId);
 
-            return View("MeetingEditor", new MeetingEditFormVM()
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = currMeeting
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting)
                 , Mode = FormMode.Process
-                , MeetingNotes = _meetingRepository.GetMeetingNotes(meetingId)
-                , MeetingGoals = _meetingRepository.GetMeetingGoals(meetingId)
-                , PreviousMeetingNotesAndGoals = prevNotesAndGoals
             });
         }
         #endregion MeetingGoals
