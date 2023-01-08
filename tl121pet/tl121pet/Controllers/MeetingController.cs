@@ -162,8 +162,6 @@ namespace tl121pet.Controllers
         public IActionResult UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.UpdateNote(noteId, MeetingNoteContent, FeedbackRequired);
 
@@ -177,8 +175,6 @@ namespace tl121pet.Controllers
         public IActionResult DeleteNote(Guid noteId, Guid meetingId)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.DeleteNote(noteId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
@@ -193,8 +189,6 @@ namespace tl121pet.Controllers
         public IActionResult AddGoal([FromForm] GoalEditListVM vm)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.AddGoal(vm.SelectedItem, vm.NewGoal);
 
@@ -209,8 +203,6 @@ namespace tl121pet.Controllers
         public IActionResult UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
 
             _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
 
