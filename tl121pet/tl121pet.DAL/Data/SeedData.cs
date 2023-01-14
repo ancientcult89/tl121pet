@@ -5,7 +5,7 @@ using tl121pet.Entities.Models;
 namespace tl121pet.DAL.Data
 {
     public static class SeedData
-    {
+    { 
         public static void SeedDatabase(DataContext dataContext)
         {
             dataContext.Database.Migrate();

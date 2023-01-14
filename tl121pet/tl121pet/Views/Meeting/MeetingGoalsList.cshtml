@@ -1,4 +1,5 @@
-﻿@model MeetingEditFormVM
+﻿@model GoalEditListVM
+@inject IMeetingRepository _meetingRepository
 @inject IViewLocalizer Localizer
 
 <div class="col-sm">
@@ -13,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (MeetingGoal mg in Model.MeetingGoals ?? Enumerable.Empty<MeetingGoal>())
+            @foreach (MeetingGoal mg in _meetingRepository.GetMeetingGoals(Model.SelectedItem) ?? Enumerable.Empty<MeetingGoal>())
             {
                 <tr>
                     <form asp-action="UpdateGoal" method="post"
@@ -25,7 +26,7 @@
                             <td><button type="submit" class="btn btn-sm btn-info" hidden="@Model.IsReadonly">@Localizer["Modify"]</button></td>
                     </form>
                     <td class="text-center">
-                        <form asp-action="DeleteGoal" method="post" asp-route-noteId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
+                        <form asp-action="DeleteGoal" method="post" asp-route-goalId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
                             <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">@Localizer["Delete"]</button>
                         </form>
                     </td>
@@ -34,7 +35,7 @@
         </tbody>
     </table>
     <form asp-action="AddGoal" method="post" hidden="@Model.IsReadonly">
-        <input class="form-control" asp-for="SelectedItem.MeetingId" disabled="@Model.IsReadonly" hidden/>
+        <input class="form-control" asp-for="SelectedItem" disabled="@Model.IsReadonly" hidden/>
         <input class="form-control" asp-for="NewGoal" disabled="@Model.IsReadonly"/>
         <button class="btn btn-primary mt-2" type="submit">
             @Localizer["AddGoal"]

@@ -62,6 +62,17 @@ namespace tl121pet.Services.Services
             return result;
         }
 
+        public string GetPreviousMeetingNoteAndGoals(Guid meetingId, long personId)
+        {
+            string prevNoteAndGoals = "";
+            Guid? previousMeetingGuid = _meetingRepository.GetPreviousMeetingId(meetingId, personId);
+            if (previousMeetingGuid != null)
+            {
+                prevNoteAndGoals = GetMeetingNoteAndGoals((Guid)previousMeetingGuid);
+            }
+            return prevNoteAndGoals;
+        }
+
         public string GetMeetingNoteAndGoals(Guid meetingId)
         {
             string result = "";
