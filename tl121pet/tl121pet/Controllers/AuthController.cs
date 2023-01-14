@@ -18,11 +18,11 @@ namespace tl121pet.Controllers
         }
         public IActionResult Login()
         {           
-            return View("Login", new UserLoginRequest());
+            return View("Login", new UserLoginRequestDTO());
         }
 
         [HttpPost]
-        public IActionResult SignUp([FromForm] UserLoginRequest loginRequest)
+        public IActionResult SignUp([FromForm] UserLoginRequestDTO loginRequest)
         {
             string token = LoginApi(loginRequest);
             if (token != "")
@@ -34,7 +34,7 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost("/api/auth/login")]
-        public string LoginApi(UserLoginRequest loginRequest)
+        public string LoginApi(UserLoginRequestDTO loginRequest)
         {
             string res = "";
             User? user = _authService.Login(loginRequest);

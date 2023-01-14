@@ -30,5 +30,27 @@ namespace tl121pet.Entities.Infrastructure
                 PersonId = meetingDTO.PersonId
             };
         }
+
+        public static UserDTO UserEntityToDto(User user)
+        {
+            return new UserDTO()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                RoleId = user.RoleId
+            };
+        }
+
+        public static User UserDtoToEntity(UserDTO userDTO, byte[] passwordHash, byte[] passwordSalt)
+        {
+            return new User() {
+                Email = userDTO.Email,
+                UserName = userDTO.UserName,
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt,
+                RoleId = userDTO.RoleId
+            };
+        }
     }
 }

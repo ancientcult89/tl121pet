@@ -1,4 +1,5 @@
-﻿using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.DTO;
+using tl121pet.Entities.Models;
 
 namespace tl121pet.DAL.Interfaces
 {
@@ -11,7 +12,7 @@ namespace tl121pet.DAL.Interfaces
         public void DeleteMeetingType(int id);
         public List<MeetingType> GetMeetingTypes();
         public void CreateMeeting(Meeting m);
-        public void UpdateMeeting(Meeting mt);
+        public void UpdateMeeting(MeetingDTO mtdto);
         public void DeleteMeeting(Guid id);
         public void AddNote(Guid id, string content, bool feedbackRequired);
         public void UpdateNote(Guid id, string content, bool feedbackRequired);

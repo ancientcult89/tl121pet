@@ -12,6 +12,8 @@ namespace tl121pet.Entities.Models
         public string LastName { get; set; } = string.Empty;
         public string ShortName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+
+        [Range(1, long.MaxValue, ErrorMessage = "Required")]
         public long GradeId { get; set; }
         public Grade? Grade { get; set; }
     }

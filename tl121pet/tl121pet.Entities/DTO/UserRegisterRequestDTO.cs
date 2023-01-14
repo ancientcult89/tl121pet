@@ -2,7 +2,7 @@
 
 namespace tl121pet.Entities.DTO
 {
-    public class UserRegisterRequest
+    public class UserRegisterRequestDTO
     {
         [Required, EmailAddress]
         public string Email { get; set; } = string.Empty;

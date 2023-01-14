@@ -28,7 +28,9 @@ namespace tl121pet.Controllers
 
         public IActionResult Edit(int id)
         {
-            return View("RoleEditor", new SimpleEditFormVM<Role>() { SelectedItem = _dataContext.Roles.Find(id) ?? new Role(), Mode = FormMode.Edit });
+            return View("RoleEditor", new SimpleEditFormVM<Role>() { 
+                SelectedItem = _dataContext.Roles.Find(id) ?? new Role(),
+                Mode = FormMode.Edit });
         }
 
         [HttpPost]
@@ -44,12 +46,16 @@ namespace tl121pet.Controllers
 
         public IActionResult Details(int id)
         {
-            return View("RoleEditor", new SimpleEditFormVM<Role>() { SelectedItem = _dataContext.Roles.Find(id) ?? new Role(), Mode = FormMode.Details });
+            return View("RoleEditor", new SimpleEditFormVM<Role>() { 
+                SelectedItem = _dataContext.Roles.Find(id) ?? new Role(),
+                Mode = FormMode.Details });
         }
 
         public IActionResult Create()
         {
-            return View("RoleEditor", new SimpleEditFormVM<Role>() { SelectedItem = new Role(), Mode = FormMode.Create });
+            return View("RoleEditor", new SimpleEditFormVM<Role>() { 
+                SelectedItem = new Role(),
+                Mode = FormMode.Create });
         }
 
         [HttpPost]
@@ -58,9 +64,10 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _adminRepository.CreateRole(roleVM.SelectedItem);
-                roleVM.Mode = FormMode.Create;
+                roleVM.Mode = FormMode.Edit;
                 return View("RoleEditor", roleVM);
             }
+            roleVM.Mode = FormMode.Create;
             return View("RoleEditor", roleVM);
         }
 
