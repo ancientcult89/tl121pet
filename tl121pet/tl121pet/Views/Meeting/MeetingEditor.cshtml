@@ -8,7 +8,6 @@
 
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Localizer[Model.Mode.ToString()]</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
-@*    <div asp-validation-summary="All" class="text-danger"></div>*@
     <form asp-action="@Model.Mode" method="post">
         @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
