@@ -21,13 +21,13 @@
                         asp-route-goalId="@mg.MeetingGoalId",
                         asp-route-meetingId="@mg.MeetingId">
                             <td>
-                                <input class="form-control" asp-for="@mg.MeetingGoalDescription" name="MeetingGoalDescription"/>                                                                            
+                                <input class="form-control" asp-for="@mg.MeetingGoalDescription" name="MeetingGoalDescription" disabled="@(Model.Mode != FormMode.Process)"/>                                                                            
                             </td>
-                            <td><button type="submit" class="btn btn-sm btn-info" hidden="@Model.IsReadonly">@Localizer["Modify"]</button></td>
+                            <td><button type="submit" class="btn btn-sm btn-info" disabled="@(Model.Mode != FormMode.Process)">@Localizer["Modify"]</button></td>
                     </form>
                     <td class="text-center">
                         <form asp-action="DeleteGoal" method="post" asp-route-goalId="@mg.MeetingGoalId", asp-route-meetingId="@mg.MeetingId">
-                            <button type="submit" class="btn btn-sm btn-danger" hidden="@Model.IsReadonly">@Localizer["Delete"]</button>
+                            <button type="submit" class="btn btn-sm btn-danger" disabled="@(Model.Mode != FormMode.Process)">@Localizer["Delete"]</button>
                         </form>
                     </td>
                 </tr>
@@ -35,9 +35,9 @@
         </tbody>
     </table>
     <form asp-action="AddGoal" method="post" hidden="@Model.IsReadonly">
-        <input class="form-control" asp-for="SelectedItem" disabled="@Model.IsReadonly" hidden/>
-        <input class="form-control" asp-for="NewGoal" disabled="@Model.IsReadonly"/>
-        <button class="btn btn-primary mt-2" type="submit">
+        <input class="form-control" asp-for="SelectedItem" disabled="@(Model.Mode != FormMode.Process)" hidden/>
+        <input class="form-control" asp-for="NewGoal" disabled="@(Model.Mode != FormMode.Process)"/>
+        <button class="btn btn-primary mt-2" type="submit" disabled="@(Model.Mode != FormMode.Process)">
             @Localizer["AddGoal"]
         </button>
     </form>

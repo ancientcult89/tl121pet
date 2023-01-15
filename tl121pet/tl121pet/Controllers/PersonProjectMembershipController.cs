@@ -9,17 +9,17 @@ using tl121pet.ViewModels;
 namespace tl121pet.Controllers
 {
     [Authorize]
-    public class ProjectMemberController : Controller
+    public class PersonProjectMembershipController : Controller
     {
         private readonly IProjectTeamRepository _projectTeamRepository;
         private readonly IPeopleRepository _peopleRepository;
 
-        public ProjectMemberController(IProjectTeamRepository projectTeamRepository, IPeopleRepository peopleRepository)
+        public PersonProjectMembershipController(IProjectTeamRepository projectTeamRepository, IPeopleRepository peopleRepository)
         {
             _projectTeamRepository = projectTeamRepository;
             _peopleRepository = peopleRepository;
         }
-        public IActionResult ProjectMemberList()
+        public IActionResult PersonProjectMemberList()
         {
             //TODO: зоны ответсвенности контроллера: 1. отобразить список сотрудников с их проектами. 2. сформировать список. Нужна декомпозиция
             List<ProjectMemberDTO> projectMembers = new List<ProjectMemberDTO>();
@@ -60,7 +60,6 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
         {
-            //TODO: добавить валидацию
             if(ModelState.IsValid)
                 _projectTeamRepository.AddPersonMembership(personId, vm.NewProjectTeamId);
 

@@ -62,7 +62,6 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddMembership([FromForm] UserMemberEditFormVM vm, long userId)
         {
-            //TODO: добавить валидацию
             if(ModelState.IsValid)
                 _projectTeamRepository.AddUserMembership(userId, vm.NewProjectTeamId);
 
