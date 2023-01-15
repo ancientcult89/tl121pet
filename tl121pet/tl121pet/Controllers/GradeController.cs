@@ -26,7 +26,9 @@ namespace tl121pet.Controllers
 
         public IActionResult Edit(long id)
         {
-            return View("GradeEditor", new SimpleEditFormVM<Grade>() { SelectedItem = _dataContext.Grades.Find(id) ?? new Grade(), Mode = FormMode.Edit });
+            return View("GradeEditor", new SimpleEditFormVM<Grade>() { 
+                SelectedItem = _dataContext.Grades.Find(id) ?? new Grade(),
+                Mode = FormMode.Edit });
         }
 
         [HttpPost]
@@ -42,12 +44,16 @@ namespace tl121pet.Controllers
 
         public IActionResult Details(long id)
         {
-            return View("GradeEditor", new SimpleEditFormVM<Grade>() { SelectedItem = _dataContext.Grades.Find(id) ?? new Grade(), Mode = FormMode.Details });
+            return View("GradeEditor", new SimpleEditFormVM<Grade>() { 
+                SelectedItem = _dataContext.Grades.Find(id) ?? new Grade(),
+                Mode = FormMode.Details });
         }
 
         public IActionResult Create()
         {
-            return View("GradeEditor", new SimpleEditFormVM<Grade>() { SelectedItem = new Grade(), Mode = FormMode.Create });
+            return View("GradeEditor", new SimpleEditFormVM<Grade>() { 
+                SelectedItem = new Grade(),
+                Mode = FormMode.Create });
         }
 
         [HttpPost]
@@ -59,6 +65,7 @@ namespace tl121pet.Controllers
                 gradeVM.Mode = FormMode.Edit;
                 return View("GradeEditor", gradeVM);
             }
+            gradeVM.Mode = FormMode.Create;
             return View("GradeEditor", gradeVM);
         }
 

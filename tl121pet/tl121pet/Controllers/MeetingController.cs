@@ -64,7 +64,9 @@ namespace tl121pet.Controllers
 
         public IActionResult Create()
         {
-            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { SelectedItem = new MeetingDTO(), Mode = FormMode.Create });
+            return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
+                SelectedItem = new MeetingDTO(),
+                Mode = FormMode.Create });
         }
 
         [HttpPost]
@@ -83,8 +85,7 @@ namespace tl121pet.Controllers
         public IActionResult Process(Guid id)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(id) ?? new Meeting();
-            string prevNotesAndGoals = "";
-            prevNotesAndGoals = _oneToOneService.GetPreviousMeetingNoteAndGoals(currMeeting.MeetingId, currMeeting.PersonId);
+
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
                 SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
@@ -97,24 +98,17 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                Meeting editedMeeting = _dataContext.Meetings.Find(meetingVM.SelectedItem.MeetingId);
-                editedMeeting.MeetingPlanDate = meetingVM.SelectedItem.MeetingPlanDate;
-                editedMeeting.MeetingDate = meetingVM.SelectedItem.MeetingDate;
-                editedMeeting.MeetingTypeId = meetingVM.SelectedItem.MeetingTypeId;
-                editedMeeting.FollowUpIsSended = meetingVM.SelectedItem.FollowUpIsSended;
-                editedMeeting.PersonId = meetingVM.SelectedItem.PersonId;
-
-                _meetingRepository.UpdateMeeting(editedMeeting);
+                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
                 meetingVM.Mode = FormMode.Process;
                 return View("MeetingEditor", meetingVM);
-        }
+            }
             return View("MeetingEditor", meetingVM);
-    }
+        }
         public IActionResult Edit(Guid id)
         {
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
-                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO()
-                , Mode = FormMode.Edit });
+                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO(),
+                Mode = FormMode.Edit });
         }
 
         [HttpPost]
@@ -122,15 +116,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                Meeting editedMeeting = _dataContext.Meetings.Find(meetingVM.SelectedItem.MeetingId);
-                editedMeeting.MeetingPlanDate = meetingVM.SelectedItem.MeetingPlanDate;
-                editedMeeting.MeetingDate = meetingVM.SelectedItem.MeetingDate;
-                editedMeeting.MeetingTypeId = meetingVM.SelectedItem.MeetingTypeId;
-                editedMeeting.FollowUpIsSended = meetingVM.SelectedItem.FollowUpIsSended;
-                editedMeeting.PersonId = meetingVM.SelectedItem.PersonId;
-
-                _meetingRepository.UpdateMeeting(editedMeeting);
-
+                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
                 return View("MeetingEditor", meetingVM);
             }
             return View("MeetingEditor", meetingVM);
@@ -178,8 +164,8 @@ namespace tl121pet.Controllers
 
             _meetingRepository.DeleteNote(noteId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting)
-                , Mode = FormMode.Process
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                Mode = FormMode.Process
             });
         }
         #endregion MeetingNotes
@@ -195,16 +181,14 @@ namespace tl121pet.Controllers
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting)
-                , Mode = FormMode.Process
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                Mode = FormMode.Process
             });
         }
 
         [HttpPost]
         public IActionResult UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
-
             _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
@@ -222,8 +206,8 @@ namespace tl121pet.Controllers
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting)
-                , Mode = FormMode.Process
+                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                Mode = FormMode.Process
             });
         }
         #endregion MeetingGoals

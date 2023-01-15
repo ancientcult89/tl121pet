@@ -35,13 +35,13 @@
             }
         </tbody>
     </table>
-    <a class="btn btn-secondary mt-2" asp-action="ProjectMemberList">@EditFormLocalizer["Back"]</a>
+    <a class="btn btn-secondary mt-2" asp-action="PersonProjectMemberList">@EditFormLocalizer["Back"]</a>
     <p></p>
     <form asp-action="AddMembership" method="post" hidden="@Model.IsReadonly" asp-route-personId="@Model.SelectedItem.PersonId">
         <div class="form-group">
             <label>@Localizer["ProjectTeams"]</label>
             <div>
-                <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>
+                <span asp-validation-for="NewProjectTeamId" class="text-danger"></span>
             </div>
             <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectService.GetFilteredProjects(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseAProjectTeam"]</option>

@@ -9,18 +9,19 @@ using tl121pet.ViewModels;
 namespace tl121pet.Controllers
 {
     [Authorize]
-    public class ProjectMemberController : Controller
+    public class PersonProjectMembershipController : Controller
     {
         private readonly IProjectTeamRepository _projectTeamRepository;
         private readonly IPeopleRepository _peopleRepository;
 
-        public ProjectMemberController(IProjectTeamRepository projectTeamRepository, IPeopleRepository peopleRepository)
+        public PersonProjectMembershipController(IProjectTeamRepository projectTeamRepository, IPeopleRepository peopleRepository)
         {
             _projectTeamRepository = projectTeamRepository;
             _peopleRepository = peopleRepository;
         }
-        public IActionResult ProjectMemberList()
+        public IActionResult PersonProjectMemberList()
         {
+            //TODO: зоны ответсвенности контроллера: 1. отобразить список сотрудников с их проектами. 2. сформировать список. Нужна декомпозиция
             List<ProjectMemberDTO> projectMembers = new List<ProjectMemberDTO>();
             List<Person> people = _peopleRepository.GetPeople();
             foreach (Person person in people)
@@ -38,9 +39,9 @@ namespace tl121pet.Controllers
         public IActionResult Details(long id)
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM() {
-                SelectedItem = _peopleRepository.GetPerson(id)
-                , ProjectTeams = _projectTeamRepository.GetPersonMembership(id)
-                , Mode = FormMode.Details
+                SelectedItem = _peopleRepository.GetPerson(id),
+                ProjectTeams = _projectTeamRepository.GetPersonMembership(id),
+                Mode = FormMode.Details
             };
             return View("ProjectMemberEditor", vm);
         }
@@ -59,7 +60,8 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
         {
-            _projectTeamRepository.AddPersonMembership(personId, vm.NewProjectTeamId);
+            if(ModelState.IsValid)
+                _projectTeamRepository.AddPersonMembership(personId, vm.NewProjectTeamId);
 
             vm.SelectedItem = _peopleRepository.GetPerson(personId);
             vm.ProjectTeams = _projectTeamRepository.GetPersonMembership(personId);

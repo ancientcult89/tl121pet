@@ -80,7 +80,7 @@ namespace tl121pet.Services.Services
                 return null;
         }
 
-        public User? Login(UserLoginRequest request)
+        public User? Login(UserLoginRequestDTO request)
         {
             User user = _adminRepository.GetUserByEmail(request.Email);
             if (user == null)
@@ -98,7 +98,7 @@ namespace tl121pet.Services.Services
             return null;
         }
 
-        public void Register(UserRegisterRequest request)
+        public void Register(UserRegisterRequestDTO request)
         {
             User existsUser = _adminRepository.GetUserByEmail(request.Email);
             if (existsUser != null)

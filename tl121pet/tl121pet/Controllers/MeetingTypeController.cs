@@ -28,7 +28,9 @@ namespace tl121pet.Controllers
 
         public IActionResult Edit(int id)
         {
-            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { SelectedItem = _dataContext.MeetingTypes.Find(id) ?? new MeetingType(), Mode = FormMode.Edit });
+            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { 
+                SelectedItem = _dataContext.MeetingTypes.Find(id) ?? new MeetingType(), 
+                Mode = FormMode.Edit });
         }
 
         [HttpPost]
@@ -39,17 +41,22 @@ namespace tl121pet.Controllers
                 _meetingRepository.UpdateMeetingType(meetingTypeVM.SelectedItem);
                 return RedirectToAction("MeetingTypeList");
             }
+            meetingTypeVM.Mode = FormMode.Create;
             return View("MeetingTypeEditor", meetingTypeVM);
         }
 
         public IActionResult Details(int id)
         {
-            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { SelectedItem = _dataContext.MeetingTypes.Find(id) ?? new MeetingType(), Mode = FormMode.Details });
+            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { 
+                SelectedItem = _dataContext.MeetingTypes.Find(id) ?? new MeetingType(),
+                Mode = FormMode.Details });
         }
 
         public IActionResult Create()
         {
-            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { SelectedItem = new MeetingType(), Mode = FormMode.Create });
+            return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { 
+                SelectedItem = new MeetingType(),
+                Mode = FormMode.Create });
         }
 
         [HttpPost]
@@ -58,9 +65,10 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _meetingRepository.CreateMeetingType(meetingTypeVM.SelectedItem);
-                meetingTypeVM.Mode = FormMode.Create;
+                meetingTypeVM.Mode = FormMode.Edit;
                 return View("MeetingTypeEditor", meetingTypeVM);
             }
+            meetingTypeVM.Mode = FormMode.Create;
             return View("MeetingTypeEditor", meetingTypeVM);
         }
 

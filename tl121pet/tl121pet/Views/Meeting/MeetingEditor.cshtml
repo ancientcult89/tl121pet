@@ -8,7 +8,6 @@
 
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@Localizer[Model.Mode.ToString()]</h5>
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
-@*    <div asp-validation-summary="All" class="text-danger"></div>*@
     <form asp-action="@Model.Mode" method="post">
         @if (@Model.Mode == FormMode.Edit || @Model.Mode == FormMode.Process)
         {
@@ -73,39 +72,37 @@
             asp-route-mode="@Model.Mode">
                 @Localizer["GenerateFollowUp"]
         </a>
+        @if(Model.Mode != FormMode.Process)
+        {
+            <a class="btn btn-success mt-2" asp-action="Process" asp-route-id="@Model.SelectedItem.MeetingId" >@Localizer["Process"]</a>            
+        }
     </form>
     <p></p>
     <hr></hr>
 
-    @if (@Model.Mode == FormMode.Process || @Model.Mode == FormMode.Details)
-    {
-        <div class="container" >
-            @if (Model.Mode == FormMode.Process)
-            {
-                <div class="row">
-                    <pre>@(_oneToOneService.GetPreviousMeetingNoteAndGoals(Model.SelectedItem.MeetingId, Model.SelectedItem.PersonId))</pre>
-                </div>
-                <hr></hr>                
-            }
-            <div class="row">
-                <partial name="MeetingNotesList" 
-                    disabled="@Model.IsReadonly" 
-                    model="@(new NoteEditListVM(){
-                        IsNewRecord = Model.IsNewRecord,
-                        SelectedItem = Model.SelectedItem.MeetingId,
-                        Mode = Model.Mode
-                })"/>
-            </div>
-            <hr></hr>
-            <div class="row">
-                <partial name="MeetingGoalsList" 
-                    disabled="@Model.IsReadonly"
-                    model="@(new GoalEditListVM(){
-                        IsNewRecord = Model.IsNewRecord,
-                        SelectedItem = Model.SelectedItem.MeetingId,
-                        Mode = Model.Mode
-                })"/>
-            </div>
+    <div class="container">
+        <div class="row">
+            <pre>@(_oneToOneService.GetPreviousMeetingNoteAndGoals(Model.SelectedItem.MeetingId, Model.SelectedItem.PersonId))</pre>
         </div>
-    }
+        <hr></hr>                
+        <div class="row">
+            <partial name="MeetingNotesList" 
+                disabled="@Model.IsReadonly" 
+                model="@(new NoteEditListVM(){
+                    IsNewRecord = Model.IsNewRecord,
+                    SelectedItem = Model.SelectedItem.MeetingId,
+                    Mode = Model.Mode
+            })"/>
+        </div>
+        <hr></hr>
+        <div class="row">
+            <partial name="MeetingGoalsList" 
+                disabled="@Model.IsReadonly"
+                model="@(new GoalEditListVM(){
+                    IsNewRecord = Model.IsNewRecord,
+                    SelectedItem = Model.SelectedItem.MeetingId,
+                    Mode = Model.Mode
+            })"/>
+        </div>
+    </div>
 </div>

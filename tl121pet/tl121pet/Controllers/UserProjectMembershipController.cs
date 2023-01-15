@@ -41,9 +41,9 @@ namespace tl121pet.Controllers
         {
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
-                SelectedItem = _adminRepository.GetUserById(id)                
-                , ProjectTeams = _projectTeamRepository.GetUserMembership(id)
-                , Mode = FormMode.Details
+                SelectedItem = _adminRepository.GetUserById(id),
+                ProjectTeams = _projectTeamRepository.GetUserMembership(id),
+                Mode = FormMode.Details
             };
             return View("UserMembershipEditor", vm);
         }
@@ -62,7 +62,8 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult AddMembership([FromForm] UserMemberEditFormVM vm, long userId)
         {
-            _projectTeamRepository.AddUserMembership(userId, vm.NewProjectTeamId);
+            if(ModelState.IsValid)
+                _projectTeamRepository.AddUserMembership(userId, vm.NewProjectTeamId);
 
             vm.SelectedItem = _adminRepository.GetUserById(userId);
             vm.ProjectTeams = _projectTeamRepository.GetUserMembership(userId);

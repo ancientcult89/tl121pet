@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
+using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 
 namespace tl121pet.DAL.Repositories
@@ -47,9 +48,15 @@ namespace tl121pet.DAL.Repositories
             _dataContext.SaveChanges();
         }
 
-        public void UpdateMeeting(Meeting m)
+        public void UpdateMeeting(MeetingDTO meetingDTO)
         {
-            _dataContext.Meetings.Update(m);
+            Meeting editedMeeting = _dataContext.Meetings.Find(meetingDTO.MeetingId);
+            editedMeeting.MeetingPlanDate = meetingDTO.MeetingPlanDate;
+            editedMeeting.MeetingDate = meetingDTO.MeetingDate;
+            editedMeeting.MeetingTypeId = meetingDTO.MeetingTypeId;
+            editedMeeting.FollowUpIsSended = meetingDTO.FollowUpIsSended;
+            editedMeeting.PersonId = meetingDTO.PersonId;
+            _dataContext.Meetings.Update(editedMeeting);
             _dataContext.SaveChanges();
         }
 

@@ -27,12 +27,16 @@ namespace tl121pet.Controllers
 
         public IActionResult Details(long id)
         {
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Details });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { 
+                SelectedItem = _dataContext.People.Find(id) ?? new Person(),
+                Mode = FormMode.Details });
         }
 
         public IActionResult Edit(long id)
         {
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = _dataContext.People.Find(id) ?? new Person(), Mode = FormMode.Edit });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { 
+                SelectedItem = _dataContext.People.Find(id) ?? new Person(),
+                Mode = FormMode.Edit });
         }
 
         [HttpPost]
@@ -55,7 +59,9 @@ namespace tl121pet.Controllers
 
         public IActionResult Create()
         {
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { SelectedItem = new Person(), Mode = FormMode.Create });
+            return View("PersonEditor", new SimpleEditFormVM<Person>() { 
+                SelectedItem = new Person(),
+                Mode = FormMode.Create });
         }
 
         [HttpPost]
@@ -67,6 +73,7 @@ namespace tl121pet.Controllers
                 personVM.Mode = FormMode.Edit;
                 return View("PersonEditor", personVM);
             }
+            personVM.Mode = FormMode.Create;
             return View("PersonEditor", personVM);
         }
 

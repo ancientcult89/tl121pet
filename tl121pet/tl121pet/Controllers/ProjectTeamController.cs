@@ -23,7 +23,9 @@ namespace tl121pet.Controllers
 
         public IActionResult Edit(long id)
         {
-            return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { SelectedItem = _projectTeamRepository.GetProjectTeamById(id) ?? new ProjectTeam(), Mode = FormMode.Edit });
+            return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { 
+                SelectedItem = _projectTeamRepository.GetProjectTeamById(id) ?? new ProjectTeam(),
+                Mode = FormMode.Edit });
         }
 
         [HttpPost]
@@ -39,12 +41,16 @@ namespace tl121pet.Controllers
 
         public IActionResult Details(long id)
         {
-            return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { SelectedItem = _projectTeamRepository.GetProjectTeamById(id) ?? new ProjectTeam(), Mode = FormMode.Details });
+            return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { 
+                SelectedItem = _projectTeamRepository.GetProjectTeamById(id) ?? new ProjectTeam(),
+                Mode = FormMode.Details });
         }
 
         public IActionResult Create()
         {
-            return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { SelectedItem = new ProjectTeam(), Mode = FormMode.Create });
+            return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { 
+                SelectedItem = new ProjectTeam(),
+                Mode = FormMode.Create });
         }
 
         [HttpPost]
@@ -56,6 +62,7 @@ namespace tl121pet.Controllers
                 ptVM.Mode = FormMode.Edit;
                 return View("ProjectTeamEditor", ptVM);
             }
+            ptVM.Mode = FormMode.Create;
             return View("ProjectTeamEditor", ptVM);
         }
 

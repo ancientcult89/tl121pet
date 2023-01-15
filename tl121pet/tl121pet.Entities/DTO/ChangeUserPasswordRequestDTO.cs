@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace tl121pet.Entities.DTO
 {
-    public class ChangeUserPasswordRequest
+    public class ChangeUserPasswordRequestDTO
     {
         public long UserId { get; set; }
 
