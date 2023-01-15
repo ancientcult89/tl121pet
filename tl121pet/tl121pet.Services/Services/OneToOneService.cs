@@ -45,7 +45,7 @@ namespace tl121pet.Services.Services
                     LastMeetingOneToOne = lastMeeting,
                     LastOneToOneMeetingDate = lastMeeting.MeetingDate ?? DateTime.Now,
                     AlertLVL = alert,
-                    DayToDeadline = datediff.Days > 0 ? datediff.Days : 0
+                    DayToDeadline = datediff.Days
                 });
             }
             return deadLines;
