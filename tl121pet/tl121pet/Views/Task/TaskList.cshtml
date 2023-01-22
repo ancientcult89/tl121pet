@@ -2,7 +2,7 @@
 @inject IViewLocalizer Localizer
 @inject IPersonService _personService
 
-<form>
+<form asp-action="TaskList">
     <select asp-for="@Model.PersonId" class="form-control" asp-items="@(new SelectList(_personService.GetInitials(), "PersonId", "Initials"))">
         <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
     </select>
