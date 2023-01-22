@@ -52,5 +52,16 @@ namespace tl121pet.Entities.Infrastructure
                 RoleId = userDTO.RoleId
             };
         }
+
+        public static TaskDTO MeetingGoalEntityToDto(MeetingGoal meetingGoal)
+        {
+            return new TaskDTO()
+            {
+                MeetingGoalId = meetingGoal.MeetingGoalId,
+                CompleteDescription = meetingGoal.CompleteDescription,
+                IsCompleted = meetingGoal.IsCompleted,
+                MeetingGoalDescription = meetingGoal.MeetingGoalDescription
+            };
+        }
     }
 }

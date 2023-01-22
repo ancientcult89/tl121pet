@@ -11,6 +11,11 @@
         asp-controller="OneToOneDeadline">
             @Localizer["OneToOneDeadlines"]
     </a>
+    <a class="btn @("Task" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
+        asp-action="TaskList"
+        asp-controller="Task">
+            @Localizer["Task"]
+    </a>
     <a class="btn @("Person" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
         asp-action="PeopleList"
         asp-controller="Person">
