@@ -162,5 +162,32 @@ namespace tl121pet.DAL.Repositories
                 .Where(mt => mt.PersonId == personId)
                 .ToList();
         }
+
+        public List<MeetingGoal> GetMeetingGoalsByPerson(long personId)
+        {
+            List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
+
+            var searchedGoals = from goals in _dataContext.MeetingGoals
+                           join meeting in _dataContext.Meetings on goals.MeetingId equals meeting.MeetingId
+                           join peop in _dataContext.People on meeting.PersonId equals peop.PersonId
+                           where peop.PersonId == personId
+                           select goals;
+
+            foreach (MeetingGoal goal in searchedGoals)
+            { 
+                meetingGoals.Add(goal);
+            }
+
+            return meetingGoals;
+        }
+
+        public void CompleteGoal(Guid goalId, string completeDescription)
+        {
+            MeetingGoal goal = _dataContext.MeetingGoals.Where(g => g.MeetingGoalId == goalId).FirstOrDefault();
+            goal.CompleteDescription = completeDescription;
+            goal.IsCompleted = true;
+            _dataContext.MeetingGoals.Update(goal);
+            _dataContext.SaveChanges();
+        }
     }
 }
