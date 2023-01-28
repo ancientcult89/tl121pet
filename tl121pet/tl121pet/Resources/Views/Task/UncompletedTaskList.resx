@@ -109,4 +109,7 @@
   <data name="Complete" xml:space="preserve">
     <value>Complete</value>
   </data>
+  <data name="FactDate" xml:space="preserve">
+    <value>Fact Date</value>
+  </data>
 </root>

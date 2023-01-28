@@ -8,5 +8,6 @@
         public string CompleteDescription { get; set; } = string.Empty;
         public string PersonName { get; set; } = string.Empty;
         public long PersonId { get; set; }
+        public DateTime? FactDate { get; set; }
     }
 }

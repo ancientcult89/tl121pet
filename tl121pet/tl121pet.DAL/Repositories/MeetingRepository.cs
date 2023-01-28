@@ -181,6 +181,14 @@ namespace tl121pet.DAL.Repositories
             return meetingGoals;
         }
 
+        public DateTime? GetFactMeetingDateById(Guid meetingId)
+        {
+            return _dataContext.Meetings
+                .Where(m => m.MeetingId == meetingId)
+                .Select(m => m.MeetingDate)
+                .FirstOrDefault();
+        }
+
         public void CompleteGoal(Guid goalId, string completeDescription)
         {
             MeetingGoal goal = _dataContext.MeetingGoals.Where(g => g.MeetingGoalId == goalId).FirstOrDefault();
