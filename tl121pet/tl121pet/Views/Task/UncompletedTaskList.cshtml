@@ -6,6 +6,7 @@
         <thead>
             <tr>
                 <th>@Localizer["Person"]</th>
+                <th>@Localizer["FactDate"]</th>
                 <th>@Localizer["Goals"]</th>
                 <th>@Localizer["GoalsCompleteDescription"]</th>
                 <th></th>
@@ -23,6 +24,9 @@
                     >
                         <td>
                             <input class="form-control" asp-for="@t.PersonName" name="PersonName" disabled=true/>                                                                            
+                        </td>
+                        <td>
+                            <input class="form-control" type="date" asp-for="@t.FactDate" name="FactDate" disabled=true/>                                                                            
                         </td>
                         <td>
                             <input class="form-control" asp-for="@t.MeetingGoalDescription" name="MeetingGoalDescription" disabled=true/>                                                                            

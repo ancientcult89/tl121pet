@@ -26,6 +26,7 @@ namespace tl121pet.DAL.Interfaces
         public Meeting? GetLastOneToOneByPersonId(long personId);
         public void MarAsSendedFollowUp(Guid meetingId);
         public List<MeetingGoal> GetMeetingGoalsByPerson(long personId);
+        public DateTime? GetFactMeetingDateById(Guid meetingId);
         public void CompleteGoal(Guid goalId, string completeDescription);
     }
 }

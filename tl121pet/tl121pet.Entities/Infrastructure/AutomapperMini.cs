@@ -53,15 +53,16 @@ namespace tl121pet.Entities.Infrastructure
             };
         }
 
-        public static TaskDTO MeetingGoalEntityToDto(MeetingGoal meetingGoal)
-        {
-            return new TaskDTO()
-            {
-                MeetingGoalId = meetingGoal.MeetingGoalId,
-                CompleteDescription = meetingGoal.CompleteDescription,
-                IsCompleted = meetingGoal.IsCompleted,
-                MeetingGoalDescription = meetingGoal.MeetingGoalDescription
-            };
-        }
+        //TODO: remove?
+        //public static TaskDTO MeetingGoalEntityToDto(MeetingGoal meetingGoal)
+        //{
+        //    return new TaskDTO()
+        //    {
+        //        MeetingGoalId = meetingGoal.MeetingGoalId,
+        //        CompleteDescription = meetingGoal.CompleteDescription,
+        //        IsCompleted = meetingGoal.IsCompleted,
+        //        MeetingGoalDescription = meetingGoal.MeetingGoalDescription
+        //    };
+        //}
     }
 }

@@ -129,4 +129,7 @@
   <data name="Complete" xml:space="preserve">
     <value>Выполнить</value>
   </data>
+  <data name="FactDate" xml:space="preserve">
+    <value>Дата проведения</value>
+  </data>
 </root>

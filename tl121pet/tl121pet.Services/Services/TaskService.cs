@@ -37,12 +37,13 @@ namespace tl121pet.Services.Services
                         IsCompleted = goal.IsCompleted,
                         MeetingGoalDescription = goal.MeetingGoalDescription,
                         PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
-                        PersonId = p.PersonId
+                        PersonId = p.PersonId,
+                        FactDate = _meetingRepository.GetFactMeetingDateById(goal.MeetingId)
                     });
                 }
             }
 
-            return taskList;
+            return taskList.OrderByDescending(t=> t.FactDate).ToList();
         }
     }
 }
