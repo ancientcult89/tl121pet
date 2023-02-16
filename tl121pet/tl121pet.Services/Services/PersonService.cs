@@ -54,6 +54,9 @@ namespace tl121pet.Services.Services
             {
                 peopleFiltered.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
             }
+
+            peopleFiltered = peopleFiltered.Distinct(new PersonComparer()).ToList();
+
             return peopleFiltered;
         }
     }

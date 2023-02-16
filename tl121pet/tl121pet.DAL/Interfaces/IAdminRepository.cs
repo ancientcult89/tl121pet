@@ -13,9 +13,9 @@ namespace tl121pet.DAL.Interfaces
         public void CreateRole(Role role);
         public void DeleteRole(int roleId);
         public void CreateUser(User user);
-        public void UpdateUser(User user);
+        public Task UpdateUserAsync(User user);
         public void DeleteUser(long userId);
-        public List<User> GetUserList();
+        public Task<List<User>> GetUserListAsync();
         public List<Role> GetRoleList();
     }
 }

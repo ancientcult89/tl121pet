@@ -22,9 +22,9 @@ namespace tl121pet.Controllers
             _authService = authService;
         }
 
-        public IActionResult UserList()
+        public async Task<IActionResult> UserList()
         {
-            return View("UserList", _adminRepository.GetUserList());
+            return View("UserList", await _adminRepository.GetUserListAsync());
         }
 
         public IActionResult Edit(long id)
@@ -37,7 +37,7 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<UserDTO> userEditRequestVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<UserDTO> userEditRequestVM)
         {
             User user = _adminRepository.GetUserById(userEditRequestVM.SelectedItem.Id);
             user.UserName = userEditRequestVM.SelectedItem.UserName;
@@ -46,7 +46,7 @@ namespace tl121pet.Controllers
 
             if (ModelState.IsValid)
             {
-                _adminRepository.UpdateUser(user);
+                await _adminRepository.UpdateUserAsync(user);
                 return View("UserEditor", userEditRequestVM);
             }
 
@@ -106,7 +106,7 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangePassword([FromForm] SimpleEditFormVM<ChangeUserPasswordRequestDTO> changePasswordRequest)
+        public async Task<IActionResult> ChangePassword([FromForm] SimpleEditFormVM<ChangeUserPasswordRequestDTO> changePasswordRequest)
         {
             //TODO: сейчас не понятно - сменили мы пароль или нет
             if (ModelState.IsValid)
@@ -118,7 +118,7 @@ namespace tl121pet.Controllers
                     user.PasswordHash = passwordHash;
                     user.PasswordSalt = passwordSalt;
                 }
-                _adminRepository.UpdateUser(user);
+                await _adminRepository.UpdateUserAsync(user);
                 UserDTO userEditRequest = AutomapperMini.UserEntityToDto(user);
 
                 return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 

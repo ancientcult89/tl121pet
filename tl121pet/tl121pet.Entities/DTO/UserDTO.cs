@@ -14,7 +14,6 @@ namespace tl121pet.Entities.DTO
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; } = string.Empty;
 
-        [Required]
         public string Password { get; set; } = string.Empty;
 
         [Range(1, long.MaxValue, ErrorMessage = "Required")]
