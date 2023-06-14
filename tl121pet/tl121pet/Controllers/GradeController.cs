@@ -19,9 +19,9 @@ namespace tl121pet.Controllers
             _dataContext = dataContext;
         }
 
-        public IActionResult GradeList()
+        public async Task<IActionResult> GradeList()
         {
-            return View("GradeList", _gradeRepository.GetAllGrades());
+            return View("GradeList", await _gradeRepository.GetAllGradesAsync());
         }
 
         public IActionResult Edit(long id)
@@ -32,11 +32,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<Grade> gradeVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<Grade> gradeVM)
         {
             if (ModelState.IsValid)
             {
-                _gradeRepository.UpdateGrade(gradeVM.SelectedItem);
+                await _gradeRepository.UpdateGradeAsync(gradeVM.SelectedItem);
                 return View("GradeEditor", gradeVM);
             }
             return View("GradeEditor", gradeVM);
@@ -57,11 +57,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<Grade> gradeVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<Grade> gradeVM)
         {
             if (ModelState.IsValid)
             {
-                _gradeRepository.CreateGrade(gradeVM.SelectedItem);
+                await _gradeRepository.CreateGradeAsync(gradeVM.SelectedItem);
                 gradeVM.Mode = FormMode.Edit;
                 return View("GradeEditor", gradeVM);
             }
@@ -70,9 +70,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> Delete(long id)
         {
-            _gradeRepository.DeleteGrade(id);
+            await _gradeRepository.DeleteGradeAsync(id);
             return RedirectToAction("GradeList");
         }
     }

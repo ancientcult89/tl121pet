@@ -1,4 +1,5 @@
-﻿using tl121pet.DAL.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 
@@ -11,33 +12,34 @@ namespace tl121pet.DAL.Repositories
         {
             _dataContext = dataContext;
         }
-        public List<Grade> GetAllGrades()
+        public async Task<List<Grade>> GetAllGradesAsync()
         {
-            return _dataContext.Grades.ToList();
+            return await _dataContext.Grades.ToListAsync();
         }
 
-        public string GetGradeName(long id)
+        public async Task<string> GetGradeNameAsync(long id)
         {
-            return _dataContext.Grades.Find(id).GradeName ?? "not found";
+            Grade selectedGrade = await _dataContext.Grades.FindAsync(id);
+            return selectedGrade.GradeName ?? "not found";
         }
 
-        public void CreateGrade(Grade grade)
+        public async Task CreateGradeAsync(Grade grade)
         {
             _dataContext.Grades.Add(grade);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void UpdateGrade(Grade grade)
+        public async Task UpdateGradeAsync(Grade grade)
         {
             _dataContext.Grades.Update(grade);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeleteGrade(long id)
+        public async Task DeleteGradeAsync(long id)
         {
             var gradeToDelete = _dataContext.Grades.Find(id);
             _dataContext.Grades.Remove(gradeToDelete);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
     }
 }
