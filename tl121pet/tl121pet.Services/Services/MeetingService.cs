@@ -32,7 +32,7 @@ namespace tl121pet.Services.Services
                 List<Person> people = new List<Person>();
                 List<ProjectTeam> projects = new List<ProjectTeam>();
                 projects = _adminRepository.GetUserProjects((long)userId);
-                people = GetPeopleByProjects(projects, personId);
+                people = GetPeopleByProjects(projects, personId).Distinct(new PersonComparer()).ToList();
                 meetingsRes = GetMeetingsByPerson(people);
             }
             
@@ -51,7 +51,7 @@ namespace tl121pet.Services.Services
             if (personId != null)
                 personByProjects = personByProjects.Where(p => p.PersonId == (long)personId).ToList();
 
-            return personByProjects;
+            return personByProjects.Distinct().ToList();
         }
 
         private List<Meeting> GetMeetingsByPerson(List<Person> people)

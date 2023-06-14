@@ -11,7 +11,7 @@ namespace tl121pet.DAL.Interfaces
         public void UpdateMeetingType(MeetingType mt);
         public void DeleteMeetingType(int id);
         public List<MeetingType> GetMeetingTypes();
-        public void CreateMeeting(Meeting m);
+        public Meeting CreateMeeting(Meeting m);
         public void UpdateMeeting(MeetingDTO mtdto);
         public void DeleteMeeting(Guid id);
         public void AddNote(Guid id, string content, bool feedbackRequired);

@@ -19,10 +19,10 @@ namespace tl121pet.Controllers
             _projectTeamRepository = projectTeamRepository;
             _adminRepository = adminRepository;
         }
-        public IActionResult UserProjectMemberList()
+        public async Task<IActionResult> UserProjectMemberList()
         {
             List<UserProjectMemberDTO> userProjectMembers = new List<UserProjectMemberDTO>();
-            List<User> users = _adminRepository.GetUserList();
+            List<User> users = await _adminRepository.GetUserListAsync();
             foreach (User user in users)
             {
                 string projects = _projectTeamRepository.GetUserProjects(user.Id);

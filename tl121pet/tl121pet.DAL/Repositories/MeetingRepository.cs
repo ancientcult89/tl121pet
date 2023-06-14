@@ -40,12 +40,13 @@ namespace tl121pet.DAL.Repositories
         #endregion MeetingType
 
         #region Meeting
-        public void CreateMeeting(Meeting m)
+        public Meeting CreateMeeting(Meeting m)
         {
             m.MeetingGoals = default;
             m.MeetingNotes = default;
             _dataContext.Meetings.Add(m);
             _dataContext.SaveChanges();
+            return m;
         }
 
         public void UpdateMeeting(MeetingDTO meetingDTO)
@@ -159,6 +160,7 @@ namespace tl121pet.DAL.Repositories
         {
             return _dataContext.Meetings
                 .Include(mt => mt.MeetingType)
+                .Include(mt => mt.Person)
                 .Where(mt => mt.PersonId == personId)
                 .ToList();
         }

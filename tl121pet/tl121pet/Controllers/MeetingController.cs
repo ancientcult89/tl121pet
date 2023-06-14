@@ -74,8 +74,9 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.CreateMeeting(AutomapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
+                Meeting m = _meetingRepository.CreateMeeting(AutomapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
                 meetingVM.Mode = FormMode.Edit;
+                meetingVM.SelectedItem = AutomapperMini.MeetingEntityToDto(m);
                 return View("MeetingEditor", meetingVM);
             }
             meetingVM.Mode = FormMode.Create;

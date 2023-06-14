@@ -71,9 +71,9 @@ namespace tl121pet.DAL.Repositories
             return _dataContext.Users.Find(id);
         }
 
-        public List<User> GetUserList()
+        public async Task<List<User>> GetUserListAsync()
         {
-            return _dataContext.Users.Include(p => p.Role).ToList();
+            return await _dataContext.Users.Include(p => p.Role).ToListAsync();
         }
 
         public List<ProjectTeam> GetUserProjects(long userId)
@@ -99,10 +99,10 @@ namespace tl121pet.DAL.Repositories
             _dataContext.SaveChanges();
         }
 
-        public void UpdateUser(User user)
+        public async Task UpdateUserAsync(User user)
         {
             _dataContext.Users.Update(user);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
     }
 }
