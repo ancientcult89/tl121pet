@@ -1,5 +1,4 @@
-﻿using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
+﻿using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -23,7 +22,7 @@ namespace tl121pet.Services.Services
             _meetingRepository = meetingRepository;
             _adminRepository = adminRepository;
         }
-        public List<Meeting> GetMeetings(long? personId)
+        public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
         {
             List<Meeting> meetingsRes = new List<Meeting>();
             long? userId = _authService.GetMyUserId();
@@ -32,11 +31,15 @@ namespace tl121pet.Services.Services
                 List<Person> people = new List<Person>();
                 List<ProjectTeam> projects = new List<ProjectTeam>();
                 projects = _adminRepository.GetUserProjects((long)userId);
-                people = GetPeopleByProjects(projects, personId).Distinct(new PersonComparer()).ToList();
+                people = GetPeopleByProjects(projects, personId);
                 meetingsRes = GetMeetingsByPerson(people);
             }
-            
-            return meetingsRes;
+
+            return meetingsRes
+                .OrderByDescending(m => m.Person.LastName)
+                .OrderByDescending(m => m.MeetingPlanDate)
+                .OrderByDescending(m => m.MeetingDate)
+                .ToList();
         }
 
         private List<Person> GetPeopleByProjects(List<ProjectTeam> projects, long? personId)
@@ -51,7 +54,7 @@ namespace tl121pet.Services.Services
             if (personId != null)
                 personByProjects = personByProjects.Where(p => p.PersonId == (long)personId).ToList();
 
-            return personByProjects.Distinct().ToList();
+            return personByProjects.Distinct(new PersonComparer()).ToList();
         }
 
         private List<Meeting> GetMeetingsByPerson(List<Person> people)

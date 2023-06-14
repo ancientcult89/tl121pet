@@ -44,7 +44,7 @@
             <div>
                 <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>
             </div>
-            <select asp-for="SelectedItem.PersonId" class="form-control" asp-items="@(new SelectList(_personService.GetInitials(), "PersonId", "Initials"))" disabled="@Model.IsReadonly">
+            <select asp-for="SelectedItem.PersonId" class="form-control" asp-items="@(new SelectList(await _personService.GetInitialsAsync(), "PersonId", "Initials"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
             </select>
         </div>

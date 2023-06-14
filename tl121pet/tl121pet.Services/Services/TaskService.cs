@@ -16,7 +16,7 @@ namespace tl121pet.Services.Services
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
         }
-        public List<TaskDTO> GetTaskList(long? personId)
+        public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
         {
             List<TaskDTO> taskList = new List<TaskDTO>();
             List<Person> people = new List<Person>();
@@ -24,7 +24,7 @@ namespace tl121pet.Services.Services
             if (personId != null)
                 people.Add(_peopleRepository.GetPerson((long)personId));
             else
-                people = _personService.GetPeople();
+                people = await _personService.GetPeopleAsync();
 
             foreach (Person p in people)
             {

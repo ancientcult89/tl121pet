@@ -5,6 +5,6 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IMeetingService
     {
-        public List<Meeting> GetMeetings(long? personId);
+        public Task<List<Meeting>> GetMeetingsAsync(long? personId);
     }
 }

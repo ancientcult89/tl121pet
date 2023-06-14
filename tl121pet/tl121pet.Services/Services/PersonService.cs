@@ -8,23 +8,22 @@ namespace tl121pet.Services.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly DataContext _dataContext;
         private readonly IAuthService _authService;
         private readonly IAdminRepository _adminRepository;
         private readonly IPeopleRepository _peopleRepository;
 
-        public PersonService(DataContext dataContext, IAuthService authService, IAdminRepository adminRepository, IPeopleRepository peopleRepository)
+        public PersonService(IAuthService authService, IAdminRepository adminRepository, IPeopleRepository peopleRepository)
         {
-            _dataContext = dataContext;
             _authService = authService;
             _adminRepository = adminRepository;
             _peopleRepository = peopleRepository;
         }
 
-        public List<PersonInitials> GetInitials()
+        public async Task<List<PersonInitials>> GetInitialsAsync()
         {
             List<PersonInitials> personInitials = new List<PersonInitials>();
-            personInitials = (List<PersonInitials>)GetPeople().Select(p =>
+            List<Person> people = await GetPeopleAsync();
+            personInitials = (List<PersonInitials>)people.Select(p =>
                 new PersonInitials
                 {
                     PersonId = p.PersonId,
@@ -33,7 +32,7 @@ namespace tl121pet.Services.Services
             return personInitials;
         }
 
-        public List<Person> GetPeople()
+        public async Task<List<Person>> GetPeopleAsync()
         {
             List<Person> people = new List<Person>();
             long? userId = _authService.GetMyUserId();

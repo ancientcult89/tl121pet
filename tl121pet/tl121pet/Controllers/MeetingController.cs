@@ -32,9 +32,9 @@ namespace tl121pet.Controllers
             _automapperMini = automapperMini;
         }
         #region Meeting
-        public IActionResult MeetingList(long? personId = null)
+        public async Task<IActionResult> MeetingList(long? personId = null)
         {
-            return View("MeetingList", _meetingService.GetMeetings(personId));
+            return View("MeetingList", await _meetingService.GetMeetingsAsync(personId));
         }
         public IActionResult Details(Guid id)
         {

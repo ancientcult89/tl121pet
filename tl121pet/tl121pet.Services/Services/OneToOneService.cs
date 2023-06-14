@@ -28,11 +28,11 @@ namespace tl121pet.Services.Services
         //TODO: дедлайн знает о репозитории людей и встреч. переделать
         //, пусть принимает айдишку? или последний 1-2-1? сильно завязано на репозитории,
         //может вынести в датаконтракт, к-й прилетает из контроллера? или принимаем на вход пользователя и встречу, что облегчит написание теста?
-        public List<OneToOneDeadline> GetDeadLines()
+        public async Task<List<OneToOneDeadline>> GetDeadLinesAsync()
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
 
-            foreach (Person p in _personService.GetPeople())
+            foreach (Person p in await _personService.GetPeopleAsync())
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();

@@ -17,22 +17,22 @@ namespace tl121pet.Controllers
             _taskService = taskService;
             _meetingRepository = meetingRepository;
         }
-        public IActionResult TaskList(long? personId = null)
+        public async Task<IActionResult> TaskList(long? personId = null)
         {
-            List<TaskDTO> tasks = _taskService.GetTaskList(personId);
+            List<TaskDTO> tasks = await _taskService.GetTaskListAsync(personId);
 
             return View("TaskList", new TaskListVM { Tasks = tasks, PersonId = personId});
         }
 
         [HttpPost]
-        public IActionResult CompleteGoal(Guid goalId, long? personId, string CompleteDescription)
+        public async Task<IActionResult> CompleteGoal(Guid goalId, long? personId, string CompleteDescription)
         {
             if (ModelState.IsValid)
             { 
                 _meetingRepository.CompleteGoal(goalId, CompleteDescription);
             }
 
-            List<TaskDTO> tasks = _taskService.GetTaskList(personId);
+            List<TaskDTO> tasks = await _taskService.GetTaskListAsync(personId);
 
             return View("TaskList", new TaskListVM { Tasks = tasks, PersonId = personId });
         }
