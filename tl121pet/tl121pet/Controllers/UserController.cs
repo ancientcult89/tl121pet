@@ -15,11 +15,13 @@ namespace tl121pet.Controllers
     {
         private readonly IAdminRepository _adminRepository;
         private readonly IAuthService _authService;
+        private readonly IAutomapperMini _automapperMini;
 
-        public UserController(IAdminRepository adminRepository, IAuthService authService)
+        public UserController(IAdminRepository adminRepository, IAuthService authService, IAutomapperMini automapperMini)
         {
             _adminRepository = adminRepository;
             _authService = authService;
+            _automapperMini = automapperMini;
         }
 
         public async Task<IActionResult> UserList()
@@ -30,7 +32,7 @@ namespace tl121pet.Controllers
         public IActionResult Edit(long id)
         {
             User? user = _adminRepository.GetUserById(id);
-            UserDTO userEditRequest = AutomapperMini.UserEntityToDto(user);
+            UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
             return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                 SelectedItem = userEditRequest ?? new UserDTO(),
                 Mode = FormMode.Edit });
@@ -66,11 +68,11 @@ namespace tl121pet.Controllers
             if (ModelState.IsValid)
             {
                 _authService.CreatePasswordHash(userEditRequestVM.SelectedItem.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                User newUser = AutomapperMini.UserDtoToEntity(userEditRequestVM.SelectedItem, passwordHash, passwordSalt);
+                User newUser = _automapperMini.UserDtoToEntity(userEditRequestVM.SelectedItem, passwordHash, passwordSalt);
                 _adminRepository.CreateUser(newUser);
 
                 User? user = _adminRepository.GetUserByEmail(userEditRequestVM.SelectedItem.Email);
-                UserDTO userEditRequest = AutomapperMini.UserEntityToDto(user);
+                UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
 
                 return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                     SelectedItem = userEditRequest ?? new UserDTO(),
@@ -83,7 +85,7 @@ namespace tl121pet.Controllers
         public IActionResult Details(long id)
         {
             User? user = _adminRepository.GetUserById(id);
-            UserDTO userEditRequest = AutomapperMini.UserEntityToDto(user);
+            UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
 
             return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                 SelectedItem = userEditRequest ?? new UserDTO(),
@@ -119,7 +121,7 @@ namespace tl121pet.Controllers
                     user.PasswordSalt = passwordSalt;
                 }
                 await _adminRepository.UpdateUserAsync(user);
-                UserDTO userEditRequest = AutomapperMini.UserEntityToDto(user);
+                UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
 
                 return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                     SelectedItem = userEditRequest ?? new UserDTO(),
