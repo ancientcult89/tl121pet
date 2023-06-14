@@ -4,7 +4,7 @@ namespace tl121pet.DAL.Interfaces
 {
     public interface IAdminRepository
     {
-        public User? GetUserByEmail(string email);
+        public Task<User?> GetUserByEmailAsync(string email);
         public string GetRoleNameById(int id);
         public int GetRoleIdByName(string roleName);
         public User? GetUserById(long id);

@@ -82,7 +82,7 @@
 
     <div class="container">
         <div class="row">
-            <pre>@(_oneToOneService.GetPreviousMeetingNoteAndGoals(Model.SelectedItem.MeetingId, Model.SelectedItem.PersonId))</pre>
+            <pre>@(await _oneToOneService.GetPreviousMeetingNoteAndGoalsAsync(Model.SelectedItem.MeetingId, Model.SelectedItem.PersonId))</pre>
         </div>
         <hr></hr>                
         <div class="row">

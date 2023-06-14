@@ -63,7 +63,7 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<UserDTO> userEditRequestVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<UserDTO> userEditRequestVM)
         {            
             if (ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace tl121pet.Controllers
                 User newUser = _automapperMini.UserDtoToEntity(userEditRequestVM.SelectedItem, passwordHash, passwordSalt);
                 _adminRepository.CreateUser(newUser);
 
-                User? user = _adminRepository.GetUserByEmail(userEditRequestVM.SelectedItem.Email);
+                User? user = await _adminRepository.GetUserByEmailAsync(userEditRequestVM.SelectedItem.Email);
                 UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
 
                 return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 

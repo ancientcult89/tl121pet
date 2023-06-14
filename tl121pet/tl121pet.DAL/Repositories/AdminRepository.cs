@@ -61,9 +61,9 @@ namespace tl121pet.DAL.Repositories
             return _dataContext.Roles.Find(id).RoleName;
         }
 
-        public User? GetUserByEmail(string email)
+        public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return _dataContext.Users.Where(u => u.Email == email).FirstOrDefault();
+            return await _dataContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
         }
 
         public User? GetUserById(long id)

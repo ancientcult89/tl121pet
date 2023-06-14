@@ -22,9 +22,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult SignUp([FromForm] UserLoginRequestDTO loginRequest)
+        public async Task<IActionResult> SignUp([FromForm] UserLoginRequestDTO loginRequest)
         {
-            string token = LoginApi(loginRequest);
+            string token = await LoginApi(loginRequest);
             if (token != "")
             {
                 HttpContext.Session.SetString("Token", token);
@@ -34,10 +34,10 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost("/api/auth/login")]
-        public string LoginApi(UserLoginRequestDTO loginRequest)
+        public async Task<string> LoginApi(UserLoginRequestDTO loginRequest)
         {
             string res = "";
-            User? user = _authService.Login(loginRequest);
+            User? user = await _authService.LoginAsync(loginRequest);
             if(user != null)
                 res = _authService.CreateToken(user);
             return res;

@@ -14,15 +14,13 @@ namespace tl121pet.Services.Services
         private IMeetingRepository _meetingRepository;
         private IMailService _mailService;
         private readonly IPersonService _personService;
-        private readonly DataContext _dataContext;
 
-        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService, DataContext dataContext)
+        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService)
         { 
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
             _mailService = mailService;
             _personService = personService;
-            _dataContext = dataContext;
         }
 
         //TODO: дедлайн знает о репозитории людей и встреч. переделать
@@ -52,28 +50,28 @@ namespace tl121pet.Services.Services
         }
 
         //TODO: рефакторим следующее: на вход подаём объекты пользователя, заметок и целей, внутри метода их не вычисляем!!!
-        public string GenerateFollowUp(Guid meetingId, long personId)
+        public async Task<string> GenerateFollowUpAsync(Guid meetingId, long personId)
         {
             string result = "";
             Person person = _peopleRepository.GetPerson(personId);
             result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
-            result += GetMeetingNoteAndGoals(meetingId);
+            result += await GetMeetingNoteAndGoalsAsync(meetingId);
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
             return result;
         }
 
-        public string GetPreviousMeetingNoteAndGoals(Guid meetingId, long personId)
+        public async Task<string> GetPreviousMeetingNoteAndGoalsAsync(Guid meetingId, long personId)
         {
             string prevNoteAndGoals = "";
             Guid? previousMeetingGuid = _meetingRepository.GetPreviousMeetingId(meetingId, personId);
             if (previousMeetingGuid != null)
             {
-                prevNoteAndGoals = GetMeetingNoteAndGoals((Guid)previousMeetingGuid);
+                prevNoteAndGoals = await GetMeetingNoteAndGoalsAsync((Guid)previousMeetingGuid);
             }
             return prevNoteAndGoals;
         }
 
-        public string GetMeetingNoteAndGoals(Guid meetingId)
+        public async Task<string> GetMeetingNoteAndGoalsAsync(Guid meetingId)
         {
             string result = "";
             List<MeetingNote> notes = _meetingRepository.GetMeetingFeedbackRequiredNotes(meetingId);
@@ -122,12 +120,12 @@ namespace tl121pet.Services.Services
         }
 
         //TODO: на вход должнен подаваться айдишка встречи и уже готовая почта
-        public void SendFollowUp(Guid meetingId, long personId)
+        public async Task SendFollowUpAsync(Guid meetingId, long personId)
         { 
             MailRequest mail = new MailRequest();
             string personMail = _peopleRepository.GetPerson(personId).Email;
             mail.ToEmail = personMail;
-            mail.Body = GenerateFollowUp(meetingId, personId);
+            mail.Body = await GenerateFollowUpAsync(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";
             try
             {

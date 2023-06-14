@@ -44,10 +44,10 @@ namespace tl121pet.Controllers
             });
         }
 
-        public IActionResult FollowUp(Guid meetingId, long personId, FormMode mode)
+        public async Task<IActionResult> FollowUp(Guid meetingId, long personId, FormMode mode)
         {            
             return View("FollowUp", new FollowUpVM() { 
-                FollowUpMessage = _oneToOneService.GenerateFollowUp(meetingId, personId), 
+                FollowUpMessage = await _oneToOneService.GenerateFollowUpAsync(meetingId, personId), 
                 MeetingId = meetingId, 
                 Mode = mode, 
                 PersonId = personId 
@@ -55,9 +55,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult FollowUp(Guid meetingId, FormMode mode, long personId)
+        public async Task<IActionResult> FollowUp(Guid meetingId, FormMode mode, long personId)
         {
-            _oneToOneService.SendFollowUp(meetingId, personId);
+            await _oneToOneService.SendFollowUpAsync(meetingId, personId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
                 SelectedItem = _automapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),

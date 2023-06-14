@@ -80,9 +80,9 @@ namespace tl121pet.Services.Services
                 return null;
         }
 
-        public User? Login(UserLoginRequestDTO request)
+        public async Task<User?> LoginAsync(UserLoginRequestDTO request)
         {
-            User user = _adminRepository.GetUserByEmail(request.Email);
+            User user = await _adminRepository.GetUserByEmailAsync(request.Email);
             if (user == null)
                 return null;
 
@@ -98,9 +98,9 @@ namespace tl121pet.Services.Services
             return null;
         }
 
-        public void Register(UserRegisterRequestDTO request)
+        public async Task Register(UserRegisterRequestDTO request)
         {
-            User existsUser = _adminRepository.GetUserByEmail(request.Email);
+            User existsUser = await _adminRepository.GetUserByEmailAsync(request.Email);
             if (existsUser != null)
                 return;
 

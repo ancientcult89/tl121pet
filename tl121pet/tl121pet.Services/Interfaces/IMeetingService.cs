@@ -1,5 +1,4 @@
-﻿
-using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.Models;
 
 namespace tl121pet.Services.Interfaces
 {
