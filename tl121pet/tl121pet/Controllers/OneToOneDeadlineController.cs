@@ -13,9 +13,9 @@ namespace tl121pet.Controllers
             _oneToOneDeadlineService = oneToOneDeadlineService;
         }
 
-        public IActionResult OneToOneDeadlineList()
+        public async Task<IActionResult> OneToOneDeadlineList()
         {
-            return View("OneToOneDeadlineList", _oneToOneDeadlineService.GetDeadLines());
+            return View("OneToOneDeadlineList", await _oneToOneDeadlineService.GetDeadLinesAsync());
         }
     }
 }

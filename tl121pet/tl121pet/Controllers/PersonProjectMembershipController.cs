@@ -19,14 +19,14 @@ namespace tl121pet.Controllers
             _projectTeamRepository = projectTeamRepository;
             _peopleRepository = peopleRepository;
         }
-        public IActionResult PersonProjectMemberList()
+        public async Task<IActionResult> PersonProjectMemberList()
         {
             //TODO: зоны ответсвенности контроллера: 1. отобразить список сотрудников с их проектами. 2. сформировать список. Нужна декомпозиция
             List<ProjectMemberDTO> projectMembers = new List<ProjectMemberDTO>();
-            List<Person> people = _peopleRepository.GetPeople();
+            List<Person> people = await _peopleRepository.GetPeopleAsync();
             foreach (Person person in people)
             {
-                string projects = _projectTeamRepository.GetPersonsProjects(person.PersonId);
+                string projects = await _projectTeamRepository.GetPersonsProjectsAsync(person.PersonId);
                 projectMembers.Add(new ProjectMemberDTO() {
                     PersonId = person.PersonId,
                     PersonName = person.FirstName + " " + person.LastName,
@@ -36,47 +36,47 @@ namespace tl121pet.Controllers
             return View("ProjectMemberList", projectMembers);
         }
 
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM() {
-                SelectedItem = _peopleRepository.GetPerson(id),
-                ProjectTeams = _projectTeamRepository.GetPersonMembership(id),
+                SelectedItem = await _peopleRepository.GetPersonAsync(id),
+                ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(id),
                 Mode = FormMode.Details
             };
             return View("ProjectMemberEditor", vm);
         }
 
-        public IActionResult Edit(long id)
+        public async Task<IActionResult> Edit(long id)
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
-                SelectedItem = _peopleRepository.GetPerson(id),
-                ProjectTeams = _projectTeamRepository.GetPersonMembership(id),
+                SelectedItem = await _peopleRepository.GetPersonAsync(id),
+                ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(id),
                 Mode = FormMode.Edit
             };
             return View("ProjectMemberEditor", vm);
         }
 
         [HttpPost]
-        public IActionResult AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
+        public async Task<IActionResult> AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
         {
             if(ModelState.IsValid)
-                _projectTeamRepository.AddPersonMembership(personId, vm.NewProjectTeamId);
+                await _projectTeamRepository.AddPersonMembershipAsync(personId, vm.NewProjectTeamId);
 
-            vm.SelectedItem = _peopleRepository.GetPerson(personId);
-            vm.ProjectTeams = _projectTeamRepository.GetPersonMembership(personId);
+            vm.SelectedItem = await _peopleRepository.GetPersonAsync(personId);
+            vm.ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(personId);
             vm.Mode = FormMode.Edit;
 
             return View("ProjectMemberEditor", vm);
         }
 
-        public IActionResult DeleteMembership(long ptId, long personId)
+        public async Task<IActionResult> DeleteMembership(long ptId, long personId)
         {
-            _projectTeamRepository.DeletePersonMembership(personId, ptId);
+            await _projectTeamRepository.DeletePersonMembershipAsync(personId, ptId);
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
-                SelectedItem = _peopleRepository.GetPerson(personId),
-                ProjectTeams = _projectTeamRepository.GetPersonMembership(personId),
+                SelectedItem = await _peopleRepository.GetPersonAsync(personId),
+                ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(personId),
                 Mode = FormMode.Edit
             };
             return View("ProjectMemberEditor", vm);

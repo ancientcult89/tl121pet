@@ -14,7 +14,7 @@ namespace tl121pet.Services.Services
             _dataContext = dataContext;
             _authService = authService;
         }
-        public List<ProjectTeam> GetFilteredProjects()
+        public async Task<List<ProjectTeam>> GetFilteredProjectsAsync()
         {
             List<ProjectTeam> filteredProjects = new List<ProjectTeam>();
 

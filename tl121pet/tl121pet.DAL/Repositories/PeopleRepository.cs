@@ -1,6 +1,6 @@
-﻿using tl121pet.DAL.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using tl121pet.DAL.Data;
 using tl121pet.DAL.Interfaces;
-using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 
 namespace tl121pet.DAL.Repositories
@@ -15,37 +15,38 @@ namespace tl121pet.DAL.Repositories
 
         public List<Person> People => _dataContext.People.ToList();
 
-        public void CreatePerson(Person person)
+        public async Task CreatePersonAsync(Person person)
         {
             _dataContext.People.Add(person);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void UpdatePerson(Person person)
+        public async Task UpdatePersonAsync(Person person)
         {
             _dataContext.People.Update(person);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeletePerson(long id)
+        public async Task DeletePersonAsync(long id)
         {
             var personToDelete = _dataContext.People.Find(id);
             _dataContext.People.Remove(personToDelete);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public List<Person> GetPeople()
+        public async Task<List<Person>> GetPeopleAsync()
         {
-            return _dataContext.People.ToList();
+            return await _dataContext.People.ToListAsync();
         }
 
-        public Person GetPerson(long id)
+        public async Task<Person> GetPersonAsync(long id)
         {
-            return _dataContext.People.Find(id) ?? new Person();
+            return await _dataContext.People.FindAsync(id) ?? new Person();
         }
 
-        public List<Person> GetPeopleFilteredByProject(long projectTeam)
+        public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)
         {
+            //TODO: переделать LINQ На асинхрон
             List<Person> filteredPeople = new List<Person>();
 
             var people = from p in _dataContext.People

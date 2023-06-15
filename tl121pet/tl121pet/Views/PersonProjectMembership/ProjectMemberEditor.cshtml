@@ -43,7 +43,7 @@
             <div>
                 <span asp-validation-for="NewProjectTeamId" class="text-danger"></span>
             </div>
-            <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(_projectService.GetFilteredProjects(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
+            <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(await _projectService.GetFilteredProjectsAsync(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseAProjectTeam"]</option>
             </select>
         </div>

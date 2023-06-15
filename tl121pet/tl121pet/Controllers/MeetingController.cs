@@ -18,33 +18,36 @@ namespace tl121pet.Controllers
         private readonly IMeetingService _meetingService;
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
+        private readonly IAutomapperMini _automapperMini;
         public MeetingController(DataContext dataContext, 
             IMeetingRepository meetingRepository, 
             IMeetingService meetingService,
-            IOneToOneService oneToOneService)
+            IOneToOneService oneToOneService,
+            IAutomapperMini automapperMini)
         {
             _dataContext = dataContext;
             _meetingRepository = meetingRepository;
             _meetingService = meetingService;
             _oneToOneService = oneToOneService;
+            _automapperMini = automapperMini;
         }
         #region Meeting
-        public IActionResult MeetingList(long? personId = null)
+        public async Task<IActionResult> MeetingList(long? personId = null)
         {
-            return View("MeetingList", _meetingService.GetMeetings(personId));
+            return View("MeetingList", await _meetingService.GetMeetingsAsync(personId));
         }
         public IActionResult Details(Guid id)
         {
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
-                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO(), 
+                SelectedItem = _automapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO(), 
                 Mode = FormMode.Details
             });
         }
 
-        public IActionResult FollowUp(Guid meetingId, long personId, FormMode mode)
+        public async Task<IActionResult> FollowUp(Guid meetingId, long personId, FormMode mode)
         {            
             return View("FollowUp", new FollowUpVM() { 
-                FollowUpMessage = _oneToOneService.GenerateFollowUp(meetingId, personId), 
+                FollowUpMessage = await _oneToOneService.GenerateFollowUpAsync(meetingId, personId), 
                 MeetingId = meetingId, 
                 Mode = mode, 
                 PersonId = personId 
@@ -52,12 +55,12 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult FollowUp(Guid meetingId, FormMode mode, long personId)
+        public async Task<IActionResult> FollowUp(Guid meetingId, FormMode mode, long personId)
         {
-            _oneToOneService.SendFollowUp(meetingId, personId);
+            await _oneToOneService.SendFollowUpAsync(meetingId, personId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),
+                SelectedItem = _automapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),
                 Mode = mode
             });
         }
@@ -70,13 +73,13 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
-                Meeting m = _meetingRepository.CreateMeeting(AutomapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
+                Meeting m = await _meetingRepository.CreateMeetingAsync(_automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
                 meetingVM.Mode = FormMode.Edit;
-                meetingVM.SelectedItem = AutomapperMini.MeetingEntityToDto(m);
+                meetingVM.SelectedItem = _automapperMini.MeetingEntityToDto(m);
                 return View("MeetingEditor", meetingVM);
             }
             meetingVM.Mode = FormMode.Create;
@@ -89,17 +92,17 @@ namespace tl121pet.Controllers
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
             });
         }
 
         [HttpPost]
-        public IActionResult Process([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
+        public async Task<IActionResult> Process([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                await _meetingRepository.UpdateMeetingAsync(meetingVM.SelectedItem);
                 meetingVM.Mode = FormMode.Process;
                 return View("MeetingEditor", meetingVM);
             }
@@ -108,16 +111,16 @@ namespace tl121pet.Controllers
         public IActionResult Edit(Guid id)
         {
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
-                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO(),
+                SelectedItem = _automapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(id)) ?? new MeetingDTO(),
                 Mode = FormMode.Edit });
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                await _meetingRepository.UpdateMeetingAsync(meetingVM.SelectedItem);
                 return View("MeetingEditor", meetingVM);
             }
             return View("MeetingEditor", meetingVM);
@@ -126,46 +129,46 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult Delete(Guid id)
         {
-            _meetingRepository.DeleteMeeting(id);
+            _meetingRepository.DeleteMeetingAsync(id);
             return RedirectToAction("MeetingList");
         }
         #endregion Meeting
 
         #region MeetingNotes
         [HttpPost]
-        public IActionResult AddNote([FromForm] NoteEditListVM vm)
+        public async Task<IActionResult> AddNote([FromForm] NoteEditListVM vm)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
             if(ModelState.IsValid)
-                _meetingRepository.AddNote(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
+                await _meetingRepository.AddNoteAsync(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
             
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting), 
+                SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting), 
                 Mode = FormMode.Process
             });
         }
 
         [HttpPost]
-        public IActionResult UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
+        public async Task<IActionResult> UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            _meetingRepository.UpdateNote(noteId, MeetingNoteContent, FeedbackRequired);
+            await _meetingRepository.UpdateNoteAsync(noteId, MeetingNoteContent, FeedbackRequired);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
             });
         }
 
-        public IActionResult DeleteNote(Guid noteId, Guid meetingId)
+        public async Task<IActionResult> DeleteNote(Guid noteId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            _meetingRepository.DeleteNote(noteId);
+            await _meetingRepository.DeleteNoteAsync(noteId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
             });
         }
@@ -173,41 +176,41 @@ namespace tl121pet.Controllers
 
         #region MeetingGoals
         [HttpPost]
-        public IActionResult AddGoal([FromForm] GoalEditListVM vm)
+        public async Task<IActionResult> AddGoal([FromForm] GoalEditListVM vm)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(vm.SelectedItem) ?? new Meeting();
 
             if (ModelState.IsValid)
-                _meetingRepository.AddGoal(vm.SelectedItem, vm.NewGoal);
+                await _meetingRepository.AddGoalAsync(vm.SelectedItem, vm.NewGoal);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
             });
         }
 
         [HttpPost]
-        public IActionResult UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
+        public async Task<IActionResult> UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
-            _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
-
+            await _meetingRepository.UpdateGoalTaskAsync(goalId, MeetingGoalDescription);
+            Meeting currentMeeting = await _dataContext.Meetings.FindAsync(meetingId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currentMeeting) ?? new MeetingDTO(),
                 Mode = FormMode.Process
             });
         }
 
-        public IActionResult DeleteGoal(Guid goalId, Guid meetingId)
+        public async Task<IActionResult> DeleteGoal(Guid goalId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            _meetingRepository.DeleteGoal(goalId);
+            await _meetingRepository.DeleteGoalAsync(goalId);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = AutomapperMini.MeetingEntityToDto(currMeeting),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
             });
         }

@@ -14,29 +14,27 @@ namespace tl121pet.Services.Services
         private IMeetingRepository _meetingRepository;
         private IMailService _mailService;
         private readonly IPersonService _personService;
-        private readonly DataContext _dataContext;
 
-        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService, DataContext dataContext)
+        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService)
         { 
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
             _mailService = mailService;
             _personService = personService;
-            _dataContext = dataContext;
         }
 
         //TODO: дедлайн знает о репозитории людей и встреч. переделать
         //, пусть принимает айдишку? или последний 1-2-1? сильно завязано на репозитории,
         //может вынести в датаконтракт, к-й прилетает из контроллера? или принимаем на вход пользователя и встречу, что облегчит написание теста?
-        public List<OneToOneDeadline> GetDeadLines()
+        public async Task<List<OneToOneDeadline>> GetDeadLinesAsync()
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
 
-            foreach (Person p in _personService.GetPeople())
+            foreach (Person p in await _personService.GetPeopleAsync())
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();
-                Meeting lastMeeting = _meetingRepository.GetLastOneToOneByPersonId(p.PersonId) ?? new Meeting();
+                Meeting lastMeeting = await _meetingRepository.GetLastOneToOneByPersonIdAsync(p.PersonId) ?? new Meeting();
 
                 (alert, datediff) = GetOneToOneDeadlineAlertLevel(lastMeeting);
 
@@ -52,31 +50,31 @@ namespace tl121pet.Services.Services
         }
 
         //TODO: рефакторим следующее: на вход подаём объекты пользователя, заметок и целей, внутри метода их не вычисляем!!!
-        public string GenerateFollowUp(Guid meetingId, long personId)
+        public async Task<string> GenerateFollowUpAsync(Guid meetingId, long personId)
         {
             string result = "";
-            Person person = _peopleRepository.GetPerson(personId);
+            Person person = await _peopleRepository.GetPersonAsync(personId);
             result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
-            result += GetMeetingNoteAndGoals(meetingId);
+            result += await GetMeetingNoteAndGoalsAsync(meetingId);
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
             return result;
         }
 
-        public string GetPreviousMeetingNoteAndGoals(Guid meetingId, long personId)
+        public async Task<string> GetPreviousMeetingNoteAndGoalsAsync(Guid meetingId, long personId)
         {
             string prevNoteAndGoals = "";
-            Guid? previousMeetingGuid = _meetingRepository.GetPreviousMeetingId(meetingId, personId);
+            Guid? previousMeetingGuid = await _meetingRepository.GetPreviousMeetingIdAsync(meetingId, personId);
             if (previousMeetingGuid != null)
             {
-                prevNoteAndGoals = GetMeetingNoteAndGoals((Guid)previousMeetingGuid);
+                prevNoteAndGoals = await GetMeetingNoteAndGoalsAsync((Guid)previousMeetingGuid);
             }
             return prevNoteAndGoals;
         }
 
-        public string GetMeetingNoteAndGoals(Guid meetingId)
+        public async Task<string> GetMeetingNoteAndGoalsAsync(Guid meetingId)
         {
             string result = "";
-            List<MeetingNote> notes = _meetingRepository.GetMeetingFeedbackRequiredNotes(meetingId);
+            List<MeetingNote> notes = await _meetingRepository.GetMeetingFeedbackRequiredNotesAsync(meetingId);
             if (notes.Count() > 0)
             {
                 result += "На встрече обсудили:\n";
@@ -86,7 +84,7 @@ namespace tl121pet.Services.Services
                 }
             }
             result += "\n\n";
-            List<MeetingGoal> goals = _meetingRepository.GetMeetingGoals(meetingId);
+            List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsAsync(meetingId);
             if (goals.Count() > 0)
             {
                 result += "К следующему 1-2-1 договорились:\n";
@@ -99,7 +97,7 @@ namespace tl121pet.Services.Services
             return result;
         }
 
-        public (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
+        private (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
         {
             AlertLevel alert = AlertLevel.None;
             TimeSpan datediff = new TimeSpan();
@@ -122,12 +120,13 @@ namespace tl121pet.Services.Services
         }
 
         //TODO: на вход должнен подаваться айдишка встречи и уже готовая почта
-        public void SendFollowUp(Guid meetingId, long personId)
+        public async Task SendFollowUpAsync(Guid meetingId, long personId)
         { 
             MailRequest mail = new MailRequest();
-            string personMail = _peopleRepository.GetPerson(personId).Email;
+            Person destinationPerson = await _peopleRepository.GetPersonAsync(personId);
+            string personMail = destinationPerson.Email;
             mail.ToEmail = personMail;
-            mail.Body = GenerateFollowUp(meetingId, personId);
+            mail.Body = await GenerateFollowUpAsync(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";
             try
             {
@@ -135,10 +134,10 @@ namespace tl121pet.Services.Services
             }
             finally
             {
-                MarkAsSendedFollowUp(meetingId);
+                await MarkAsSendedFollowUpAsync(meetingId);
             }
         }
 
-        public void MarkAsSendedFollowUp(Guid meetingId) => _meetingRepository.MarAsSendedFollowUp(meetingId);
+        private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingRepository.MarkAsSendedFollowUpAsync(meetingId);
     }
 }

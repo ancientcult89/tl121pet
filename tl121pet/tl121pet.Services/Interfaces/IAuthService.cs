@@ -7,9 +7,9 @@ namespace tl121pet.Services.Interfaces
     {
         public string GetMyRole();
         public long? GetMyUserId();
-        public void Register(UserRegisterRequestDTO request);
-        public User? Login(UserLoginRequestDTO request);
-        public string CreateToken(User user);
+        public Task Register(UserRegisterRequestDTO request);
+        public Task<User?> LoginAsync(UserLoginRequestDTO request);
+        public Task<string> CreateTokenAsync(User user);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public string Role { get; set; }

@@ -40,20 +40,20 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<Person> personVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<Person> personVM)
         {
             if (ModelState.IsValid)
             {
-                _peopleRepository.UpdatePerson(personVM.SelectedItem);                
+                await _peopleRepository.UpdatePersonAsync(personVM.SelectedItem);                
                 return View("PersonEditor", personVM);
             }
             return View("PersonEditor", personVM);
         }
 
         [HttpPost]
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> Delete(long id)
         {
-            _peopleRepository.DeletePerson(id);
+            await _peopleRepository.DeletePersonAsync(id);
             return RedirectToAction("PeopleList");
         }
 
@@ -65,11 +65,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<Person> personVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<Person> personVM)
         {
             if (ModelState.IsValid)
             {
-                _peopleRepository.CreatePerson(personVM.SelectedItem);
+                await _peopleRepository.CreatePersonAsync(personVM.SelectedItem);
                 personVM.Mode = FormMode.Edit;
                 return View("PersonEditor", personVM);
             }

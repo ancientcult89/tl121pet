@@ -12,51 +12,52 @@ namespace tl121pet.DAL.Repositories
         {
             _dataContext = dataContext;
         }
-        public List<ProjectTeam> GetAllTeams()
+        public async Task<List<ProjectTeam>> GetAllTeamsAsync()
         {
-            return _dataContext.ProjectTeams.ToList();
+            return await _dataContext.ProjectTeams.ToListAsync();
         }
 
-        public ProjectTeam GetProjectTeamById(long id)
+        public async Task<ProjectTeam> GetProjectTeamByIdAsync(long id)
         {
-            return _dataContext.ProjectTeams.Find(id) ?? new ProjectTeam();
+            return await _dataContext.ProjectTeams.FindAsync(id) ?? new ProjectTeam();
         }
 
-        public void DeleteProjectTeam(long id)
+        public async Task DeleteProjectTeamAsync(long id)
         { 
             ProjectTeam pt = _dataContext.ProjectTeams.Find(id);
             _dataContext.ProjectTeams.Remove(pt);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void CreateProjectTeam(ProjectTeam pt)
+        public async Task CreateProjectTeamAsync(ProjectTeam pt)
         { 
             _dataContext.ProjectTeams.Add(pt);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void UpdateProjectTeam(ProjectTeam pt)
+        public async Task UpdateProjectTeamAsync(ProjectTeam pt)
         {
             _dataContext.ProjectTeams.Update(pt);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public string GetPersonsProjects(long id)
+        public async Task<string> GetPersonsProjectsAsync(long id)
         {
             string projectsList = "";
-            List<ProjectMember> projectMemberList = _dataContext.ProjectMembers
+            List<ProjectMember> projectMemberList = await _dataContext.ProjectMembers
                 .Include(p => p.ProjectTeam)
                 .Where(pm => pm.PersonId == id)
                 .OrderBy(pm => pm.ProjectTeam.ProjectTeamName)
-                .ToList();
+                .ToListAsync();
             foreach (ProjectMember pm in projectMemberList) {
                 projectsList += $"{pm.ProjectTeam.ProjectTeamName}; ";
             }
             return projectsList;
         }
 
-        public List<ProjectTeam> GetPersonMembership(long id)
+        public async Task<List<ProjectTeam>> GetPersonMembershipAsync(long id)
         {
+            //TODO: переделать на асинхрон
             List<ProjectTeam> result = new List<ProjectTeam>();
             var selectedTeams = from pt in _dataContext.ProjectTeams
                                 join pm in _dataContext.ProjectMembers on pt.ProjectTeamId equals pm.ProjectTeamId
@@ -70,27 +71,28 @@ namespace tl121pet.DAL.Repositories
             return result;
         }
 
-        public void DeletePersonMembership(long userId, long projectTeamId)
+        public async Task DeletePersonMembershipAsync(long userId, long projectTeamId)
         { 
-            ProjectMember pm = _dataContext.ProjectMembers
+            ProjectMember pm = await _dataContext.ProjectMembers
                 .Where(p => p.ProjectTeamId == projectTeamId && p.PersonId == userId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             _dataContext.ProjectMembers.Remove(pm);
             _dataContext.SaveChanges();
         }
 
-        public void AddPersonMembership(long userId, long projectTeamId)
+        public async Task AddPersonMembershipAsync(long userId, long projectTeamId)
         {
             ProjectMember pm = new ProjectMember() { 
                 PersonId = userId,
                 ProjectTeamId = projectTeamId
             };
             _dataContext.ProjectMembers.Add(pm);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public List<ProjectTeam> GetUserMembership(long id)
+        public async Task<List<ProjectTeam>> GetUserMembershipAsync(long id)
         {
+            //TODO: Переделать на асинхрон
             List<ProjectTeam> result = new List<ProjectTeam>();
             var selectedTeams = from pt in _dataContext.ProjectTeams
                                 join up in _dataContext.UserProjects on pt.ProjectTeamId equals up.ProjectTeamId
@@ -105,16 +107,16 @@ namespace tl121pet.DAL.Repositories
             return result;
         }
 
-        public void DeleteUserMembership(long userId, long projectTeamId)
+        public async Task DeleteUserMembershipAsync(long userId, long projectTeamId)
         {
-            UserProject up = _dataContext.UserProjects
+            UserProject up = await _dataContext.UserProjects
                 .Where(p => p.ProjectTeamId == projectTeamId && p.UserId == userId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             _dataContext.UserProjects.Remove(up);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void AddUserMembership(long userId, long projectTeamId)
+        public async Task AddUserMembershipAsync(long userId, long projectTeamId)
         {
             UserProject up = new UserProject()
             {
@@ -122,17 +124,17 @@ namespace tl121pet.DAL.Repositories
                 ProjectTeamId = projectTeamId
             };
             _dataContext.UserProjects.Add(up);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public string GetUserProjects(long userId)
+        public async Task<string> GetUserProjectsNameAsync(long userId)
         {
             string projectsList = "";
-            List<UserProject> userMemberList = _dataContext.UserProjects
+            List<UserProject> userMemberList = await _dataContext.UserProjects
                 .Include(p => p.ProjectTeam)
                 .Where(pm => pm.UserId == userId)
                 .OrderBy(pm => pm.ProjectTeam.ProjectTeamName)
-                .ToList();
+                .ToListAsync();
             foreach (UserProject up in userMemberList)
             {
                 projectsList += $"{up.ProjectTeam.ProjectTeamName}; ";

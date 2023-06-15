@@ -16,19 +16,19 @@ namespace tl121pet.Services.Services
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
         }
-        public List<TaskDTO> GetTaskList(long? personId)
+        public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
         {
             List<TaskDTO> taskList = new List<TaskDTO>();
             List<Person> people = new List<Person>();
 
             if (personId != null)
-                people.Add(_peopleRepository.GetPerson((long)personId));
+                people.Add(await _peopleRepository.GetPersonAsync((long)personId));
             else
-                people = _personService.GetPeople();
+                people = await _personService.GetPeopleAsync();
 
             foreach (Person p in people)
             {
-                List<MeetingGoal> goals = _meetingRepository.GetMeetingGoalsByPerson(p.PersonId);
+                List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsByPersonAsync(p.PersonId);
                 foreach (MeetingGoal goal in goals)
                 {
                     taskList.Add(new TaskDTO() { 
@@ -38,7 +38,7 @@ namespace tl121pet.Services.Services
                         MeetingGoalDescription = goal.MeetingGoalDescription,
                         PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
                         PersonId = p.PersonId,
-                        FactDate = _meetingRepository.GetFactMeetingDateById(goal.MeetingId)
+                        FactDate = await _meetingRepository.GetFactMeetingDateByIdAsync(goal.MeetingId)
                     });
                 }
             }

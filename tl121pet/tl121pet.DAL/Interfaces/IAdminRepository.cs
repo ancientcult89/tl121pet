@@ -4,18 +4,17 @@ namespace tl121pet.DAL.Interfaces
 {
     public interface IAdminRepository
     {
-        public User? GetUserByEmail(string email);
-        public string GetRoleNameById(int id);
-        public int GetRoleIdByName(string roleName);
-        public User? GetUserById(long id);
-        public List<ProjectTeam> GetUserProjects(long userId);
-        public void UpdateRole(Role role);
-        public void CreateRole(Role role);
-        public void DeleteRole(int roleId);
-        public void CreateUser(User user);
+        public Task<User?> GetUserByEmailAsync(string email);
+        public Task<string> GetRoleNameByIdAsync(int id);
+        public Task<User?> GetUserByIdAsync(long id);
+        public Task<List<ProjectTeam>> GetUserProjectsAsync(long userId);
+        public Task UpdateRoleAsync(Role role);
+        public Task CreateRoleAsync(Role role);
+        public Task DeleteRoleAsync(int roleId);
+        public Task CreateUserAsync(User user);
         public Task UpdateUserAsync(User user);
-        public void DeleteUser(long userId);
+        public Task DeleteUserAsync(long userId);
         public Task<List<User>> GetUserListAsync();
-        public List<Role> GetRoleList();
+        public Task<List<Role>> GetRoleListAsync();
     }
 }

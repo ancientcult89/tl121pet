@@ -3,9 +3,9 @@ using tl121pet.Entities.Models;
 
 namespace tl121pet.Entities.Infrastructure
 {
-    public static class AutomapperMini
+    public class AutomapperMini : IAutomapperMini
     {
-        public static MeetingDTO MeetingEntityToDto(Meeting meeting)
+        public MeetingDTO MeetingEntityToDto(Meeting meeting)
         {
             return new MeetingDTO()
             {
@@ -18,7 +18,7 @@ namespace tl121pet.Entities.Infrastructure
             } ?? new MeetingDTO();
         }
 
-        public static Meeting MeetingDtoToEntity(MeetingDTO meetingDTO)
+        public Meeting MeetingDtoToEntity(MeetingDTO meetingDTO)
         {
             return new Meeting()
             {
@@ -31,7 +31,7 @@ namespace tl121pet.Entities.Infrastructure
             };
         }
 
-        public static UserDTO UserEntityToDto(User user)
+        public UserDTO UserEntityToDto(User user)
         {
             return new UserDTO()
             {
@@ -42,7 +42,7 @@ namespace tl121pet.Entities.Infrastructure
             };
         }
 
-        public static User UserDtoToEntity(UserDTO userDTO, byte[] passwordHash, byte[] passwordSalt)
+        public User UserDtoToEntity(UserDTO userDTO, byte[] passwordHash, byte[] passwordSalt)
         {
             return new User() {
                 Email = userDTO.Email,
@@ -52,17 +52,5 @@ namespace tl121pet.Entities.Infrastructure
                 RoleId = userDTO.RoleId
             };
         }
-
-        //TODO: remove?
-        //public static TaskDTO MeetingGoalEntityToDto(MeetingGoal meetingGoal)
-        //{
-        //    return new TaskDTO()
-        //    {
-        //        MeetingGoalId = meetingGoal.MeetingGoalId,
-        //        CompleteDescription = meetingGoal.CompleteDescription,
-        //        IsCompleted = meetingGoal.IsCompleted,
-        //        MeetingGoalDescription = meetingGoal.MeetingGoalDescription
-        //    };
-        //}
     }
 }

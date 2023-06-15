@@ -4,6 +4,6 @@ namespace tl121pet.Services.Interfaces
 {
     public interface ITaskService
     {
-        List<TaskDTO> GetTaskList(long? personId);
+        Task<List<TaskDTO>> GetTaskListAsync(long? personId);
     }
 }
