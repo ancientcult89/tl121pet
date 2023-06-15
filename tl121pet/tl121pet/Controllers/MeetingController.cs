@@ -151,7 +151,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
             await _meetingRepository.UpdateNoteAsync(noteId, MeetingNoteContent, FeedbackRequired);
 
@@ -197,7 +197,7 @@ namespace tl121pet.Controllers
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = _automapperMini.MeetingEntityToDto(_dataContext.Meetings.Find(meetingId)) ?? new MeetingDTO(),
+                SelectedItem = _automapperMini.MeetingEntityToDto(await _dataContext.Meetings.FindAsync(meetingId)) ?? new MeetingDTO(),
                 Mode = FormMode.Process
             });
         }
