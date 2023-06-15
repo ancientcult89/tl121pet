@@ -25,7 +25,7 @@ namespace tl121pet.Controllers
             List<User> users = await _adminRepository.GetUserListAsync();
             foreach (User user in users)
             {
-                string projects = _projectTeamRepository.GetUserProjects(user.Id);
+                string projects = await _projectTeamRepository.GetUserProjectsAsync(user.Id);
                 userProjectMembers.Add(new UserProjectMemberDTO()
                 {
                     UserId = user.Id,
@@ -42,7 +42,7 @@ namespace tl121pet.Controllers
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
                 SelectedItem = await _adminRepository.GetUserByIdAsync(id),
-                ProjectTeams = _projectTeamRepository.GetUserMembership(id),
+                ProjectTeams = await _projectTeamRepository.GetUserMembershipAsync(id),
                 Mode = FormMode.Details
             };
             return View("UserMembershipEditor", vm);
@@ -53,7 +53,7 @@ namespace tl121pet.Controllers
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
                 SelectedItem = await _adminRepository.GetUserByIdAsync(id),
-                ProjectTeams = _projectTeamRepository.GetUserMembership(id),
+                ProjectTeams = await _projectTeamRepository.GetUserMembershipAsync(id),
                 Mode = FormMode.Edit
             };
             return View("UserMembershipEditor", vm);
@@ -63,10 +63,10 @@ namespace tl121pet.Controllers
         public async Task<IActionResult> AddMembership([FromForm] UserMemberEditFormVM vm, long userId)
         {
             if(ModelState.IsValid)
-                _projectTeamRepository.AddUserMembership(userId, vm.NewProjectTeamId);
+                await _projectTeamRepository.AddUserMembershipAsync(userId, vm.NewProjectTeamId);
 
             vm.SelectedItem = await _adminRepository.GetUserByIdAsync(userId);
-            vm.ProjectTeams = _projectTeamRepository.GetUserMembership(userId);
+            vm.ProjectTeams = await _projectTeamRepository.GetUserMembershipAsync(userId);
             vm.Mode = FormMode.Edit;
 
             return View("UserMembershipEditor", vm);
@@ -74,11 +74,11 @@ namespace tl121pet.Controllers
 
         public async Task<IActionResult> DeleteMembership(long ptId, long userId)
         {
-            _projectTeamRepository.DeleteUserMembership(userId, ptId);
+            await _projectTeamRepository.DeleteUserMembershipAsync(userId, ptId);
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
                 SelectedItem = await _adminRepository.GetUserByIdAsync(userId),
-                ProjectTeams = _projectTeamRepository.GetUserMembership(userId),
+                ProjectTeams = await _projectTeamRepository.GetUserMembershipAsync(userId),
                 Mode = FormMode.Edit
             };
             return View("UserMembershipEditor", vm);

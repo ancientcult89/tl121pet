@@ -16,33 +16,33 @@ namespace tl121pet.Controllers
         {
             _projectTeamRepository = projectTeamRepository;
         }
-        public IActionResult ProjectTeamList()
+        public async Task<IActionResult> ProjectTeamList()
         {
-            return View("ProjectTeamList", _projectTeamRepository.GetAllTeams());
+            return View("ProjectTeamList", await _projectTeamRepository.GetAllTeamsAsync());
         }
 
-        public IActionResult Edit(long id)
+        public async Task<IActionResult> Edit(long id)
         {
             return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { 
-                SelectedItem = _projectTeamRepository.GetProjectTeamById(id) ?? new ProjectTeam(),
+                SelectedItem = await _projectTeamRepository.GetProjectTeamByIdAsync(id) ?? new ProjectTeam(),
                 Mode = FormMode.Edit });
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<ProjectTeam> ptVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<ProjectTeam> ptVM)
         {
             if (ModelState.IsValid)
             {
-                _projectTeamRepository.UpdateProjectTeam(ptVM.SelectedItem);
+                await _projectTeamRepository.UpdateProjectTeamAsync(ptVM.SelectedItem);
                 return View("ProjectTeamEditor", ptVM);
             }
             return View("ProjectTeamEditor", ptVM);
         }
 
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             return View("ProjectTeamEditor", new SimpleEditFormVM<ProjectTeam>() { 
-                SelectedItem = _projectTeamRepository.GetProjectTeamById(id) ?? new ProjectTeam(),
+                SelectedItem = await _projectTeamRepository.GetProjectTeamByIdAsync(id) ?? new ProjectTeam(),
                 Mode = FormMode.Details });
         }
 
@@ -54,11 +54,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<ProjectTeam> ptVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<ProjectTeam> ptVM)
         {
             if (ModelState.IsValid)
             {
-                _projectTeamRepository.CreateProjectTeam(ptVM.SelectedItem);
+                await _projectTeamRepository.CreateProjectTeamAsync(ptVM.SelectedItem);
                 ptVM.Mode = FormMode.Edit;
                 return View("ProjectTeamEditor", ptVM);
             }
@@ -67,9 +67,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(long id)
+        public async Task<IActionResult> Delete(long id)
         {
-            _projectTeamRepository.DeleteProjectTeam(id);
+            await _projectTeamRepository.DeleteProjectTeamAsync(id);
             return RedirectToAction("ProjectTeamList");
         }
     }
