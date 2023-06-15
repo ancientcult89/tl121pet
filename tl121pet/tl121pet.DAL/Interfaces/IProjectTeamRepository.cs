@@ -10,7 +10,7 @@ namespace tl121pet.DAL.Interfaces
         public Task UpdateProjectTeamAsync(ProjectTeam pt);
         public Task DeleteProjectTeamAsync(long id);
         public Task<string> GetPersonsProjectsAsync(long id);
-        public Task<string> GetUserProjectsAsync(long userId);
+        public Task<string> GetUserProjectsNameAsync(long userId);
         public Task<List<ProjectTeam>> GetPersonMembershipAsync(long id);
         public Task<List<ProjectTeam>> GetUserMembershipAsync(long id);
         public Task DeletePersonMembershipAsync(long userId, long projectTeamId);

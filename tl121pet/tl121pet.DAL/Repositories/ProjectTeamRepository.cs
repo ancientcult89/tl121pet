@@ -127,7 +127,7 @@ namespace tl121pet.DAL.Repositories
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<string> GetUserProjectsAsync(long userId)
+        public async Task<string> GetUserProjectsNameAsync(long userId)
         {
             string projectsList = "";
             List<UserProject> userMemberList = await _dataContext.UserProjects

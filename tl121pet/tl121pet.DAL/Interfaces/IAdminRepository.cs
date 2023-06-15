@@ -7,8 +7,6 @@ namespace tl121pet.DAL.Interfaces
         public Task<User?> GetUserByEmailAsync(string email);
         public Task<string> GetRoleNameByIdAsync(int id);
         public Task<User?> GetUserByIdAsync(long id);
-        
-        //TODO: пересекается с методом в IProjectTeamRepository, нужно избавиться от дубляжа в названии, может как-то переименовать или там или тут
         public Task<List<ProjectTeam>> GetUserProjectsAsync(long userId);
         public Task UpdateRoleAsync(Role role);
         public Task CreateRoleAsync(Role role);

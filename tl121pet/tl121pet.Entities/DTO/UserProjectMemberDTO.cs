@@ -1,5 +1,4 @@
-﻿
-namespace tl121pet.Entities.DTO
+﻿namespace tl121pet.Entities.DTO
 {
     public class UserProjectMemberDTO
     {

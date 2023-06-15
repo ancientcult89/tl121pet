@@ -25,7 +25,7 @@ namespace tl121pet.Controllers
             List<User> users = await _adminRepository.GetUserListAsync();
             foreach (User user in users)
             {
-                string projects = await _projectTeamRepository.GetUserProjectsAsync(user.Id);
+                string projects = await _projectTeamRepository.GetUserProjectsNameAsync(user.Id);
                 userProjectMembers.Add(new UserProjectMemberDTO()
                 {
                     UserId = user.Id,
