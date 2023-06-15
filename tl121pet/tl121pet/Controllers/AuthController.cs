@@ -39,7 +39,7 @@ namespace tl121pet.Controllers
             string res = "";
             User? user = await _authService.LoginAsync(loginRequest);
             if(user != null)
-                res = _authService.CreateToken(user);
+                res = await _authService.CreateTokenAsync(user);
             return res;
         }
 

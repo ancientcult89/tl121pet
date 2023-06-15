@@ -37,22 +37,22 @@ namespace tl121pet.Controllers
             return View("UserProjectMemberList", userProjectMembers);
         }
 
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
-                SelectedItem = _adminRepository.GetUserById(id),
+                SelectedItem = await _adminRepository.GetUserByIdAsync(id),
                 ProjectTeams = _projectTeamRepository.GetUserMembership(id),
                 Mode = FormMode.Details
             };
             return View("UserMembershipEditor", vm);
         }
 
-        public IActionResult Edit(long id)
+        public async Task<IActionResult> Edit(long id)
         {
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
-                SelectedItem = _adminRepository.GetUserById(id),
+                SelectedItem = await _adminRepository.GetUserByIdAsync(id),
                 ProjectTeams = _projectTeamRepository.GetUserMembership(id),
                 Mode = FormMode.Edit
             };
@@ -60,24 +60,24 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddMembership([FromForm] UserMemberEditFormVM vm, long userId)
+        public async Task<IActionResult> AddMembership([FromForm] UserMemberEditFormVM vm, long userId)
         {
             if(ModelState.IsValid)
                 _projectTeamRepository.AddUserMembership(userId, vm.NewProjectTeamId);
 
-            vm.SelectedItem = _adminRepository.GetUserById(userId);
+            vm.SelectedItem = await _adminRepository.GetUserByIdAsync(userId);
             vm.ProjectTeams = _projectTeamRepository.GetUserMembership(userId);
             vm.Mode = FormMode.Edit;
 
             return View("UserMembershipEditor", vm);
         }
 
-        public IActionResult DeleteMembership(long ptId, long userId)
+        public async Task<IActionResult> DeleteMembership(long ptId, long userId)
         {
             _projectTeamRepository.DeleteUserMembership(userId, ptId);
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
-                SelectedItem = _adminRepository.GetUserById(userId),
+                SelectedItem = await _adminRepository.GetUserByIdAsync(userId),
                 ProjectTeams = _projectTeamRepository.GetUserMembership(userId),
                 Mode = FormMode.Edit
             };

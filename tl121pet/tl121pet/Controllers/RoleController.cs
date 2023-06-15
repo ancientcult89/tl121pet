@@ -34,11 +34,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<Role> roleVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<Role> roleVM)
         {
             if (ModelState.IsValid && roleVM.SelectedItem.RoleName != "Admin")
             {
-                _adminRepository.UpdateRole(roleVM.SelectedItem);
+                await _adminRepository.UpdateRoleAsync(roleVM.SelectedItem);
                 return View("RoleEditor", roleVM);
             }
             return View("RoleEditor", roleVM);
@@ -59,11 +59,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<Role> roleVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<Role> roleVM)
         {
             if (ModelState.IsValid)
             {
-                _adminRepository.CreateRole(roleVM.SelectedItem);
+                await _adminRepository.CreateRoleAsync(roleVM.SelectedItem);
                 roleVM.Mode = FormMode.Edit;
                 return View("RoleEditor", roleVM);
             }
@@ -72,9 +72,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _adminRepository.DeleteRole(id);
+            await _adminRepository.DeleteRoleAsync(id);
             return RedirectToAction("RoleList");
         }
     }

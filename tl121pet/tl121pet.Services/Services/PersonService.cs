@@ -39,7 +39,7 @@ namespace tl121pet.Services.Services
             List<ProjectTeam> projects = new List<ProjectTeam>();
             if (userId != null)
             {
-                projects = _adminRepository.GetUserProjects((long)userId);
+                projects = await _adminRepository.GetUserProjectsAsync((long)userId);
                 people = GetPeopleFilteredByProjects(projects);
             }
 

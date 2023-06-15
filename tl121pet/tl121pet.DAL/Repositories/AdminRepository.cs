@@ -14,51 +14,44 @@ namespace tl121pet.DAL.Repositories
             _dataContext = dataContext;
         }
 
-        public void CreateRole(Role role)
+        public async Task CreateRoleAsync(Role role)
         {
             _dataContext.Roles.Add(role);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void CreateUser(User user)
+        public async Task CreateUserAsync(User user)
         {
             if (user != null)
             {
                 _dataContext.Users.Add(user);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
             }
         }
 
-        public void DeleteRole(int roleId)
+        public async Task DeleteRoleAsync(int roleId)
         {
             Role role = _dataContext.Roles.Find(roleId);
             _dataContext.Roles.Remove(role);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeleteUser(long userId)
+        public async Task DeleteUserAsync(long userId)
         {
             User user = _dataContext.Users.Find(userId);
             _dataContext.Users.Remove(user);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public int GetRoleIdByName(string roleName)
+        public async Task<List<Role>> GetRoleListAsync()
         {
-            return _dataContext.Roles
-                .Where(p => p.RoleName == roleName)
-                .Select(p => p.RoleId)
-                .FirstOrDefault();
+            return await _dataContext.Roles.ToListAsync();
         }
 
-        public List<Role> GetRoleList()
+        public async Task<string> GetRoleNameByIdAsync(int id)
         {
-            return _dataContext.Roles.ToList();
-        }
-
-        public string GetRoleNameById(int id)
-        {
-            return _dataContext.Roles.Find(id).RoleName;
+            Role role = await _dataContext.Roles.FindAsync(id);
+            return role.RoleName;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
@@ -66,9 +59,9 @@ namespace tl121pet.DAL.Repositories
             return await _dataContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
         }
 
-        public User? GetUserById(long id)
+        public async Task<User?> GetUserByIdAsync(long id)
         {
-            return _dataContext.Users.Find(id);
+            return await _dataContext.Users.FindAsync(id);
         }
 
         public async Task<List<User>> GetUserListAsync()
@@ -76,8 +69,9 @@ namespace tl121pet.DAL.Repositories
             return await _dataContext.Users.Include(p => p.Role).ToListAsync();
         }
 
-        public List<ProjectTeam> GetUserProjects(long userId)
+        public async Task<List<ProjectTeam>> GetUserProjectsAsync(long userId)
         {
+            //TODO: переделать LINQ На асинхрон
             List<ProjectTeam> usersProjects = new List<ProjectTeam>();
 
             var projects = from proj in _dataContext.ProjectTeams
@@ -93,10 +87,10 @@ namespace tl121pet.DAL.Repositories
             return usersProjects;
         }
 
-        public void UpdateRole(Role role)
+        public async Task UpdateRoleAsync(Role role)
         {
             _dataContext.Roles.Update(role);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task UpdateUserAsync(User user)

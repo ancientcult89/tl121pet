@@ -35,11 +35,11 @@ namespace tl121pet.Services.Services
             }
         }
 
-        public string CreateToken(User user)
+        public async Task<string> CreateTokenAsync(User user)
         {
             List<Claim> claims = new List<Claim> {
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, _adminRepository.GetRoleNameById(user.RoleId)),
+                new Claim(ClaimTypes.Role, await _adminRepository.GetRoleNameByIdAsync(user.RoleId)),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
@@ -88,7 +88,7 @@ namespace tl121pet.Services.Services
 
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
-                string token = CreateToken(user);
+                string token = await CreateTokenAsync(user);
                 
                 //temporary
                 Role = "Admin";
@@ -111,7 +111,7 @@ namespace tl121pet.Services.Services
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt
             };
-            _adminRepository.CreateUser(newUser);
+            await _adminRepository.CreateUserAsync(newUser);
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)

@@ -30,7 +30,7 @@ namespace tl121pet.Services.Services
             {
                 List<Person> people = new List<Person>();
                 List<ProjectTeam> projects = new List<ProjectTeam>();
-                projects = _adminRepository.GetUserProjects((long)userId);
+                projects = await _adminRepository.GetUserProjectsAsync((long)userId);
                 people = GetPeopleByProjects(projects, personId);
                 meetingsRes = GetMeetingsByPerson(people);
             }
