@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (MeetingGoal mg in _meetingRepository.GetMeetingGoals(Model.SelectedItem) ?? Enumerable.Empty<MeetingGoal>())
+            @foreach (MeetingGoal mg in await _meetingRepository.GetMeetingGoalsAsync(Model.SelectedItem) ?? Enumerable.Empty<MeetingGoal>())
             {
                 <tr>
                     <form asp-action="UpdateGoal" method="post"

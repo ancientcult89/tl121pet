@@ -32,7 +32,7 @@ namespace tl121pet.Services.Services
                 List<ProjectTeam> projects = new List<ProjectTeam>();
                 projects = await _adminRepository.GetUserProjectsAsync((long)userId);
                 people = await GetPeopleByProjectsAsync(projects, personId);
-                meetingsRes = GetMeetingsByPerson(people);
+                meetingsRes = await GetMeetingsByPersonAsync(people);
             }
 
             return meetingsRes
@@ -57,12 +57,12 @@ namespace tl121pet.Services.Services
             return personByProjects.Distinct(new PersonComparer()).ToList();
         }
 
-        private List<Meeting> GetMeetingsByPerson(List<Person> people)
+        private async Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people)
         {
             List<Meeting> meetingsByPerson = new List<Meeting>();
             foreach (Person person in people)
             {
-                meetingsByPerson.AddRange(_meetingRepository.GetMeetingsByPersonId(person.PersonId));
+                meetingsByPerson.AddRange(await _meetingRepository.GetMeetingsByPersonIdAsync(person.PersonId));
             }
             return meetingsByPerson;
         }

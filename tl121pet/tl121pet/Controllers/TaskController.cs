@@ -29,7 +29,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             { 
-                _meetingRepository.CompleteGoal(goalId, CompleteDescription);
+                await _meetingRepository.CompleteGoalAsync(goalId, CompleteDescription);
             }
 
             List<TaskDTO> tasks = await _taskService.GetTaskListAsync(personId);

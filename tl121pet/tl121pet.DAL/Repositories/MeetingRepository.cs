@@ -14,159 +14,164 @@ namespace tl121pet.DAL.Repositories
             _dataContext = dataContext;
         }
         #region MeetingType
-        public void CreateMeetingType(MeetingType mt)
+        public async Task CreateMeetingTypeAsync(MeetingType mt)
         {
             _dataContext.MeetingTypes.Add(mt);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeleteMeetingType(int id)
+        public async Task DeleteMeetingTypeAsync(int id)
         {
             var meetingTypeToDelete = _dataContext.MeetingTypes.Find(id);
             _dataContext.MeetingTypes.Remove(meetingTypeToDelete);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void UpdateMeetingType(MeetingType mt)
+        public async Task UpdateMeetingTypeAsync(MeetingType mt)
         {
             _dataContext.MeetingTypes.Update(mt);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public List<MeetingType> GetMeetingTypes()
+        public async Task<List<MeetingType>> GetMeetingTypesAsync()
         { 
-            return _dataContext.MeetingTypes.ToList();
+            return await _dataContext.MeetingTypes.ToListAsync();
         }
         #endregion MeetingType
 
         #region Meeting
-        public Meeting CreateMeeting(Meeting m)
+        public async Task<Meeting> CreateMeetingAsync(Meeting m)
         {
             m.MeetingGoals = default;
             m.MeetingNotes = default;
             _dataContext.Meetings.Add(m);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
             return m;
         }
 
-        public void UpdateMeeting(MeetingDTO meetingDTO)
+        public async Task UpdateMeetingAsync(MeetingDTO meetingDTO)
         {
-            Meeting editedMeeting = _dataContext.Meetings.Find(meetingDTO.MeetingId);
+            Meeting editedMeeting = await _dataContext.Meetings.FindAsync(meetingDTO.MeetingId);
             editedMeeting.MeetingPlanDate = meetingDTO.MeetingPlanDate;
             editedMeeting.MeetingDate = meetingDTO.MeetingDate;
             editedMeeting.MeetingTypeId = meetingDTO.MeetingTypeId;
             editedMeeting.FollowUpIsSended = meetingDTO.FollowUpIsSended;
             editedMeeting.PersonId = meetingDTO.PersonId;
             _dataContext.Meetings.Update(editedMeeting);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeleteMeeting(Guid id)
+        public async Task DeleteMeetingAsync(Guid id)
         {
-            var meetingTypeToDelete = _dataContext.Meetings.Find(id);
+            var meetingTypeToDelete = await _dataContext.Meetings.FindAsync(id);
             _dataContext.Meetings.Remove(meetingTypeToDelete);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void AddNote(Guid id, string content, bool feedbackRequired)
+        public async Task AddNoteAsync(Guid id, string content, bool feedbackRequired)
         {
             _dataContext.MeetingNotes.Add(new MeetingNote { MeetingId = id, Meeting = default, MeetingNoteContent = content, FeedbackRequired = feedbackRequired });
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeleteNote(Guid id)
+        public async Task DeleteNoteAsync(Guid id)
         {
-            var meetingNoteToDelete = _dataContext.MeetingNotes.Find(id);
+            var meetingNoteToDelete = await _dataContext.MeetingNotes.FindAsync(id);
             _dataContext.MeetingNotes.Remove(meetingNoteToDelete);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public List<MeetingNote> GetMeetingNotes(Guid id)
+        public async Task<List<MeetingNote>> GetMeetingNotesAsync(Guid id)
         { 
-            return _dataContext.MeetingNotes.Where(p => p.MeetingId == id).ToList();
+            return await _dataContext.MeetingNotes.Where(p => p.MeetingId == id).ToListAsync();
         }
 
-        public List<MeetingNote> GetMeetingFeedbackRequiredNotes(Guid id)
+        public async Task<List<MeetingNote>> GetMeetingFeedbackRequiredNotesAsync(Guid id)
         {
-            return _dataContext.MeetingNotes.Where(p => p.MeetingId == id && p.FeedbackRequired == true).ToList();
+            return await _dataContext.MeetingNotes
+                .Where(p => p.MeetingId == id && p.FeedbackRequired == true)
+                .ToListAsync();
         }
 
         
-        public void AddGoal(Guid id, string content)
+        public async Task AddGoalAsync(Guid id, string content)
         {
             _dataContext.MeetingGoals.Add(new MeetingGoal { MeetingId = id, Meeting = default, MeetingGoalDescription = content });
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void DeleteGoal(Guid id)
+        public async Task DeleteGoalAsync(Guid id)
         {
-            var meetingGoalToDelete = _dataContext.MeetingGoals.Find(id);
+            var meetingGoalToDelete = await _dataContext.MeetingGoals.FindAsync(id);
             _dataContext.MeetingGoals.Remove(meetingGoalToDelete);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public List<MeetingGoal> GetMeetingGoals(Guid id)
+        public async Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id)
         {
-            return _dataContext.MeetingGoals.Where(p => p.MeetingId == id).ToList();
+            return await _dataContext.MeetingGoals
+                .Where(p => p.MeetingId == id)
+                .ToListAsync();
         }
         #endregion Meeting
 
-        public Meeting? GetLastOneToOneByPersonId(long personId) 
+        public async Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId) 
         { 
-            return _dataContext.Meetings
+            return await _dataContext.Meetings
                 .Where(p => p.PersonId == personId && p.MeetingDate != null)
                 .OrderByDescending(p => p.MeetingDate)
-                .Take(1).FirstOrDefault() ;
+                .Take(1).FirstOrDefaultAsync() ;
         }
 
-        public void MarAsSendedFollowUp(Guid meetingId)
+        public async Task MarkAsSendedFollowUpAsync(Guid meetingId)
         {
-            Meeting meeting = _dataContext.Meetings.Find(meetingId);
+            Meeting meeting = await _dataContext.Meetings.FindAsync(meetingId);
             if (meeting != null)
             { 
                 meeting.FollowUpIsSended = true;
                 _dataContext.Update(meeting);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
             }
         }
 
-        public void UpdateNote(Guid id, string MeetingNoteContent, bool feedbackRequired)
+        public async Task UpdateNoteAsync(Guid id, string MeetingNoteContent, bool feedbackRequired)
         {
-            MeetingNote mn = _dataContext.MeetingNotes.Find(id);
+            MeetingNote mn = await _dataContext.MeetingNotes.FindAsync(id);
             mn.MeetingNoteContent = MeetingNoteContent;
             mn.FeedbackRequired = feedbackRequired;
             _dataContext.MeetingNotes.Update(mn);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
 
-        public void UpdateGoal(Guid id, string content)
+        public async Task UpdateGoalTaskAsync(Guid id, string content)
         {
-            MeetingGoal mg = _dataContext.MeetingGoals.Find(id);
+            MeetingGoal mg = await _dataContext.MeetingGoals.FindAsync(id);
             mg.MeetingGoalDescription = content;
             _dataContext.MeetingGoals.Update(mg);
-            _dataContext.SaveChanges();
+            _dataContext.SaveChangesAsync();
         }
 
-        public Guid? GetPreviousMeetingId(Guid currnetMeetingId, long personId)
+        public async Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId)
         {
-            Meeting previousMeeting = _dataContext.Meetings
+            Meeting previousMeeting = await _dataContext.Meetings
                 .OrderByDescending(p => p.MeetingDate)
                 .Where(p => p.PersonId == personId && p.MeetingId != currnetMeetingId)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
             return previousMeeting?.MeetingId;
         }
 
-        public List<Meeting> GetMeetingsByPersonId(long personId)
+        public async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
         {
-            return _dataContext.Meetings
+            return await _dataContext.Meetings
                 .Include(mt => mt.MeetingType)
                 .Include(mt => mt.Person)
                 .Where(mt => mt.PersonId == personId)
-                .ToList();
+                .ToListAsync();
         }
 
-        public List<MeetingGoal> GetMeetingGoalsByPerson(long personId)
+        public async Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId)
         {
+            //TODO: переделать на асинхронный LINQ
             List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
 
             var searchedGoals = from goals in _dataContext.MeetingGoals
@@ -183,21 +188,21 @@ namespace tl121pet.DAL.Repositories
             return meetingGoals;
         }
 
-        public DateTime? GetFactMeetingDateById(Guid meetingId)
+        public async Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId)
         {
-            return _dataContext.Meetings
+            return await _dataContext.Meetings
                 .Where(m => m.MeetingId == meetingId)
                 .Select(m => m.MeetingDate)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
 
-        public void CompleteGoal(Guid goalId, string completeDescription)
+        public async Task CompleteGoalAsync(Guid goalId, string completeDescription)
         {
-            MeetingGoal goal = _dataContext.MeetingGoals.Where(g => g.MeetingGoalId == goalId).FirstOrDefault();
+            MeetingGoal goal = await _dataContext.MeetingGoals.Where(g => g.MeetingGoalId == goalId).FirstOrDefaultAsync();
             goal.CompleteDescription = completeDescription;
             goal.IsCompleted = true;
             _dataContext.MeetingGoals.Update(goal);
-            _dataContext.SaveChanges();
+            await _dataContext.SaveChangesAsync();
         }
     }
 }

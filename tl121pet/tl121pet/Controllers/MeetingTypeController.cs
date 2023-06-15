@@ -34,11 +34,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<MeetingType> meetingTypeVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<MeetingType> meetingTypeVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.UpdateMeetingType(meetingTypeVM.SelectedItem);
+                await _meetingRepository.UpdateMeetingTypeAsync(meetingTypeVM.SelectedItem);
                 return RedirectToAction("MeetingTypeList");
             }
             meetingTypeVM.Mode = FormMode.Create;
@@ -60,11 +60,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<MeetingType> meetingTypeVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<MeetingType> meetingTypeVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.CreateMeetingType(meetingTypeVM.SelectedItem);
+                await _meetingRepository.CreateMeetingTypeAsync(meetingTypeVM.SelectedItem);
                 meetingTypeVM.Mode = FormMode.Edit;
                 return View("MeetingTypeEditor", meetingTypeVM);
             }
@@ -73,9 +73,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _meetingRepository.DeleteMeetingType(id);
+            await _meetingRepository.DeleteMeetingTypeAsync(id);
             return RedirectToAction("MeetingTypeList");
         }
         #endregion MeetingType

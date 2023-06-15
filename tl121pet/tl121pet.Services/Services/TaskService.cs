@@ -28,7 +28,7 @@ namespace tl121pet.Services.Services
 
             foreach (Person p in people)
             {
-                List<MeetingGoal> goals = _meetingRepository.GetMeetingGoalsByPerson(p.PersonId);
+                List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsByPersonAsync(p.PersonId);
                 foreach (MeetingGoal goal in goals)
                 {
                     taskList.Add(new TaskDTO() { 
@@ -38,7 +38,7 @@ namespace tl121pet.Services.Services
                         MeetingGoalDescription = goal.MeetingGoalDescription,
                         PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
                         PersonId = p.PersonId,
-                        FactDate = _meetingRepository.GetFactMeetingDateById(goal.MeetingId)
+                        FactDate = await _meetingRepository.GetFactMeetingDateByIdAsync(goal.MeetingId)
                     });
                 }
             }

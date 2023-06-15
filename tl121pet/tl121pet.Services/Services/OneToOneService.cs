@@ -34,7 +34,7 @@ namespace tl121pet.Services.Services
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();
-                Meeting lastMeeting = _meetingRepository.GetLastOneToOneByPersonId(p.PersonId) ?? new Meeting();
+                Meeting lastMeeting = await _meetingRepository.GetLastOneToOneByPersonIdAsync(p.PersonId) ?? new Meeting();
 
                 (alert, datediff) = GetOneToOneDeadlineAlertLevel(lastMeeting);
 
@@ -63,7 +63,7 @@ namespace tl121pet.Services.Services
         public async Task<string> GetPreviousMeetingNoteAndGoalsAsync(Guid meetingId, long personId)
         {
             string prevNoteAndGoals = "";
-            Guid? previousMeetingGuid = _meetingRepository.GetPreviousMeetingId(meetingId, personId);
+            Guid? previousMeetingGuid = await _meetingRepository.GetPreviousMeetingIdAsync(meetingId, personId);
             if (previousMeetingGuid != null)
             {
                 prevNoteAndGoals = await GetMeetingNoteAndGoalsAsync((Guid)previousMeetingGuid);
@@ -74,7 +74,7 @@ namespace tl121pet.Services.Services
         public async Task<string> GetMeetingNoteAndGoalsAsync(Guid meetingId)
         {
             string result = "";
-            List<MeetingNote> notes = _meetingRepository.GetMeetingFeedbackRequiredNotes(meetingId);
+            List<MeetingNote> notes = await _meetingRepository.GetMeetingFeedbackRequiredNotesAsync(meetingId);
             if (notes.Count() > 0)
             {
                 result += "На встрече обсудили:\n";
@@ -84,7 +84,7 @@ namespace tl121pet.Services.Services
                 }
             }
             result += "\n\n";
-            List<MeetingGoal> goals = _meetingRepository.GetMeetingGoals(meetingId);
+            List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsAsync(meetingId);
             if (goals.Count() > 0)
             {
                 result += "К следующему 1-2-1 договорились:\n";
@@ -97,7 +97,7 @@ namespace tl121pet.Services.Services
             return result;
         }
 
-        public (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
+        private (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
         {
             AlertLevel alert = AlertLevel.None;
             TimeSpan datediff = new TimeSpan();
@@ -134,10 +134,10 @@ namespace tl121pet.Services.Services
             }
             finally
             {
-                MarkAsSendedFollowUp(meetingId);
+                await MarkAsSendedFollowUpAsync(meetingId);
             }
         }
 
-        public void MarkAsSendedFollowUp(Guid meetingId) => _meetingRepository.MarAsSendedFollowUp(meetingId);
+        private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingRepository.MarkAsSendedFollowUpAsync(meetingId);
     }
 }

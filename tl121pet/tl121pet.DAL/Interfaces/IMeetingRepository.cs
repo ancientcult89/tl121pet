@@ -5,28 +5,28 @@ namespace tl121pet.DAL.Interfaces
 {
     public interface IMeetingRepository
     {
-        public Guid? GetPreviousMeetingId(Guid currnetMeetingId, long personId);
-        public List<Meeting> GetMeetingsByPersonId(long personId);
-        public void CreateMeetingType(MeetingType mt);
-        public void UpdateMeetingType(MeetingType mt);
-        public void DeleteMeetingType(int id);
-        public List<MeetingType> GetMeetingTypes();
-        public Meeting CreateMeeting(Meeting m);
-        public void UpdateMeeting(MeetingDTO mtdto);
-        public void DeleteMeeting(Guid id);
-        public void AddNote(Guid id, string content, bool feedbackRequired);
-        public void UpdateNote(Guid id, string content, bool feedbackRequired);
-        public void DeleteNote(Guid id);
-        public List<MeetingNote> GetMeetingNotes(Guid id);
-        public List<MeetingNote> GetMeetingFeedbackRequiredNotes(Guid id);
-        public void AddGoal(Guid id, string content);
-        public void UpdateGoal(Guid id, string content);
-        public void DeleteGoal(Guid id);
-        public List<MeetingGoal> GetMeetingGoals(Guid id);
-        public Meeting? GetLastOneToOneByPersonId(long personId);
-        public void MarAsSendedFollowUp(Guid meetingId);
-        public List<MeetingGoal> GetMeetingGoalsByPerson(long personId);
-        public DateTime? GetFactMeetingDateById(Guid meetingId);
-        public void CompleteGoal(Guid goalId, string completeDescription);
+        public Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId);
+        public Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId);
+        public Task CreateMeetingTypeAsync(MeetingType mt);
+        public Task UpdateMeetingTypeAsync(MeetingType mt);
+        public Task DeleteMeetingTypeAsync(int id);
+        public Task<List<MeetingType>> GetMeetingTypesAsync();
+        public Task<Meeting> CreateMeetingAsync(Meeting m);
+        public Task UpdateMeetingAsync(MeetingDTO mtdto);
+        public Task DeleteMeetingAsync(Guid id);
+        public Task AddNoteAsync(Guid id, string content, bool feedbackRequired);
+        public Task UpdateNoteAsync(Guid id, string content, bool feedbackRequired);
+        public Task DeleteNoteAsync(Guid id);
+        public Task<List<MeetingNote>> GetMeetingNotesAsync(Guid id);
+        public Task<List<MeetingNote>> GetMeetingFeedbackRequiredNotesAsync(Guid id);
+        public Task AddGoalAsync(Guid id, string content);
+        public Task UpdateGoalTaskAsync(Guid id, string content);
+        public Task DeleteGoalAsync(Guid id);
+        public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);
+        public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);
+        public Task MarkAsSendedFollowUpAsync(Guid meetingId);
+        public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);
+        public Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId);
+        public Task CompleteGoalAsync(Guid goalId, string completeDescription);
     }
 }

@@ -35,7 +35,7 @@
             <div>
                 <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
             </div>
-            <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(_meetingRepository.GetMeetingTypes(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
+            <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(await _meetingRepository.GetMeetingTypesAsync(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
                 <option disabled selected>@Localizer["ChooseMeetingType"]</option>
             </select>
         </div>

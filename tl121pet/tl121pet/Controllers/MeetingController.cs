@@ -73,11 +73,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
+        public async Task<IActionResult> Create([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
-                Meeting m = _meetingRepository.CreateMeeting(_automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
+                Meeting m = await _meetingRepository.CreateMeetingAsync(_automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
                 meetingVM.Mode = FormMode.Edit;
                 meetingVM.SelectedItem = _automapperMini.MeetingEntityToDto(m);
                 return View("MeetingEditor", meetingVM);
@@ -98,11 +98,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Process([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
+        public async Task<IActionResult> Process([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                await _meetingRepository.UpdateMeetingAsync(meetingVM.SelectedItem);
                 meetingVM.Mode = FormMode.Process;
                 return View("MeetingEditor", meetingVM);
             }
@@ -116,11 +116,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
+        public async Task<IActionResult> Edit([FromForm] SimpleEditFormVM<MeetingDTO> meetingVM)
         {
             if (ModelState.IsValid)
             {
-                _meetingRepository.UpdateMeeting(meetingVM.SelectedItem);
+                await _meetingRepository.UpdateMeetingAsync(meetingVM.SelectedItem);
                 return View("MeetingEditor", meetingVM);
             }
             return View("MeetingEditor", meetingVM);
@@ -129,18 +129,18 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult Delete(Guid id)
         {
-            _meetingRepository.DeleteMeeting(id);
+            _meetingRepository.DeleteMeetingAsync(id);
             return RedirectToAction("MeetingList");
         }
         #endregion Meeting
 
         #region MeetingNotes
         [HttpPost]
-        public IActionResult AddNote([FromForm] NoteEditListVM vm)
+        public async Task<IActionResult> AddNote([FromForm] NoteEditListVM vm)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
             if(ModelState.IsValid)
-                _meetingRepository.AddNote(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
+                await _meetingRepository.AddNoteAsync(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
             
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
                 SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting), 
@@ -149,11 +149,11 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
+        public async Task<IActionResult> UpdateNote(bool FeedbackRequired, string MeetingNoteContent, Guid noteId, Guid meetingId)
         {
             Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
 
-            _meetingRepository.UpdateNote(noteId, MeetingNoteContent, FeedbackRequired);
+            await _meetingRepository.UpdateNoteAsync(noteId, MeetingNoteContent, FeedbackRequired);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
@@ -162,11 +162,11 @@ namespace tl121pet.Controllers
             });
         }
 
-        public IActionResult DeleteNote(Guid noteId, Guid meetingId)
+        public async Task<IActionResult> DeleteNote(Guid noteId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            _meetingRepository.DeleteNote(noteId);
+            await _meetingRepository.DeleteNoteAsync(noteId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
                 SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
@@ -176,12 +176,12 @@ namespace tl121pet.Controllers
 
         #region MeetingGoals
         [HttpPost]
-        public IActionResult AddGoal([FromForm] GoalEditListVM vm)
+        public async Task<IActionResult> AddGoal([FromForm] GoalEditListVM vm)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(vm.SelectedItem) ?? new Meeting();
 
             if (ModelState.IsValid)
-                _meetingRepository.AddGoal(vm.SelectedItem, vm.NewGoal);
+                await _meetingRepository.AddGoalAsync(vm.SelectedItem, vm.NewGoal);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
@@ -191,9 +191,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
+        public async Task<IActionResult> UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
-            _meetingRepository.UpdateGoal(goalId, MeetingGoalDescription);
+            await _meetingRepository.UpdateGoalTaskAsync(goalId, MeetingGoalDescription);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
@@ -202,11 +202,11 @@ namespace tl121pet.Controllers
             });
         }
 
-        public IActionResult DeleteGoal(Guid goalId, Guid meetingId)
+        public async Task<IActionResult> DeleteGoal(Guid goalId, Guid meetingId)
         {
-            Meeting currMeeting = _dataContext.Meetings.Find(meetingId) ?? new Meeting();
+            Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            _meetingRepository.DeleteGoal(goalId);
+            await _meetingRepository.DeleteGoalAsync(goalId);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
