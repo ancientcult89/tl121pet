@@ -194,10 +194,10 @@ namespace tl121pet.Controllers
         public async Task<IActionResult> UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
             await _meetingRepository.UpdateGoalTaskAsync(goalId, MeetingGoalDescription);
-
+            Meeting currentMeeting = await _dataContext.Meetings.FindAsync(meetingId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
-                SelectedItem = _automapperMini.MeetingEntityToDto(await _dataContext.Meetings.FindAsync(meetingId)) ?? new MeetingDTO(),
+                SelectedItem = _automapperMini.MeetingEntityToDto(currentMeeting) ?? new MeetingDTO(),
                 Mode = FormMode.Process
             });
         }

@@ -148,7 +148,7 @@ namespace tl121pet.DAL.Repositories
             MeetingGoal mg = await _dataContext.MeetingGoals.FindAsync(id);
             mg.MeetingGoalDescription = content;
             _dataContext.MeetingGoals.Update(mg);
-            _dataContext.SaveChangesAsync();
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId)
