@@ -31,7 +31,7 @@ namespace tl121pet.Services.Services
                 List<Person> people = new List<Person>();
                 List<ProjectTeam> projects = new List<ProjectTeam>();
                 projects = await _adminRepository.GetUserProjectsAsync((long)userId);
-                people = GetPeopleByProjects(projects, personId);
+                people = await GetPeopleByProjectsAsync(projects, personId);
                 meetingsRes = GetMeetingsByPerson(people);
             }
 
@@ -42,13 +42,13 @@ namespace tl121pet.Services.Services
                 .ToList();
         }
 
-        private List<Person> GetPeopleByProjects(List<ProjectTeam> projects, long? personId)
+        private async Task<List<Person>> GetPeopleByProjectsAsync(List<ProjectTeam> projects, long? personId)
         {
             List<Person> personByProjects = new List<Person>();
 
             foreach (ProjectTeam pt in projects)
             {
-                personByProjects.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
+                personByProjects.AddRange(await _peopleRepository.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
             }
 
             if (personId != null)

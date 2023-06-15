@@ -40,18 +40,18 @@ namespace tl121pet.Services.Services
             if (userId != null)
             {
                 projects = await _adminRepository.GetUserProjectsAsync((long)userId);
-                people = GetPeopleFilteredByProjects(projects);
+                people = await GetPeopleFilteredByProjectsAsync(projects);
             }
 
             return people;
         }
 
-        private List<Person> GetPeopleFilteredByProjects(List<ProjectTeam> projects)
+        private async Task<List<Person>> GetPeopleFilteredByProjectsAsync(List<ProjectTeam> projects)
         {
             List<Person> peopleFiltered = new List<Person>();
             foreach (ProjectTeam pt in projects)
             {
-                peopleFiltered.AddRange(_peopleRepository.GetPeopleFilteredByProject(pt.ProjectTeamId));
+                peopleFiltered.AddRange(await _peopleRepository.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
             }
 
             peopleFiltered = peopleFiltered.Distinct(new PersonComparer()).ToList();

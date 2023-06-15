@@ -53,7 +53,7 @@ namespace tl121pet.Services.Services
         public async Task<string> GenerateFollowUpAsync(Guid meetingId, long personId)
         {
             string result = "";
-            Person person = _peopleRepository.GetPerson(personId);
+            Person person = await _peopleRepository.GetPersonAsync(personId);
             result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
             result += await GetMeetingNoteAndGoalsAsync(meetingId);
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
@@ -123,7 +123,8 @@ namespace tl121pet.Services.Services
         public async Task SendFollowUpAsync(Guid meetingId, long personId)
         { 
             MailRequest mail = new MailRequest();
-            string personMail = _peopleRepository.GetPerson(personId).Email;
+            Person destinationPerson = await _peopleRepository.GetPersonAsync(personId);
+            string personMail = destinationPerson.Email;
             mail.ToEmail = personMail;
             mail.Body = await GenerateFollowUpAsync(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";
