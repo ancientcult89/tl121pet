@@ -1,6 +1,5 @@
-﻿using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
-using tl121pet.Entities.DTO;
+﻿using tl121pet.DAL.Interfaces;
+using tl121pet.Entities.Aggregate;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -16,7 +15,7 @@ namespace tl121pet.Services.Services
         private readonly IPersonService _personService;
 
         public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService)
-        { 
+        {
             _meetingRepository = meetingRepository;
             _peopleRepository = peopleRepository;
             _mailService = mailService;
@@ -38,7 +37,8 @@ namespace tl121pet.Services.Services
 
                 (alert, datediff) = GetOneToOneDeadlineAlertLevel(lastMeeting);
 
-                deadLines.Add(new OneToOneDeadline {
+                deadLines.Add(new OneToOneDeadline
+                {
                     Person = p,
                     LastMeetingOneToOne = lastMeeting,
                     LastOneToOneMeetingDate = lastMeeting.MeetingDate ?? DateTime.Now,
@@ -49,13 +49,12 @@ namespace tl121pet.Services.Services
             return deadLines;
         }
 
-        //TODO: рефакторим следующее: на вход подаём объекты пользователя, заметок и целей, внутри метода их не вычисляем!!!
         public async Task<string> GenerateFollowUpAsync(Guid meetingId, long personId)
         {
             string result = "";
             Person person = await _peopleRepository.GetPersonAsync(personId);
             result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
-            result += await GetMeetingNoteAndGoalsAsync(meetingId);
+            result += await GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(meetingId);
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
             return result;
         }
@@ -66,35 +65,51 @@ namespace tl121pet.Services.Services
             Guid? previousMeetingGuid = await _meetingRepository.GetPreviousMeetingIdAsync(meetingId, personId);
             if (previousMeetingGuid != null)
             {
-                prevNoteAndGoals = await GetMeetingNoteAndGoalsAsync((Guid)previousMeetingGuid);
+                prevNoteAndGoals = await GetMeetingFeedbackRequiredNotesAndGoalByMeetingId((Guid)previousMeetingGuid);
             }
             return prevNoteAndGoals;
         }
 
-        public async Task<string> GetMeetingNoteAndGoalsAsync(Guid meetingId)
+        private async Task<string> GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(Guid meetingId)
         {
             string result = "";
+            result += await GetMeetingFeedbackRequiredNotesByMeetingId(meetingId);
+            result += "\n\n";
+            result += await GetMeetingGoalsByMeetingId(meetingId);
+
+            return result;
+        }
+
+        private async Task<string> GetMeetingFeedbackRequiredNotesByMeetingId(Guid meetingId)
+        {
+            string meetingGoals = "";
             List<MeetingNote> notes = await _meetingRepository.GetMeetingFeedbackRequiredNotesAsync(meetingId);
             if (notes.Count() > 0)
             {
-                result += "На встрече обсудили:\n";
+                meetingGoals += "На встрече обсудили:\n";
                 foreach (MeetingNote mn in notes)
                 {
-                    result += $"\t- {mn.MeetingNoteContent};\n";
-                }
-            }
-            result += "\n\n";
-            List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsAsync(meetingId);
-            if (goals.Count() > 0)
-            {
-                result += "К следующему 1-2-1 договорились:\n";
-                foreach (MeetingGoal mg in goals)
-                {
-                    result += $"\t- {mg.MeetingGoalDescription};\n";
+                    meetingGoals += $"\t- {mn.MeetingNoteContent};\n";
                 }
             }
 
-            return result;
+            return meetingGoals;
+        }
+
+        private async Task<string> GetMeetingGoalsByMeetingId(Guid meetingId)
+        {
+            string meetingGoals = "";
+            List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsAsync(meetingId);
+            if (goals.Count() > 0)
+            {
+                meetingGoals += "К следующему 1-2-1 договорились:\n";
+                foreach (MeetingGoal mg in goals)
+                {
+                    meetingGoals += $"\t- {mg.MeetingGoalDescription};\n";
+                }
+            }
+
+            return meetingGoals;
         }
 
         private (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
@@ -121,23 +136,25 @@ namespace tl121pet.Services.Services
 
         //TODO: на вход должнен подаваться айдишка встречи и уже готовая почта
         public async Task SendFollowUpAsync(Guid meetingId, long personId)
-        { 
-            MailRequest mail = new MailRequest();
-            Person destinationPerson = await _peopleRepository.GetPersonAsync(personId);
-            string personMail = destinationPerson.Email;
-            mail.ToEmail = personMail;
-            mail.Body = await GenerateFollowUpAsync(meetingId, personId);
-            mail.Subject = "1-2-1 Follow-up";
-            try
-            {
-                _mailService.SendMailAsync(mail);
-            }
-            finally
-            {
-                await MarkAsSendedFollowUpAsync(meetingId);
-            }
+        {
+            MailRequest mail = await GenerateFollowUpMailRequest(meetingId, personId);
+
+            _mailService.SendMailAsync(mail);
+
+            await MarkAsSendedFollowUpAsync(meetingId);
         }
 
         private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingRepository.MarkAsSendedFollowUpAsync(meetingId);
+
+        private async Task<MailRequest> GenerateFollowUpMailRequest(Guid meetingId, long personId)
+        {
+            MailRequest mail = new MailRequest();
+            Person destinationPerson = await _peopleRepository.GetPersonAsync(personId);
+            mail.ToEmail = destinationPerson.Email;
+            mail.Body = await GenerateFollowUpAsync(meetingId, personId);
+            mail.Subject = "1-2-1 Follow-up";
+
+            return mail;
+        }
     }
 }

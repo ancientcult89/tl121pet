@@ -23,7 +23,7 @@ namespace tl121pet.Controllers
         {
             //TODO: зоны ответсвенности контроллера: 1. отобразить список сотрудников с их проектами. 2. сформировать список. Нужна декомпозиция
             List<ProjectMemberDTO> projectMembers = new List<ProjectMemberDTO>();
-            List<Person> people = await _peopleRepository.GetPeopleAsync();
+            List<Person> people = await _peopleRepository.GetAllPeopleAsync();
             foreach (Person person in people)
             {
                 string projects = await _projectTeamRepository.GetPersonsProjectsAsync(person.PersonId);

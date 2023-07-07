@@ -34,7 +34,7 @@ namespace tl121pet.DAL.Repositories
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<Person>> GetPeopleAsync()
+        public async Task<List<Person>> GetAllPeopleAsync()
         {
             return await _dataContext.People.ToListAsync();
         }
