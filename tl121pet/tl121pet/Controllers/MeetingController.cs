@@ -16,6 +16,7 @@ namespace tl121pet.Controllers
     {
         private IMeetingRepository _meetingRepository;
         private readonly IMeetingService _meetingService;
+        //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
         private readonly IAutomapperMini _automapperMini;

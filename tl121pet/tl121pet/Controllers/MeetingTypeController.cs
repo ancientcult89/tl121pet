@@ -12,6 +12,7 @@ namespace tl121pet.Controllers
     public class MeetingTypeController : Controller
     {
         private IMeetingRepository _meetingRepository;
+        //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
         public MeetingTypeController(DataContext dataContext, IMeetingRepository meetingRepository)
         {

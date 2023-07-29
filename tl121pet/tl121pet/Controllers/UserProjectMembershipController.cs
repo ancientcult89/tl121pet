@@ -22,6 +22,7 @@ namespace tl121pet.Controllers
         public async Task<IActionResult> UserProjectMemberList()
         {
             List<UserProjectMemberDTO> userProjectMembers = new List<UserProjectMemberDTO>();
+            //TODO: убрать говнокод из контроллера. либо экстеншн либо маппер
             List<User> users = await _adminRepository.GetUserListAsync();
             foreach (User user in users)
             {
@@ -39,6 +40,7 @@ namespace tl121pet.Controllers
 
         public async Task<IActionResult> Details(long id)
         {
+            //TODO: очень напрашивается AppLayer
             UserMemberEditFormVM vm = new UserMemberEditFormVM()
             {
                 SelectedItem = await _adminRepository.GetUserByIdAsync(id),

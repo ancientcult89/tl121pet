@@ -1,4 +1,4 @@
-﻿@inject IGradeRepository _gradeRepository
+﻿@inject IPersonService _personService
 @model List<OneToOneDeadline>
 @inject IViewLocalizer Localizer
 
@@ -18,7 +18,7 @@
             {
                 <tr class="bg @coloringAlertLevel[dl.AlertLVL]">
                     <td>@dl.Person.LastName @dl.Person.FirstName @dl.Person.SurName</td>
-                    <td>@(await _gradeRepository.GetGradeNameAsync(dl.Person.GradeId))</td>
+                    <td>@(await _personService.GetGradeNameAsync(dl.Person.GradeId))</td>
                     <td>@dl.LastMeetingOneToOne.MeetingDate?.ToString("dd.MM.yyyy")</td>
                     <td>@(dl.LastOneToOneMeetingDate.AddMonths(1).ToString("dd.MM.yyyy"))</td>
                     <td>@dl.DayToDeadline</td>

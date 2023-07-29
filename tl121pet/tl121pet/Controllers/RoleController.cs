@@ -11,6 +11,7 @@ namespace tl121pet.Controllers
     [Authorize(Roles = "Admin")]
     public class RoleController : Controller
     {
+        //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
         private readonly IAdminRepository _adminRepository;
 

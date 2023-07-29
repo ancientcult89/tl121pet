@@ -13,6 +13,7 @@ namespace tl121pet.Controllers
     public class PersonController : Controller
     {
         private IPeopleRepository _peopleRepository;
+        //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
         public PersonController(DataContext dataContext, IPeopleRepository peopleRepository)
         {
