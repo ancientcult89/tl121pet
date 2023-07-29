@@ -171,16 +171,17 @@ namespace tl121pet.DAL.Repositories
 
         public async Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId)
         {
-            //TODO: переделать на асинхронный LINQ
             List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
 
-            var searchedGoals = from goals in _dataContext.MeetingGoals
-                           join meeting in _dataContext.Meetings on goals.MeetingId equals meeting.MeetingId
-                           join peop in _dataContext.People on meeting.PersonId equals peop.PersonId
-                           where peop.PersonId == personId
-                           select goals;
+            var searchedGoals = ( 
+                from goals in _dataContext.MeetingGoals
+                join meeting in _dataContext.Meetings on goals.MeetingId equals meeting.MeetingId
+                join peop in _dataContext.People on meeting.PersonId equals peop.PersonId
+                where peop.PersonId == personId
+                select goals
+            ).ToListAsync();
 
-            foreach (MeetingGoal goal in searchedGoals)
+            foreach (MeetingGoal goal in await searchedGoals)
             { 
                 meetingGoals.Add(goal);
             }

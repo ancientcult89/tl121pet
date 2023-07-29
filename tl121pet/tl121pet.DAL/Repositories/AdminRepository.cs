@@ -71,15 +71,16 @@ namespace tl121pet.DAL.Repositories
 
         public async Task<List<ProjectTeam>> GetUserProjectsAsync(long userId)
         {
-            //TODO: переделать LINQ На асинхрон
             List<ProjectTeam> usersProjects = new List<ProjectTeam>();
 
-            var projects = from proj in _dataContext.ProjectTeams
-                           join usrproj in _dataContext.UserProjects on proj.ProjectTeamId equals usrproj.ProjectTeamId
-                           where usrproj.UserId == userId
-                           select proj;
+            var projects = (
+                from proj in _dataContext.ProjectTeams
+                join usrproj in _dataContext.UserProjects on proj.ProjectTeamId equals usrproj.ProjectTeamId
+                where usrproj.UserId == userId
+                select proj
+            ).ToListAsync();
 
-            foreach (var proj in projects) 
+            foreach (var proj in await projects) 
             { 
                 usersProjects.Add(proj);
             }

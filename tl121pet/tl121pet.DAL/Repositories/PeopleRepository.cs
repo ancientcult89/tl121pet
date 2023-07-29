@@ -46,32 +46,33 @@ namespace tl121pet.DAL.Repositories
 
         public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)
         {
-            //TODO: переделать LINQ На асинхрон
             List<Person> filteredPeople = new List<Person>();
 
-            var people = from p in _dataContext.People
-                         join up in _dataContext.ProjectMembers on p.PersonId equals up.PersonId
-                         where up.ProjectTeamId == projectTeam
-                         group p by new { 
-                             p.PersonId
-                             , p.FirstName 
-                             , p.LastName
-                             , p.SurName
-                             , p.Email
-                             , p.ShortName
-                             , p.GradeId
-                         } into g
-                         select new {
-                             PersonId = g.Key.PersonId,
-                             FirstName = g.Key.FirstName,
-                             LastName = g.Key.LastName,
-                             SurName = g.Key.SurName,
-                             Email = g.Key.Email,
-                             ShortName = g.Key.ShortName,
-                             GradeId = g.Key.GradeId
-                         };
+            var people = (
+                from p in _dataContext.People
+                join up in _dataContext.ProjectMembers on p.PersonId equals up.PersonId
+                where up.ProjectTeamId == projectTeam
+                group p by new { 
+                    p.PersonId
+                    , p.FirstName 
+                    , p.LastName
+                    , p.SurName
+                    , p.Email
+                    , p.ShortName
+                    , p.GradeId
+                } into g
+                select new {
+                    PersonId = g.Key.PersonId,
+                    FirstName = g.Key.FirstName,
+                    LastName = g.Key.LastName,
+                    SurName = g.Key.SurName,
+                    Email = g.Key.Email,
+                    ShortName = g.Key.ShortName,
+                    GradeId = g.Key.GradeId
+                }
+            ).ToListAsync();
 
-            foreach(var p in people)
+            foreach(var p in await people)
             {
                 Person person = new Person()
                 {

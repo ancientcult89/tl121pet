@@ -57,14 +57,15 @@ namespace tl121pet.DAL.Repositories
 
         public async Task<List<ProjectTeam>> GetPersonMembershipAsync(long id)
         {
-            //TODO: переделать на асинхрон
             List<ProjectTeam> result = new List<ProjectTeam>();
-            var selectedTeams = from pt in _dataContext.ProjectTeams
-                                join pm in _dataContext.ProjectMembers on pt.ProjectTeamId equals pm.ProjectTeamId
-                                where pm.PersonId == id
-                                select pt;
+            var selectedTeams = (
+                from pt in _dataContext.ProjectTeams
+                join pm in _dataContext.ProjectMembers on pt.ProjectTeamId equals pm.ProjectTeamId
+                where pm.PersonId == id
+                select pt
+            ).ToListAsync();
 
-            foreach (ProjectTeam pm in selectedTeams) {
+            foreach (ProjectTeam pm in await selectedTeams) {
                 result.Add(pm);
             }
 
@@ -92,14 +93,15 @@ namespace tl121pet.DAL.Repositories
 
         public async Task<List<ProjectTeam>> GetUserMembershipAsync(long id)
         {
-            //TODO: Переделать на асинхрон
             List<ProjectTeam> result = new List<ProjectTeam>();
-            var selectedTeams = from pt in _dataContext.ProjectTeams
-                                join up in _dataContext.UserProjects on pt.ProjectTeamId equals up.ProjectTeamId
-                                where up.UserId == id
-                                select pt;
+            var selectedTeams = (
+                from pt in _dataContext.ProjectTeams
+                join up in _dataContext.UserProjects on pt.ProjectTeamId equals up.ProjectTeamId
+                where up.UserId == id
+                select pt
+            ).ToListAsync();
 
-            foreach (ProjectTeam pm in selectedTeams)
+            foreach (ProjectTeam pm in await selectedTeams)
             {
                 result.Add(pm);
             }
