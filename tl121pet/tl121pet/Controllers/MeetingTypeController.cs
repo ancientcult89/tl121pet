@@ -17,9 +17,9 @@ namespace tl121pet.Controllers
         }
 
         #region MeetingTypes
-        public IActionResult MeetingTypeList()
+        public async Task<IActionResult> MeetingTypeList()
         {
-            return View("MeetingTypeList", _meetingService.GetAllMeetingTypesAsync());
+            return View("MeetingTypeList", await _meetingService.GetAllMeetingTypesAsync());
         }
 
         public async Task<IActionResult> Edit(int id)
