@@ -14,20 +14,17 @@ namespace tl121pet.Controllers
     [Authorize]
     public class MeetingController : Controller
     {
-        private IMeetingRepository _meetingRepository;
         private readonly IMeetingService _meetingService;
         //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
         private readonly IAutomapperMini _automapperMini;
         public MeetingController(DataContext dataContext, 
-            IMeetingRepository meetingRepository, 
             IMeetingService meetingService,
             IOneToOneService oneToOneService,
             IAutomapperMini automapperMini)
         {
             _dataContext = dataContext;
-            _meetingRepository = meetingRepository;
             _meetingService = meetingService;
             _oneToOneService = oneToOneService;
             _automapperMini = automapperMini;
@@ -78,7 +75,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                Meeting m = await _meetingRepository.CreateMeetingAsync(_automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
+                Meeting m = await _meetingService.CreateMeetingAsync(_automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem));
                 meetingVM.Mode = FormMode.Edit;
                 meetingVM.SelectedItem = _automapperMini.MeetingEntityToDto(m);
                 return View("MeetingEditor", meetingVM);
@@ -103,7 +100,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _meetingRepository.UpdateMeetingAsync(meetingVM.SelectedItem);
+                await _meetingService.UpdateMeetingAsync(meetingVM.SelectedItem);
                 meetingVM.Mode = FormMode.Process;
                 return View("MeetingEditor", meetingVM);
             }
@@ -121,7 +118,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _meetingRepository.UpdateMeetingAsync(meetingVM.SelectedItem);
+                await _meetingService.UpdateMeetingAsync(meetingVM.SelectedItem);
                 return View("MeetingEditor", meetingVM);
             }
             return View("MeetingEditor", meetingVM);
@@ -130,7 +127,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public IActionResult Delete(Guid id)
         {
-            _meetingRepository.DeleteMeetingAsync(id);
+            _meetingService.DeleteMeetingAsync(id);
             return RedirectToAction("MeetingList");
         }
         #endregion Meeting
@@ -141,7 +138,7 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = _dataContext.Meetings.Find(vm.SelectedItem) ?? new Meeting();
             if(ModelState.IsValid)
-                await _meetingRepository.AddNoteAsync(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
+                await _meetingService.AddNoteAsync(vm.SelectedItem, vm.NewNote, vm.NewNoteFeedbackRequires);
             
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
                 SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting), 
@@ -154,7 +151,7 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            await _meetingRepository.UpdateNoteAsync(noteId, MeetingNoteContent, FeedbackRequired);
+            await _meetingService.UpdateNoteAsync(noteId, MeetingNoteContent, FeedbackRequired);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
@@ -167,7 +164,7 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            await _meetingRepository.DeleteNoteAsync(noteId);
+            await _meetingService.DeleteNoteAsync(noteId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>() { 
                 SelectedItem = _automapperMini.MeetingEntityToDto(currMeeting),
                 Mode = FormMode.Process
@@ -182,7 +179,7 @@ namespace tl121pet.Controllers
             Meeting currMeeting = await _dataContext.Meetings.FindAsync(vm.SelectedItem) ?? new Meeting();
 
             if (ModelState.IsValid)
-                await _meetingRepository.AddGoalAsync(vm.SelectedItem, vm.NewGoal);
+                await _meetingService.AddGoalAsync(vm.SelectedItem, vm.NewGoal);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
@@ -194,7 +191,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateGoal(string MeetingGoalDescription, Guid goalId, Guid meetingId)
         {
-            await _meetingRepository.UpdateGoalTaskAsync(goalId, MeetingGoalDescription);
+            await _meetingService.UpdateGoalTaskAsync(goalId, MeetingGoalDescription);
             Meeting currentMeeting = await _dataContext.Meetings.FindAsync(meetingId);
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {
@@ -207,7 +204,7 @@ namespace tl121pet.Controllers
         {
             Meeting currMeeting = await _dataContext.Meetings.FindAsync(meetingId) ?? new Meeting();
 
-            await _meetingRepository.DeleteGoalAsync(goalId);
+            await _meetingService.DeleteGoalAsync(goalId);
 
             return View("MeetingEditor", new SimpleEditFormVM<MeetingDTO>()
             {

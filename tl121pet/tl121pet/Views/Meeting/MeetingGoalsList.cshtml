@@ -1,5 +1,5 @@
 ﻿@model GoalEditListVM
-@inject IMeetingRepository _meetingRepository
+@inject IMeetingService _meetingService
 @inject IViewLocalizer Localizer
 
 <div class="col-sm">
@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (MeetingGoal mg in await _meetingRepository.GetMeetingGoalsAsync(Model.SelectedItem) ?? Enumerable.Empty<MeetingGoal>())
+            @foreach (MeetingGoal mg in await _meetingService.GetMeetingGoalsAsync(Model.SelectedItem) ?? Enumerable.Empty<MeetingGoal>())
             {
                 <tr>
                     <form asp-action="UpdateGoal" method="post"

@@ -11,11 +11,11 @@ namespace tl121pet.Controllers
     public class TaskController : Controller
     {
         private ITaskService _taskService;
-        private IMeetingRepository _meetingRepository;
-        public TaskController(ITaskService taskService, IMeetingRepository meetingRepository)
+        private IMeetingService _meetingService;
+        public TaskController(ITaskService taskService, IMeetingService meetingService)
         {
             _taskService = taskService;
-            _meetingRepository = meetingRepository;
+            _meetingService = meetingService;
         }
         public async Task<IActionResult> TaskList(long? personId = null)
         {
@@ -29,7 +29,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             { 
-                await _meetingRepository.CompleteGoalAsync(goalId, CompleteDescription);
+                await _meetingService.CompleteGoalAsync(goalId, CompleteDescription);
             }
 
             List<TaskDTO> tasks = await _taskService.GetTaskListAsync(personId);

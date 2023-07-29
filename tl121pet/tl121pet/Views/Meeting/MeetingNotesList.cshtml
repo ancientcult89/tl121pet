@@ -1,5 +1,5 @@
 ﻿@model NoteEditListVM
-@inject IMeetingRepository _meetingRepository
+@inject IMeetingService _meetingService
 @inject IViewLocalizer Localizer
 @inject IHtmlLocalizer<SharedListResource> ListLocalizer
 @inject IHtmlLocalizer<SharedEditFormResource> EditFormLocalizer
@@ -18,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (MeetingNote mn in await _meetingRepository.GetMeetingNotesAsync(Model.SelectedItem) ?? new List<MeetingNote>())
+            @foreach (MeetingNote mn in await _meetingService.GetMeetingNotesAsync(Model.SelectedItem) ?? new List<MeetingNote>())
             {
                     <tr class="">
                         <form asp-action="UpdateNote" method="post"

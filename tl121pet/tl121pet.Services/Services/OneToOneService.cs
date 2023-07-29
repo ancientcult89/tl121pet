@@ -10,13 +10,13 @@ namespace tl121pet.Services.Services
     public class OneToOneService : IOneToOneService
     {
         private IPeopleRepository _peopleRepository;
-        private IMeetingRepository _meetingRepository;
+        private IMeetingService _meetingService;
         private IMailService _mailService;
         private readonly IPersonService _personService;
 
-        public OneToOneService(IPeopleRepository peopleRepository, IMeetingRepository meetingRepository, IMailService mailService, IPersonService personService)
+        public OneToOneService(IPeopleRepository peopleRepository, IMeetingService meetingService, IMailService mailService, IPersonService personService)
         {
-            _meetingRepository = meetingRepository;
+            _meetingService = meetingService;
             _peopleRepository = peopleRepository;
             _mailService = mailService;
             _personService = personService;
@@ -33,7 +33,7 @@ namespace tl121pet.Services.Services
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();
-                Meeting lastMeeting = await _meetingRepository.GetLastOneToOneByPersonIdAsync(p.PersonId) ?? new Meeting();
+                Meeting lastMeeting = await _meetingService.GetLastOneToOneByPersonIdAsync(p.PersonId) ?? new Meeting();
 
                 (alert, datediff) = GetOneToOneDeadlineAlertLevel(lastMeeting);
 
@@ -62,7 +62,7 @@ namespace tl121pet.Services.Services
         public async Task<string> GetPreviousMeetingNoteAndGoalsAsync(Guid meetingId, long personId)
         {
             string prevNoteAndGoals = "";
-            Guid? previousMeetingGuid = await _meetingRepository.GetPreviousMeetingIdAsync(meetingId, personId);
+            Guid? previousMeetingGuid = await _meetingService.GetPreviousMeetingIdAsync(meetingId, personId);
             if (previousMeetingGuid != null)
             {
                 prevNoteAndGoals = await GetMeetingFeedbackRequiredNotesAndGoalByMeetingId((Guid)previousMeetingGuid);
@@ -83,7 +83,7 @@ namespace tl121pet.Services.Services
         private async Task<string> GetMeetingFeedbackRequiredNotesByMeetingId(Guid meetingId)
         {
             string meetingGoals = "";
-            List<MeetingNote> notes = await _meetingRepository.GetMeetingFeedbackRequiredNotesAsync(meetingId);
+            List<MeetingNote> notes = await _meetingService.GetMeetingFeedbackRequiredNotesAsync(meetingId);
             if (notes.Count() > 0)
             {
                 meetingGoals += "На встрече обсудили:\n";
@@ -99,7 +99,7 @@ namespace tl121pet.Services.Services
         private async Task<string> GetMeetingGoalsByMeetingId(Guid meetingId)
         {
             string meetingGoals = "";
-            List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsAsync(meetingId);
+            List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsAsync(meetingId);
             if (goals.Count() > 0)
             {
                 meetingGoals += "К следующему 1-2-1 договорились:\n";
@@ -144,7 +144,7 @@ namespace tl121pet.Services.Services
             await MarkAsSendedFollowUpAsync(meetingId);
         }
 
-        private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingRepository.MarkAsSendedFollowUpAsync(meetingId);
+        private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingService.MarkAsSendedFollowUpAsync(meetingId);
 
         private async Task<MailRequest> GenerateFollowUpMailRequest(Guid meetingId, long personId)
         {

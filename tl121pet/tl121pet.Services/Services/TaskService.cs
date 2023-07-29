@@ -8,12 +8,12 @@ namespace tl121pet.Services.Services
     public class TaskService : ITaskService
     {
         private readonly IPersonService _personService;
-        private readonly IMeetingRepository _meetingRepository;
+        private readonly IMeetingService _meetingService;
         private readonly IPeopleRepository _peopleRepository;
-        public TaskService(IPersonService personService, IMeetingRepository meetingRepository, IPeopleRepository peopleRepository)
+        public TaskService(IPersonService personService, IMeetingService meetingService, IPeopleRepository peopleRepository)
         {
             _personService = personService;
-            _meetingRepository = meetingRepository;
+            _meetingService = meetingService;
             _peopleRepository = peopleRepository;
         }
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
@@ -28,7 +28,7 @@ namespace tl121pet.Services.Services
 
             foreach (Person p in people)
             {
-                List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsByPersonAsync(p.PersonId);
+                List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsByPersonAsync(p.PersonId);
                 foreach (MeetingGoal goal in goals)
                 {
                     taskList.Add(new TaskDTO() { 
@@ -38,7 +38,7 @@ namespace tl121pet.Services.Services
                         MeetingGoalDescription = goal.MeetingGoalDescription,
                         PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
                         PersonId = p.PersonId,
-                        FactDate = await _meetingRepository.GetFactMeetingDateByIdAsync(goal.MeetingId)
+                        FactDate = await _meetingService.GetFactMeetingDateByIdAsync(goal.MeetingId)
                     });
                 }
             }

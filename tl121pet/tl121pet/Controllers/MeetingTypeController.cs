@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
@@ -11,14 +11,14 @@ namespace tl121pet.Controllers
     [Authorize]
     public class MeetingTypeController : Controller
     {
-        private IMeetingRepository _meetingRepository;
+        private IMeetingService _meetingService;
         //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
-        public MeetingTypeController(DataContext dataContext, IMeetingRepository meetingRepository)
+        public MeetingTypeController(DataContext dataContext, IMeetingService meetingService)
         {
 
             _dataContext = dataContext;
-            _meetingRepository = meetingRepository;
+            _meetingService = meetingService;
         }
 
         #region MeetingTypes
@@ -39,7 +39,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _meetingRepository.UpdateMeetingTypeAsync(meetingTypeVM.SelectedItem);
+                await _meetingService.UpdateMeetingTypeAsync(meetingTypeVM.SelectedItem);
                 return RedirectToAction("MeetingTypeList");
             }
             meetingTypeVM.Mode = FormMode.Create;
@@ -65,7 +65,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _meetingRepository.CreateMeetingTypeAsync(meetingTypeVM.SelectedItem);
+                await _meetingService.CreateMeetingTypeAsync(meetingTypeVM.SelectedItem);
                 meetingTypeVM.Mode = FormMode.Edit;
                 return View("MeetingTypeEditor", meetingTypeVM);
             }
@@ -76,7 +76,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _meetingRepository.DeleteMeetingTypeAsync(id);
+            await _meetingService.DeleteMeetingTypeAsync(id);
             return RedirectToAction("MeetingTypeList");
         }
         #endregion MeetingType
