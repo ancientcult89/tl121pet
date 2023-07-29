@@ -168,5 +168,10 @@ namespace tl121pet.Services.Services
 
             return filteredPeople;
         }
+
+        public async Task<List<Person>> GetPeopleWithGradeAsync()
+        {
+            return await _dataContext.People.Include(p => p.Grade).ToListAsync();
+        }
     }
 }

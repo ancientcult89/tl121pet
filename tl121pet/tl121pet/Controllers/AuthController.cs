@@ -30,8 +30,7 @@ namespace tl121pet.Controllers
             return View("Login", loginRequest);
         }
 
-        [HttpPost("/api/auth/login")]
-        public async Task<string> LoginApi(UserLoginRequestDTO loginRequest)
+        private async Task<string> LoginApi(UserLoginRequestDTO loginRequest)
         {
             string res = "";
             User? user = await _authService.LoginAsync(loginRequest);

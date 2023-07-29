@@ -21,5 +21,6 @@ namespace tl121pet.Services.Interfaces
         public Task<List<Person>> GetAllPeopleAsync();
         public Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam);
         public Task<Person> GetPersonAsync(long id);
+        public Task<List<Person>> GetPeopleWithGradeAsync();
     }
 }

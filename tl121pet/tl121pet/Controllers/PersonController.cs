@@ -13,30 +13,26 @@ namespace tl121pet.Controllers
     public class PersonController : Controller
     {
         private IPersonService _personService;
-        //TODO: избавиться от зависимости слоя данных в контроллере
-        private DataContext _dataContext;
-        public PersonController(DataContext dataContext, IPersonService _peopleService)
+        public PersonController(IPersonService _peopleService)
         {
-
-            _dataContext = dataContext;
             _personService = _peopleService;
         }
         public IActionResult PeopleList()
         {
-            return View("PeopleList", GetPeopleList());
+            return View("PeopleList", _personService.GetPeopleWithGradeAsync());
         }
 
-        public IActionResult Details(long id)
+        public async Task<IActionResult> Details(long id)
         {
             return View("PersonEditor", new SimpleEditFormVM<Person>() { 
-                SelectedItem = _dataContext.People.Find(id) ?? new Person(),
+                SelectedItem = await _personService.GetPersonAsync(id),
                 Mode = FormMode.Details });
         }
 
-        public IActionResult Edit(long id)
+        public async Task<IActionResult> Edit(long id)
         {
             return View("PersonEditor", new SimpleEditFormVM<Person>() { 
-                SelectedItem = _dataContext.People.Find(id) ?? new Person(),
+                SelectedItem = await _personService.GetPersonAsync(id),
                 Mode = FormMode.Edit });
         }
 
@@ -76,24 +72,6 @@ namespace tl121pet.Controllers
             }
             personVM.Mode = FormMode.Create;
             return View("PersonEditor", personVM);
-        }
-
-
-        //test db endpoint
-        [HttpDelete("/api/person/deleteperson/{id}")]
-        public string DeletePerson(long id)
-        {
-            var person = _dataContext.People.Find(id);
-            _dataContext.People.Remove(person);
-            _dataContext.SaveChanges();
-            return "Ok";
-        }
-
-        [Authorize]
-        [HttpGet("/api/person/peoplelist")]
-        public List<Person> GetPeopleList()
-        {
-            return _dataContext.People.Include(p => p.Grade).ToList();
         }
     }
 }
