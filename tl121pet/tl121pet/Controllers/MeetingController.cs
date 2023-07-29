@@ -124,9 +124,9 @@ namespace tl121pet.Controllers
         }
 
         [HttpPost]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            _meetingService.DeleteMeetingAsync(id);
+            await _meetingService.DeleteMeetingAsync(id);
             return RedirectToAction("MeetingList");
         }
         #endregion Meeting
