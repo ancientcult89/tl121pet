@@ -2,8 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
 using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
-using tl121pet.DAL.Repositories;
 using tl121pet.Entities.Infrastructure;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
@@ -70,8 +68,6 @@ builder.Services.AddHttpClient();
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
-builder.Services.AddScoped<IProjectTeamRepository, ProjectTeamRepository>();
-builder.Services.AddScoped<IAdminRepository, AdminRepository>();
 builder.Services.AddScoped<IOneToOneService, OneToOneService>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();

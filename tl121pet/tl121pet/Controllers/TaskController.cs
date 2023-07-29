@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Services.Interfaces;
 using tl121pet.ViewModels;

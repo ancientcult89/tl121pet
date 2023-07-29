@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -12,12 +11,12 @@ namespace tl121pet.Controllers
     [Authorize]
     public class PersonProjectMembershipController : Controller
     {
-        private readonly IProjectTeamRepository _projectTeamRepository;
+        private readonly IProjectService _projectService;
         private readonly IPersonService _personService;
 
-        public PersonProjectMembershipController(IProjectTeamRepository projectTeamRepository, IPersonService personService)
+        public PersonProjectMembershipController(IProjectService projectService, IPersonService personService)
         {
-            _projectTeamRepository = projectTeamRepository;
+            _projectService = projectService;
             _personService = personService;
         }
         public async Task<IActionResult> PersonProjectMemberList()
@@ -27,7 +26,7 @@ namespace tl121pet.Controllers
             List<Person> people = await _personService.GetAllPeopleAsync();
             foreach (Person person in people)
             {
-                string projects = await _projectTeamRepository.GetPersonsProjectsAsync(person.PersonId);
+                string projects = await _projectService.GetPersonsProjectsAsync(person.PersonId);
                 projectMembers.Add(new ProjectMemberDTO() {
                     PersonId = person.PersonId,
                     PersonName = person.FirstName + " " + person.LastName,
@@ -41,7 +40,7 @@ namespace tl121pet.Controllers
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM() {
                 SelectedItem = await _personService.GetPersonAsync(id),
-                ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(id),
+                ProjectTeams = await _projectService.GetPersonMembershipAsync(id),
                 Mode = FormMode.Details
             };
             return View("ProjectMemberEditor", vm);
@@ -52,7 +51,7 @@ namespace tl121pet.Controllers
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
                 SelectedItem = await _personService.GetPersonAsync(id),
-                ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(id),
+                ProjectTeams = await _projectService.GetPersonMembershipAsync(id),
                 Mode = FormMode.Edit
             };
             return View("ProjectMemberEditor", vm);
@@ -62,10 +61,10 @@ namespace tl121pet.Controllers
         public async Task<IActionResult> AddMembership([FromForm] ProjectMemberEditFormVM vm, long personId)
         {
             if(ModelState.IsValid)
-                await _projectTeamRepository.AddPersonMembershipAsync(personId, vm.NewProjectTeamId);
+                await _projectService.AddPersonMembershipAsync(personId, vm.NewProjectTeamId);
 
             vm.SelectedItem = await _personService.GetPersonAsync(personId);
-            vm.ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(personId);
+            vm.ProjectTeams = await _projectService.GetPersonMembershipAsync(personId);
             vm.Mode = FormMode.Edit;
 
             return View("ProjectMemberEditor", vm);
@@ -73,11 +72,11 @@ namespace tl121pet.Controllers
 
         public async Task<IActionResult> DeleteMembership(long ptId, long personId)
         {
-            await _projectTeamRepository.DeletePersonMembershipAsync(personId, ptId);
+            await _projectService.DeletePersonMembershipAsync(personId, ptId);
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
                 SelectedItem = await _personService.GetPersonAsync(personId),
-                ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(personId),
+                ProjectTeams = await _projectService.GetPersonMembershipAsync(personId),
                 Mode = FormMode.Edit
             };
             return View("ProjectMemberEditor", vm);

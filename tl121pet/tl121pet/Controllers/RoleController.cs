@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
@@ -13,13 +13,13 @@ namespace tl121pet.Controllers
     {
         //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
-        private readonly IAdminRepository _adminRepository;
+        private readonly IAuthService _authService;
 
-        public RoleController(DataContext dataContext, IAdminRepository adminRepository)
+        public RoleController(DataContext dataContext, IAuthService authService)
         {
 
             _dataContext = dataContext;
-            _adminRepository = adminRepository;
+            _authService = authService;
         }
 
         public IActionResult RoleList()
@@ -39,7 +39,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid && roleVM.SelectedItem.RoleName != "Admin")
             {
-                await _adminRepository.UpdateRoleAsync(roleVM.SelectedItem);
+                await _authService.UpdateRoleAsync(roleVM.SelectedItem);
                 return View("RoleEditor", roleVM);
             }
             return View("RoleEditor", roleVM);
@@ -64,7 +64,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _adminRepository.CreateRoleAsync(roleVM.SelectedItem);
+                await _authService.CreateRoleAsync(roleVM.SelectedItem);
                 roleVM.Mode = FormMode.Edit;
                 return View("RoleEditor", roleVM);
             }
@@ -75,7 +75,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _adminRepository.DeleteRoleAsync(id);
+            await _authService.DeleteRoleAsync(id);
             return RedirectToAction("RoleList");
         }
     }

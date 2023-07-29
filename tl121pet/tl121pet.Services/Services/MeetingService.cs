@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -12,18 +11,15 @@ namespace tl121pet.Services.Services
 
         private readonly IAuthService _authService;
         private readonly IPersonService _personService;
-        private readonly IAdminRepository _adminRepository;
         //TODO: избавить от зависимости датаконтекста
         private DataContext _dataContext;
 
         public MeetingService(IAuthService authService
             , IPersonService personService
-            , DataContext dataContext
-            , IAdminRepository adminRepository)
+            , DataContext dataContext)
         {
             _authService = authService;
             _personService = personService;
-            _adminRepository = adminRepository;
             _dataContext = dataContext;
         }
 
@@ -35,7 +31,7 @@ namespace tl121pet.Services.Services
             {
                 List<Person> people = new List<Person>();
                 List<ProjectTeam> projects = new List<ProjectTeam>();
-                projects = await _adminRepository.GetUserProjectsAsync((long)userId);
+                projects = await _authService.GetUserProjectsAsync((long)userId);
                 people = await GetPeopleByProjectsAsync(projects, personId);
                 meetingsRes = await GetMeetingsByPersonAsync(people);
             }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -10,13 +9,11 @@ namespace tl121pet.Services.Services
     public class PersonService : IPersonService
     {
         private readonly IAuthService _authService;
-        private readonly IAdminRepository _adminRepository;
         private DataContext _dataContext;
 
-        public PersonService(IAuthService authService, IAdminRepository adminRepository, DataContext dataContext)
+        public PersonService(IAuthService authService, DataContext dataContext)
         {
             _authService = authService;
-            _adminRepository = adminRepository;
             _dataContext = dataContext;
         }
 
@@ -40,7 +37,7 @@ namespace tl121pet.Services.Services
             List<ProjectTeam> projects = new List<ProjectTeam>();
             if (userId != null)
             {
-                projects = await _adminRepository.GetUserProjectsAsync((long)userId);
+                projects = await _authService.GetUserProjectsAsync((long)userId);
                 people = await GetPeopleFilteredByProjectsAsync(projects);
             }
 

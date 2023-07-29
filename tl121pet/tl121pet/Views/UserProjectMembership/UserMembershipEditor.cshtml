@@ -2,7 +2,7 @@
 @inject IViewLocalizer Localizer
 @inject IHtmlLocalizer<SharedListResource> ListLocalizer
 @inject IHtmlLocalizer<SharedEditFormResource> EditFormLocalizer
-@inject IProjectTeamRepository _projectTeamRepository
+@inject IProjectService _projectService
 
 <h5 class="bg-@Model.Theme text-white text-center p-2  rounded-top">@(Model.SelectedItem.UserName + " " + Model.SelectedItem.Email)</h5>
 <div class="col-sm">
@@ -43,7 +43,7 @@
             <div>
                 <span asp-validation-for="NewProjectTeamId" class="text-danger"></span>
             </div>
-            <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(await _projectTeamRepository.GetAllTeamsAsync(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
+            <select asp-for="NewProjectTeamId" class="form-control" asp-items="@(new SelectList(await _projectService.GetAllTeamsAsync(), "ProjectTeamId", "ProjectTeamName"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseAProjectTeam"]</option>
             </select>
         </div>
