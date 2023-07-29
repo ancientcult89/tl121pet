@@ -1,5 +1,4 @@
-﻿using tl121pet.DAL.Interfaces;
-using tl121pet.Entities.Aggregate;
+﻿using tl121pet.Entities.Aggregate;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -9,15 +8,13 @@ namespace tl121pet.Services.Services
 
     public class OneToOneService : IOneToOneService
     {
-        private IPeopleRepository _peopleRepository;
+        private IPersonService _personService;
         private IMeetingService _meetingService;
         private IMailService _mailService;
-        private readonly IPersonService _personService;
 
-        public OneToOneService(IPeopleRepository peopleRepository, IMeetingService meetingService, IMailService mailService, IPersonService personService)
+        public OneToOneService(IMeetingService meetingService, IMailService mailService, IPersonService personService)
         {
             _meetingService = meetingService;
-            _peopleRepository = peopleRepository;
             _mailService = mailService;
             _personService = personService;
         }
@@ -52,7 +49,7 @@ namespace tl121pet.Services.Services
         public async Task<string> GenerateFollowUpAsync(Guid meetingId, long personId)
         {
             string result = "";
-            Person person = await _peopleRepository.GetPersonAsync(personId);
+            Person person = await _personService.GetPersonAsync(personId);
             result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
             result += await GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(meetingId);
             result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
@@ -149,7 +146,7 @@ namespace tl121pet.Services.Services
         private async Task<MailRequest> GenerateFollowUpMailRequest(Guid meetingId, long personId)
         {
             MailRequest mail = new MailRequest();
-            Person destinationPerson = await _peopleRepository.GetPersonAsync(personId);
+            Person destinationPerson = await _personService.GetPersonAsync(personId);
             mail.ToEmail = destinationPerson.Email;
             mail.Body = await GenerateFollowUpAsync(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";

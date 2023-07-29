@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
@@ -12,18 +13,18 @@ namespace tl121pet.Controllers
     public class PersonProjectMembershipController : Controller
     {
         private readonly IProjectTeamRepository _projectTeamRepository;
-        private readonly IPeopleRepository _peopleRepository;
+        private readonly IPersonService _personService;
 
-        public PersonProjectMembershipController(IProjectTeamRepository projectTeamRepository, IPeopleRepository peopleRepository)
+        public PersonProjectMembershipController(IProjectTeamRepository projectTeamRepository, IPersonService personService)
         {
             _projectTeamRepository = projectTeamRepository;
-            _peopleRepository = peopleRepository;
+            _personService = personService;
         }
         public async Task<IActionResult> PersonProjectMemberList()
         {
             //TODO: зоны ответсвенности контроллера: 1. отобразить список сотрудников с их проектами. 2. сформировать список. Нужна декомпозиция
             List<ProjectMemberDTO> projectMembers = new List<ProjectMemberDTO>();
-            List<Person> people = await _peopleRepository.GetAllPeopleAsync();
+            List<Person> people = await _personService.GetAllPeopleAsync();
             foreach (Person person in people)
             {
                 string projects = await _projectTeamRepository.GetPersonsProjectsAsync(person.PersonId);
@@ -39,7 +40,7 @@ namespace tl121pet.Controllers
         public async Task<IActionResult> Details(long id)
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM() {
-                SelectedItem = await _peopleRepository.GetPersonAsync(id),
+                SelectedItem = await _personService.GetPersonAsync(id),
                 ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(id),
                 Mode = FormMode.Details
             };
@@ -50,7 +51,7 @@ namespace tl121pet.Controllers
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
-                SelectedItem = await _peopleRepository.GetPersonAsync(id),
+                SelectedItem = await _personService.GetPersonAsync(id),
                 ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(id),
                 Mode = FormMode.Edit
             };
@@ -63,7 +64,7 @@ namespace tl121pet.Controllers
             if(ModelState.IsValid)
                 await _projectTeamRepository.AddPersonMembershipAsync(personId, vm.NewProjectTeamId);
 
-            vm.SelectedItem = await _peopleRepository.GetPersonAsync(personId);
+            vm.SelectedItem = await _personService.GetPersonAsync(personId);
             vm.ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(personId);
             vm.Mode = FormMode.Edit;
 
@@ -75,7 +76,7 @@ namespace tl121pet.Controllers
             await _projectTeamRepository.DeletePersonMembershipAsync(personId, ptId);
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
-                SelectedItem = await _peopleRepository.GetPersonAsync(personId),
+                SelectedItem = await _personService.GetPersonAsync(personId),
                 ProjectTeams = await _projectTeamRepository.GetPersonMembershipAsync(personId),
                 Mode = FormMode.Edit
             };

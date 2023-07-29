@@ -11,21 +11,22 @@ namespace tl121pet.Services.Services
     {
 
         private readonly IAuthService _authService;
-        private readonly IPeopleRepository _peopleRepository;
+        private readonly IPersonService _personService;
         private readonly IAdminRepository _adminRepository;
+        //TODO: избавить от зависимости датаконтекста
         private DataContext _dataContext;
 
-
         public MeetingService(IAuthService authService
-            , IPeopleRepository peopleRepository
+            , IPersonService personService
             , DataContext dataContext
             , IAdminRepository adminRepository)
         {
             _authService = authService;
-            _peopleRepository = peopleRepository;
+            _personService = personService;
             _adminRepository = adminRepository;
             _dataContext = dataContext;
         }
+
         public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
         {
             List<Meeting> meetingsRes = new List<Meeting>();
@@ -52,7 +53,7 @@ namespace tl121pet.Services.Services
 
             foreach (ProjectTeam pt in projects)
             {
-                personByProjects.AddRange(await _peopleRepository.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
+                personByProjects.AddRange(await _personService.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
             }
 
             if (personId != null)
@@ -91,9 +92,14 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<MeetingType>> GetMeetingTypesAsync()
+        public async Task<List<MeetingType>> GetAllMeetingTypesAsync()
         {
             return await _dataContext.MeetingTypes.ToListAsync();
+        }
+
+        public async Task<MeetingType> GetMeetingTypeByIdAsync(int meetingTypeId)
+        {
+            return await _dataContext.MeetingTypes.FindAsync(meetingTypeId) ?? new MeetingType();
         }
         #endregion MeetingType
 

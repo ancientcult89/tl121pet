@@ -11,14 +11,12 @@ namespace tl121pet.Services.Services
     {
         private readonly IAuthService _authService;
         private readonly IAdminRepository _adminRepository;
-        private readonly IPeopleRepository _peopleRepository;
         private DataContext _dataContext;
 
-        public PersonService(IAuthService authService, IAdminRepository adminRepository, IPeopleRepository peopleRepository, DataContext dataContext)
+        public PersonService(IAuthService authService, IAdminRepository adminRepository, DataContext dataContext)
         {
             _authService = authService;
             _adminRepository = adminRepository;
-            _peopleRepository = peopleRepository;
             _dataContext = dataContext;
         }
 
@@ -54,7 +52,7 @@ namespace tl121pet.Services.Services
             List<Person> peopleFiltered = new List<Person>();
             foreach (ProjectTeam pt in projects)
             {
-                peopleFiltered.AddRange(await _peopleRepository.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
+                peopleFiltered.AddRange(await GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
             }
 
             peopleFiltered = peopleFiltered.Distinct(new PersonComparer()).ToList();
@@ -95,6 +93,83 @@ namespace tl121pet.Services.Services
         public async Task<Grade> GetGradeByIdAsync(long id)
         {
             return await _dataContext.Grades.FindAsync(id) ?? new Grade();
+        }
+
+        public async Task CreatePersonAsync(Person person)
+        {
+            _dataContext.People.Add(person);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task UpdatePersonAsync(Person person)
+        {
+            _dataContext.People.Update(person);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task DeletePersonAsync(long id)
+        {
+            var personToDelete = _dataContext.People.Find(id);
+            _dataContext.People.Remove(personToDelete);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<List<Person>> GetAllPeopleAsync()
+        {
+            return await _dataContext.People.ToListAsync();
+        }
+
+        public async Task<Person> GetPersonAsync(long id)
+        {
+            return await _dataContext.People.FindAsync(id) ?? new Person();
+        }
+
+        public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)
+        {
+            List<Person> filteredPeople = new List<Person>();
+
+            var people = (
+                from p in _dataContext.People
+                join up in _dataContext.ProjectMembers on p.PersonId equals up.PersonId
+                where up.ProjectTeamId == projectTeam
+                group p by new
+                {
+                    p.PersonId,
+                    p.FirstName,
+                    p.LastName,
+                    p.SurName,
+                    p.Email,
+                    p.ShortName,
+                    p.GradeId
+                } into g
+                select new
+                {
+                    PersonId = g.Key.PersonId,
+                    FirstName = g.Key.FirstName,
+                    LastName = g.Key.LastName,
+                    SurName = g.Key.SurName,
+                    Email = g.Key.Email,
+                    ShortName = g.Key.ShortName,
+                    GradeId = g.Key.GradeId
+                }
+            ).ToListAsync();
+
+            foreach (var p in await people)
+            {
+                Person person = new Person()
+                {
+                    PersonId = p.PersonId,
+                    Email = p.Email,
+                    FirstName = p.FirstName,
+                    LastName = p.LastName,
+                    SurName = p.SurName,
+                    ShortName = p.ShortName,
+                    GradeId = p.GradeId
+                };
+                filteredPeople.Add(person);
+            }
+
+            return filteredPeople;
         }
     }
 }

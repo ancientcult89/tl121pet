@@ -1,5 +1,4 @@
-﻿using tl121pet.DAL.Interfaces;
-using tl121pet.Entities.DTO;
+﻿using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -9,12 +8,11 @@ namespace tl121pet.Services.Services
     {
         private readonly IPersonService _personService;
         private readonly IMeetingService _meetingService;
-        private readonly IPeopleRepository _peopleRepository;
-        public TaskService(IPersonService personService, IMeetingService meetingService, IPeopleRepository peopleRepository)
+
+        public TaskService(IPersonService personService, IMeetingService meetingService)
         {
             _personService = personService;
             _meetingService = meetingService;
-            _peopleRepository = peopleRepository;
         }
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
         {
@@ -22,7 +20,7 @@ namespace tl121pet.Services.Services
             List<Person> people = new List<Person>();
 
             if (personId != null)
-                people.Add(await _peopleRepository.GetPersonAsync((long)personId));
+                people.Add(await _personService.GetPersonAsync((long)personId));
             else
                 people = await _personService.GetPeopleAsync();
 

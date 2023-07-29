@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
-using tl121pet.DAL.Interfaces;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
@@ -12,14 +12,14 @@ namespace tl121pet.Controllers
     [Authorize]
     public class PersonController : Controller
     {
-        private IPeopleRepository _peopleRepository;
+        private IPersonService _personService;
         //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
-        public PersonController(DataContext dataContext, IPeopleRepository peopleRepository)
+        public PersonController(DataContext dataContext, IPersonService _peopleService)
         {
 
             _dataContext = dataContext;
-            _peopleRepository = peopleRepository;
+            _personService = _peopleService;
         }
         public IActionResult PeopleList()
         {
@@ -45,7 +45,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _peopleRepository.UpdatePersonAsync(personVM.SelectedItem);                
+                await _personService.UpdatePersonAsync(personVM.SelectedItem);                
                 return View("PersonEditor", personVM);
             }
             return View("PersonEditor", personVM);
@@ -54,7 +54,7 @@ namespace tl121pet.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(long id)
         {
-            await _peopleRepository.DeletePersonAsync(id);
+            await _personService.DeletePersonAsync(id);
             return RedirectToAction("PeopleList");
         }
 
@@ -70,7 +70,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _peopleRepository.CreatePersonAsync(personVM.SelectedItem);
+                await _personService.CreatePersonAsync(personVM.SelectedItem);
                 personVM.Mode = FormMode.Edit;
                 return View("PersonEditor", personVM);
             }

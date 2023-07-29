@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
@@ -12,25 +11,21 @@ namespace tl121pet.Controllers
     public class MeetingTypeController : Controller
     {
         private IMeetingService _meetingService;
-        //TODO: избавиться от зависимости слоя данных в контроллере
-        private DataContext _dataContext;
-        public MeetingTypeController(DataContext dataContext, IMeetingService meetingService)
+        public MeetingTypeController(IMeetingService meetingService)
         {
-
-            _dataContext = dataContext;
             _meetingService = meetingService;
         }
 
         #region MeetingTypes
         public IActionResult MeetingTypeList()
         {
-            return View("MeetingTypeList", _dataContext.MeetingTypes.ToList());
+            return View("MeetingTypeList", _meetingService.GetAllMeetingTypesAsync());
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { 
-                SelectedItem = _dataContext.MeetingTypes.Find(id) ?? new MeetingType(), 
+                SelectedItem = await _meetingService.GetMeetingTypeByIdAsync(id), 
                 Mode = FormMode.Edit });
         }
 
@@ -46,10 +41,10 @@ namespace tl121pet.Controllers
             return View("MeetingTypeEditor", meetingTypeVM);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             return View("MeetingTypeEditor", new SimpleEditFormVM<MeetingType>() { 
-                SelectedItem = _dataContext.MeetingTypes.Find(id) ?? new MeetingType(),
+                SelectedItem = await _meetingService.GetMeetingTypeByIdAsync(id),
                 Mode = FormMode.Details });
         }
 
