@@ -26,31 +26,22 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPost]
-        public async Task<ActionResult<int>> Create()
+        public async Task<ActionResult<Grade>> Create([FromBody] Grade newGrade)
         {
-            //return await Mediator.Send(command);
-            throw new NotImplementedException();
+            return await _personService.CreateGradeAsync(newGrade);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Update(int id)
+        public async Task<ActionResult<Grade>> Update([FromBody] Grade grade)
         {
-            //if (id != command.Id)
-            //    return BadRequest();
-
-            //await Mediator.Send(command);
-
-            //return NoContent();
-            throw new NotImplementedException();
+            return await _personService.UpdateGradeAsync(grade);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            //await Mediator.Send(new DeleteTourListCommand { Id = id });
-
-            //return NoContent();
-            throw new NotImplementedException();
+            await _personService.DeleteGradeAsync(id);
+            return Ok();
         }
     }
 }

@@ -68,16 +68,18 @@ namespace tl121pet.Services.Services
             return selectedGrade.GradeName ?? "not found";
         }
 
-        public async Task CreateGradeAsync(Grade grade)
+        public async Task<Grade> CreateGradeAsync(Grade grade)
         {
             _dataContext.Grades.Add(grade);
             await _dataContext.SaveChangesAsync();
+            return grade;
         }
 
-        public async Task UpdateGradeAsync(Grade grade)
+        public async Task<Grade> UpdateGradeAsync(Grade grade)
         {
             _dataContext.Grades.Update(grade);
             await _dataContext.SaveChangesAsync();
+            return grade;
         }
 
         public async Task DeleteGradeAsync(long id)

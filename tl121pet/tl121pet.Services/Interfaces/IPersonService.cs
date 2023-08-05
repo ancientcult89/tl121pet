@@ -10,8 +10,8 @@ namespace tl121pet.Services.Interfaces
         public Task<List<Grade>> GetAllGradesAsync();
         public Task<string> GetGradeNameAsync(long id);
 
-        public Task CreateGradeAsync(Grade grade);
-        public Task UpdateGradeAsync(Grade grade);
+        public Task<Grade> CreateGradeAsync(Grade grade);
+        public Task<Grade> UpdateGradeAsync(Grade grade);
         public Task DeleteGradeAsync(long id);
         public Task<Grade> GetGradeByIdAsync(long id);
 
