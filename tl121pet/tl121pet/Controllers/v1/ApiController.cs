@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace tl121pet.Controllers.v1
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class ApiController : ControllerBase
     {
