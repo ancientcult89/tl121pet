@@ -39,7 +39,7 @@ namespace tl121pet.Controllers
         public async Task<IActionResult> Details(long id)
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM() {
-                SelectedItem = await _personService.GetPersonAsync(id),
+                SelectedItem = await _personService.GetPersonByIdAsync(id),
                 ProjectTeams = await _projectService.GetPersonMembershipAsync(id),
                 Mode = FormMode.Details
             };
@@ -50,7 +50,7 @@ namespace tl121pet.Controllers
         {
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
-                SelectedItem = await _personService.GetPersonAsync(id),
+                SelectedItem = await _personService.GetPersonByIdAsync(id),
                 ProjectTeams = await _projectService.GetPersonMembershipAsync(id),
                 Mode = FormMode.Edit
             };
@@ -63,7 +63,7 @@ namespace tl121pet.Controllers
             if(ModelState.IsValid)
                 await _projectService.AddPersonMembershipAsync(personId, vm.NewProjectTeamId);
 
-            vm.SelectedItem = await _personService.GetPersonAsync(personId);
+            vm.SelectedItem = await _personService.GetPersonByIdAsync(personId);
             vm.ProjectTeams = await _projectService.GetPersonMembershipAsync(personId);
             vm.Mode = FormMode.Edit;
 
@@ -75,7 +75,7 @@ namespace tl121pet.Controllers
             await _projectService.DeletePersonMembershipAsync(personId, ptId);
             ProjectMemberEditFormVM vm = new ProjectMemberEditFormVM()
             {
-                SelectedItem = await _personService.GetPersonAsync(personId),
+                SelectedItem = await _personService.GetPersonByIdAsync(personId),
                 ProjectTeams = await _projectService.GetPersonMembershipAsync(personId),
                 Mode = FormMode.Edit
             };

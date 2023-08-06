@@ -85,30 +85,38 @@ namespace tl121pet.Services.Services
         public async Task DeleteGradeAsync(long id)
         {
             var gradeToDelete = _dataContext.Grades.Find(id);
+            if (gradeToDelete == null)
+                throw new Exception("Grade to delete not found");
             _dataContext.Grades.Remove(gradeToDelete);
             await _dataContext.SaveChangesAsync();
         }
 
         public async Task<Grade> GetGradeByIdAsync(long id)
         {
-            return await _dataContext.Grades.FindAsync(id) ?? new Grade();
+            return await _dataContext.Grades.FindAsync(id) ?? throw new Exception("Grade not found");
         }
 
-        public async Task CreatePersonAsync(Person person)
+        public async Task<Person> CreatePersonAsync(Person person)
         {
             _dataContext.People.Add(person);
             await _dataContext.SaveChangesAsync();
+            return person;
         }
 
-        public async Task UpdatePersonAsync(Person person)
+        public async Task<Person> UpdatePersonAsync(Person person)
         {
+            Grade grade = await _dataContext.Grades.FindAsync(person.GradeId);
+            person.Grade = grade;
             _dataContext.People.Update(person);
             await _dataContext.SaveChangesAsync();
+            return person;
         }
 
         public async Task DeletePersonAsync(long id)
         {
             var personToDelete = _dataContext.People.Find(id);
+            if (personToDelete is null)
+                throw new Exception("Person to delete not found");
             _dataContext.People.Remove(personToDelete);
             await _dataContext.SaveChangesAsync();
         }
@@ -118,9 +126,9 @@ namespace tl121pet.Services.Services
             return await _dataContext.People.ToListAsync();
         }
 
-        public async Task<Person> GetPersonAsync(long id)
+        public async Task<Person> GetPersonByIdAsync(long id)
         {
-            return await _dataContext.People.FindAsync(id) ?? new Person();
+            return await _dataContext.People.FindAsync(id) ?? throw new Exception("Person not found");
         }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)

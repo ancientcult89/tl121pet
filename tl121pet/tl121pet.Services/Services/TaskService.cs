@@ -20,7 +20,7 @@ namespace tl121pet.Services.Services
             List<Person> people = new List<Person>();
 
             if (personId != null)
-                people.Add(await _personService.GetPersonAsync((long)personId));
+                people.Add(await _personService.GetPersonByIdAsync((long)personId));
             else
                 people = await _personService.GetPeopleAsync();
 

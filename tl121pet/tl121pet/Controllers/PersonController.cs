@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
@@ -24,16 +22,20 @@ namespace tl121pet.Controllers
 
         public async Task<IActionResult> Details(long id)
         {
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { 
-                SelectedItem = await _personService.GetPersonAsync(id),
-                Mode = FormMode.Details });
+            return View("PersonEditor", new SimpleEditFormVM<Person>()
+            {
+                SelectedItem = await _personService.GetPersonByIdAsync(id),
+                Mode = FormMode.Details
+            });
         }
 
         public async Task<IActionResult> Edit(long id)
         {
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { 
-                SelectedItem = await _personService.GetPersonAsync(id),
-                Mode = FormMode.Edit });
+            return View("PersonEditor", new SimpleEditFormVM<Person>()
+            {
+                SelectedItem = await _personService.GetPersonByIdAsync(id),
+                Mode = FormMode.Edit
+            });
         }
 
         [HttpPost]
@@ -41,7 +43,7 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _personService.UpdatePersonAsync(personVM.SelectedItem);                
+                await _personService.UpdatePersonAsync(personVM.SelectedItem);
                 return View("PersonEditor", personVM);
             }
             return View("PersonEditor", personVM);
@@ -56,9 +58,11 @@ namespace tl121pet.Controllers
 
         public IActionResult Create()
         {
-            return View("PersonEditor", new SimpleEditFormVM<Person>() { 
+            return View("PersonEditor", new SimpleEditFormVM<Person>()
+            {
                 SelectedItem = new Person(),
-                Mode = FormMode.Create });
+                Mode = FormMode.Create
+            });
         }
 
         [HttpPost]
