@@ -105,8 +105,6 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> UpdatePersonAsync(Person person)
         {
-            //Grade grade = await _dataContext.Grades.FindAsync(person.GradeId);
-            //person.Grade = grade;
             _dataContext.People.Update(person);
             await _dataContext.SaveChangesAsync();
             return person;
