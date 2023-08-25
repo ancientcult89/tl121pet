@@ -109,6 +109,7 @@ namespace tl121pet.Services.Services
             return meetingGoals;
         }
 
+        //TODO: в новой версии фронтенда не понадобится, удалить после перехода
         private (AlertLevel, TimeSpan) GetOneToOneDeadlineAlertLevel(Meeting lastMeeting)
         {
             AlertLevel alert = AlertLevel.None;

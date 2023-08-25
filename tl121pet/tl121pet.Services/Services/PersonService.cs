@@ -169,7 +169,8 @@ namespace tl121pet.Services.Services
                     LastName = p.LastName,
                     SurName = p.SurName,
                     ShortName = p.ShortName,
-                    GradeId = p.GradeId
+                    GradeId = p.GradeId,
+                    Grade = _dataContext.Grades.Where(g => g.GradeId == p.GradeId).FirstOrDefault()
                 };
                 filteredPeople.Add(person);
             }
