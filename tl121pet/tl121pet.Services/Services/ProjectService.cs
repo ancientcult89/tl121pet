@@ -51,16 +51,18 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task CreateProjectTeamAsync(ProjectTeam pt)
+        public async Task<ProjectTeam> CreateProjectTeamAsync(ProjectTeam pt)
         {
             _dataContext.ProjectTeams.Add(pt);
             await _dataContext.SaveChangesAsync();
+            return pt;
         }
 
-        public async Task UpdateProjectTeamAsync(ProjectTeam pt)
+        public async Task<ProjectTeam> UpdateProjectTeamAsync(ProjectTeam pt)
         {
             _dataContext.ProjectTeams.Update(pt);
             await _dataContext.SaveChangesAsync();
+            return pt;
         }
 
         public async Task<string> GetPersonsProjectsAsync(long id)

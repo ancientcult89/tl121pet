@@ -7,8 +7,8 @@ namespace tl121pet.Services.Interfaces
         public Task<List<ProjectTeam>> GetFilteredProjectsAsync();
         public Task<List<ProjectTeam>> GetAllTeamsAsync();
         public Task<ProjectTeam> GetProjectTeamByIdAsync(long id);
-        public Task CreateProjectTeamAsync(ProjectTeam pt);
-        public Task UpdateProjectTeamAsync(ProjectTeam pt);
+        public Task<ProjectTeam> CreateProjectTeamAsync(ProjectTeam pt);
+        public Task<ProjectTeam> UpdateProjectTeamAsync(ProjectTeam pt);
         public Task DeleteProjectTeamAsync(long id);
         public Task<string> GetPersonsProjectsAsync(long id);
         public Task<string> GetUserProjectsNameAsync(long userId);
