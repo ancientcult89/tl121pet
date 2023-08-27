@@ -1,5 +1,4 @@
-﻿using tl121pet.Entities.DTO;
-using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.Models;
 
 namespace tl121pet.Services.Interfaces
 {
@@ -7,9 +6,10 @@ namespace tl121pet.Services.Interfaces
     {
         #region Meetings
         public Task<List<Meeting>> GetMeetingsAsync(long? personId);
+        public Task<Meeting> GetMeetingByIdAsync(Guid id);
         public Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId);
         public Task<Meeting> CreateMeetingAsync(Meeting m);
-        public Task UpdateMeetingAsync(MeetingDTO mtdto);
+        public Task<Meeting> UpdateMeetingAsync(Meeting mtdto);
         public Task DeleteMeetingAsync(Guid id);
         public Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);

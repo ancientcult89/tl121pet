@@ -6,7 +6,7 @@ using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
 using tl121pet.ViewModels;
 
-namespace tl121pet.Controllers
+namespace tl121pet.Controllers.v0_MVC
 {
     [Authorize(Roles = "Admin")]
     public class RoleController : Controller

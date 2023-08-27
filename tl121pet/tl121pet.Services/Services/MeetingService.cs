@@ -100,6 +100,10 @@ namespace tl121pet.Services.Services
         #endregion MeetingType
 
         #region Meeting
+        public async Task<Meeting> GetMeetingByIdAsync(Guid id)
+        {
+            return await _dataContext.Meetings.FindAsync(id) ?? throw new Exception("Meeting not found");
+        }
         public async Task<Meeting> CreateMeetingAsync(Meeting m)
         {
             m.MeetingGoals = default;
@@ -109,16 +113,11 @@ namespace tl121pet.Services.Services
             return m;
         }
 
-        public async Task UpdateMeetingAsync(MeetingDTO meetingDTO)
+        public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)
         {
-            Meeting editedMeeting = await _dataContext.Meetings.FindAsync(meetingDTO.MeetingId);
-            editedMeeting.MeetingPlanDate = meetingDTO.MeetingPlanDate;
-            editedMeeting.MeetingDate = meetingDTO.MeetingDate;
-            editedMeeting.MeetingTypeId = meetingDTO.MeetingTypeId;
-            editedMeeting.FollowUpIsSended = meetingDTO.FollowUpIsSended;
-            editedMeeting.PersonId = meetingDTO.PersonId;
             _dataContext.Meetings.Update(editedMeeting);
             await _dataContext.SaveChangesAsync();
+            return editedMeeting;
         }
 
         public async Task DeleteMeetingAsync(Guid id)

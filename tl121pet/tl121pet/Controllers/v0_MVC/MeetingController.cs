@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure;
 
-namespace tl121pet.Controllers
+namespace tl121pet.Controllers.v0_MVC
 {
     [Authorize]
     public class MeetingController : Controller
@@ -99,7 +99,8 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _meetingService.UpdateMeetingAsync(meetingVM.SelectedItem);
+                Meeting meeting = _automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem);
+                await _meetingService.UpdateMeetingAsync(meeting);
                 meetingVM.Mode = FormMode.Process;
                 return View("MeetingEditor", meetingVM);
             }
@@ -117,7 +118,8 @@ namespace tl121pet.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _meetingService.UpdateMeetingAsync(meetingVM.SelectedItem);
+                Meeting meting = _automapperMini.MeetingDtoToEntity(meetingVM.SelectedItem);
+                await _meetingService.UpdateMeetingAsync(meting);
                 return View("MeetingEditor", meetingVM);
             }
             return View("MeetingEditor", meetingVM);

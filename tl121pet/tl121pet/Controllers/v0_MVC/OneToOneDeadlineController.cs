@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.Services.Interfaces;
 
-namespace tl121pet.Controllers
+namespace tl121pet.Controllers.v0_MVC
 {
     [Authorize]
     public class OneToOneDeadlineController : Controller

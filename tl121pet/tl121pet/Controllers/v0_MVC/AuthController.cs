@@ -3,7 +3,7 @@ using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
-namespace tl121pet.Controllers
+namespace tl121pet.Controllers.v0_MVC
 {
     public class AuthController : Controller
     {
