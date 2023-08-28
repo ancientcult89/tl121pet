@@ -122,6 +122,10 @@ if (app.Environment.IsDevelopment())
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "API",
+    pattern: "api/v1/{controller=Home}/{action=Index}/{id?}");
+
 
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
 SeedData.SeedDatabase(context);
