@@ -16,9 +16,8 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<int>> Create()
+        public async Task<ActionResult<int>> CreateUser()
         {
-            //return await Mediator.Send(command);
             throw new NotImplementedException();
         }
 
@@ -38,12 +37,6 @@ namespace tl121pet.Controllers.v1
         [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(int id)
         {
-            //if (id != command.Id)
-            //    return BadRequest();
-
-            //await Mediator.Send(command);
-
-            //return NoContent();
             throw new NotImplementedException();
         }
     }

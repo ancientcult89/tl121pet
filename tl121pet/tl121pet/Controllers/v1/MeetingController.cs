@@ -18,31 +18,31 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Meeting>>> Get(long? personId = null)
+        public async Task<ActionResult<List<Meeting>>> GetMeetingList(long? personId = null)
         {
             return await _meetingService.GetMeetingsAsync(personId);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Meeting>> Get(Guid id)
+        public async Task<ActionResult<Meeting>> GetMeetingById(Guid id)
         {
             return await _meetingService.GetMeetingByIdAsync(id);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Meeting>> Create([FromBody] Meeting newMeeting)
+        public async Task<ActionResult<Meeting>> CreateMeeting([FromBody] Meeting newMeeting)
         {
             return await _meetingService.CreateMeetingAsync(newMeeting);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Meeting>> Update([FromBody] Meeting meeting)
+        public async Task<ActionResult<Meeting>> UpdateMeeting([FromBody] Meeting meeting)
         {
             return await _meetingService.UpdateMeetingAsync(meeting);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(Guid id)
+        public async Task<ActionResult> DeleteMeeting(Guid id)
         {
             await _meetingService.DeleteMeetingAsync(id);
             return Ok();

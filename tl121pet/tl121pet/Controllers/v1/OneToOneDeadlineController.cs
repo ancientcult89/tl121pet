@@ -16,7 +16,7 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<OneToOneDeadline>>> Get()
+        public async Task<ActionResult<List<OneToOneDeadline>>> GetOneToOneDeadlineList()
         {
             return await _oneToOneDeadlineService.GetDeadLinesAsync();
         }

@@ -15,9 +15,9 @@ namespace tl121pet.Controllers.v0_MVC
         {
             _personService = _peopleService;
         }
-        public IActionResult PeopleList()
+        public async Task<IActionResult> PeopleList()
         {
-            return View("PeopleList", _personService.GetPeopleWithGradeAsync());
+            return View("PeopleList", await _personService.GetPeopleWithGradeAsync());
         }
 
         public async Task<IActionResult> Details(long id)

@@ -14,31 +14,31 @@ namespace tl121pet.Controllers.v1
             _personService = personService;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Grade>>> Get()
+        public async Task<ActionResult<List<Grade>>> GetGradeList()
         {
             return await _personService.GetAllGradesAsync();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Grade>> Get(long id)
+        public async Task<ActionResult<Grade>> GetGradeById(long id)
         {
             return await _personService.GetGradeByIdAsync(id);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Grade>> Create([FromBody] Grade newGrade)
+        public async Task<ActionResult<Grade>> CreateGrade([FromBody] Grade newGrade)
         {
             return await _personService.CreateGradeAsync(newGrade);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Grade>> Update([FromBody] Grade grade)
+        public async Task<ActionResult<Grade>> UpdateGrade([FromBody] Grade grade)
         {
             return await _personService.UpdateGradeAsync(grade);
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> DeleteGrade(int id)
         {
             await _personService.DeleteGradeAsync(id);
             return Ok();
