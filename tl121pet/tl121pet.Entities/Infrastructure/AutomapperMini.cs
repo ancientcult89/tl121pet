@@ -12,7 +12,6 @@ namespace tl121pet.Entities.Infrastructure
                 MeetingId = meeting.MeetingId,
                 MeetingDate = meeting.MeetingDate,
                 MeetingPlanDate = meeting.MeetingPlanDate,
-                MeetingTypeId = meeting.MeetingTypeId,
                 PersonId = meeting.PersonId,
                 FollowUpIsSended = meeting.FollowUpIsSended
             } ?? new MeetingDTO();
@@ -25,7 +24,6 @@ namespace tl121pet.Entities.Infrastructure
                 MeetingId = meetingDTO.MeetingId,
                 MeetingDate = meetingDTO.MeetingDate,
                 MeetingPlanDate = meetingDTO.MeetingPlanDate,
-                MeetingTypeId = meetingDTO.MeetingTypeId,
                 FollowUpIsSended= meetingDTO.FollowUpIsSended,
                 PersonId = meetingDTO.PersonId
             };

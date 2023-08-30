@@ -221,7 +221,6 @@ namespace tl121pet.Services.Services
         public async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
         {
             return await _dataContext.Meetings
-                .Include(mt => mt.MeetingType)
                 .Include(mt => mt.Person)
                 .Where(mt => mt.PersonId == personId)
                 .ToListAsync();

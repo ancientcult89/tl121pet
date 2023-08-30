@@ -30,15 +30,6 @@
             <input type="date" class="form-control" asp-for="SelectedItem.MeetingDate" disabled="@Model.IsReadonly"/>
         </div>
         <div class="form-group">
-            <label>@Localizer["MeetingType"]</label>
-            <div>
-                <span asp-validation-for="SelectedItem.MeetingTypeId" class="text-danger"></span>
-            </div>
-            <select asp-for="SelectedItem.MeetingTypeId" class="form-control" asp-items="@(new SelectList(await _meetingService.GetAllMeetingTypesAsync(), "MeetingTypeId", "MeetingTypeName"))" disabled="@Model.IsReadonly">
-                <option disabled selected>@Localizer["ChooseMeetingType"]</option>
-            </select>
-        </div>
-        <div class="form-group">
             <label>@Localizer["Person"]</label>
             <div>
                 <span asp-validation-for="SelectedItem.PersonId" class="text-danger"></span>

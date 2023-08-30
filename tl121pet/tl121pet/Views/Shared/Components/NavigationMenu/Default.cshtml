@@ -26,10 +26,6 @@
         asp-controller="Meeting">
             @Localizer["Meetings"]
     </a>
-    <a class="btn @("MeetingType" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
-        asp-action="MeetingTypeList" asp-controller="MeetingType">
-            @Localizer["MeetingTypes"]
-    </a>
     <a class="btn @("Grade" == ViewBag.SelectedCategory ? "btn-primary" : "btn-outline-secondary")"
         asp-action="GradeList" asp-controller="Grade">
             @Localizer["Grade"]

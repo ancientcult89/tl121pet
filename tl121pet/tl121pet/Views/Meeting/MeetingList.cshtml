@@ -33,7 +33,6 @@
                 <form asp-action="Delete" method="post" asp-route-id="@m.MeetingId">
                     <tr class="">
                         <td>@m.Person?.FirstName, @m.Person?.LastName</td>
-                        <td>@m.MeetingType?.MeetingTypeName</td>
                         <td>@m.MeetingPlanDate.ToLocalTime().ToString("dd.MM.yyyy")</td>
                         <td>@m.MeetingDate?.ToLocalTime().ToString("dd.MM.yyyy")</td>
                         <td><input type="checkbox" asp-for="@m.FollowUpIsSended" disabled></td>
