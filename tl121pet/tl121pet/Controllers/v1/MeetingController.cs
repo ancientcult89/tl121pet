@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -11,10 +12,12 @@ namespace tl121pet.Controllers.v1
     public class MeetingController : ApiController
     {
         private readonly IMeetingService _meetingService;
+        private readonly IAutomapperMini _automapperMini;
 
-        public MeetingController(IMeetingService meetingService)
+        public MeetingController(IMeetingService meetingService, IAutomapperMini automapperMini)
         {
             _meetingService = meetingService;
+            _automapperMini = automapperMini;
         }
 
         [HttpGet]
@@ -30,15 +33,15 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPost]
-        public async Task<ActionResult<Meeting>> CreateMeeting([FromBody] Meeting newMeeting)
+        public async Task<ActionResult<Meeting>> CreateMeeting([FromBody] MeetingDTO newMeeting)
         {
-            return await _meetingService.CreateMeetingAsync(newMeeting);
+            return await _meetingService.CreateMeetingAsync(_automapperMini.MeetingDtoToEntity(newMeeting));
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Meeting>> UpdateMeeting([FromBody] Meeting meeting)
+        public async Task<ActionResult<Meeting>> UpdateMeeting([FromBody] MeetingDTO meeting)
         {
-            return await _meetingService.UpdateMeetingAsync(meeting);
+            return await _meetingService.UpdateMeetingAsync(_automapperMini.MeetingDtoToEntity(meeting));
         }
 
         [HttpDelete("{id}")]
