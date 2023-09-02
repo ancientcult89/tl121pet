@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
@@ -13,11 +12,13 @@ namespace tl121pet.Controllers.v1
     {
         private readonly IMeetingService _meetingService;
         private readonly IAutomapperMini _automapperMini;
+        private readonly IOneToOneService _oneToOneService;
 
-        public MeetingController(IMeetingService meetingService, IAutomapperMini automapperMini)
+        public MeetingController(IMeetingService meetingService, IAutomapperMini automapperMini, IOneToOneService oneToOneService)
         {
             _meetingService = meetingService;
             _automapperMini = automapperMini;
+            _oneToOneService = oneToOneService;
         }
 
         [HttpGet]
@@ -49,6 +50,12 @@ namespace tl121pet.Controllers.v1
         {
             await _meetingService.DeleteMeetingAsync(id);
             return Ok();
+        }
+
+        [HttpGet("{id}/previous")]
+        public async Task<ActionResult<string>> GetPreviousMeetingNotesAndGoals([FromBody] Guid meetingId, long personId)
+        {
+            return await _oneToOneService.GetPreviousMeetingNoteAndGoalsAsync(meetingId, personId);
         }
     }
 }
