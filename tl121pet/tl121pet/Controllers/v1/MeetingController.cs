@@ -52,8 +52,8 @@ namespace tl121pet.Controllers.v1
             return Ok();
         }
 
-        [HttpGet("{id}/previous")]
-        public async Task<ActionResult<string>> GetPreviousMeetingNotesAndGoals([FromBody] Guid meetingId, long personId)
+        [HttpGet("previous")]
+        public async Task<ActionResult<string>> GetPreviousMeetingNotesAndGoals(Guid meetingId, long personId)
         {
             return await _oneToOneService.GetPreviousMeetingNoteAndGoalsAsync(meetingId, personId);
         }
