@@ -37,7 +37,9 @@ namespace tl121pet.Services.Interfaces
 
         #region MeetingGoals
         public Task AddGoalAsync(Guid id, string content);
+        public Task<MeetingGoal> AddGoalAsync(MeetingGoal meetingGoal);
         public Task UpdateGoalTaskAsync(Guid id, string content);
+        public Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal);
         public Task DeleteGoalAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);

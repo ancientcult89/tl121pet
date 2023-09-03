@@ -21,6 +21,8 @@ namespace tl121pet.Controllers.v1
             _oneToOneService = oneToOneService;
         }
 
+        #region Meeting
+
         [HttpGet]
         public async Task<ActionResult<List<Meeting>>> GetMeetingList(long? personId = null)
         {
@@ -58,6 +60,10 @@ namespace tl121pet.Controllers.v1
             return await _oneToOneService.GetPreviousMeetingNoteAndGoalsAsync(meetingId, personId);
         }
 
+        #endregion Meeting
+
+        #region MeetingNotes
+
         [HttpGet("{id}/note")]
         public async Task<ActionResult<List<MeetingNote>>> GetMeetingNotesList(Guid id)
         {
@@ -83,11 +89,33 @@ namespace tl121pet.Controllers.v1
             return await _meetingService.UpdateNoteAsync(_automapperMini.MeetingNoteDtoToEntity(meetingNote));
         }
 
+        #endregion MeetingNotes
 
+        #region MeetingGoal
         [HttpGet("{id}/goal")]
         public async Task<ActionResult<List<MeetingGoal>>> GetMeetingGoalsList(Guid id)
         {
             return await _meetingService.GetMeetingGoalsAsync(id);
         }
+
+        [HttpDelete("{id}/goal/{meetingGoalId}")]
+        public async Task<ActionResult> DeleteGoal(Guid meetingGoalId)
+        {
+            await _meetingService.DeleteGoalAsync(meetingGoalId);
+            return Ok();
+        }
+
+        [HttpPost("{id}/goal")]
+        public async Task<ActionResult<MeetingGoal>> CreateGoal([FromBody] MeetingGoalDTO meetingGoal)
+        {
+            return await _meetingService.AddGoalAsync(_automapperMini.MeetingGoalDtoToEntity(meetingGoal));
+        }
+
+        [HttpPut("{id}/goal")]
+        public async Task<ActionResult<MeetingGoal>> UpdateGoal([FromBody] MeetingGoalDTO meetingGoal)
+        {
+            return await _meetingService.UpdateGoalAsync(_automapperMini.MeetingGoalDtoToEntity(meetingGoal));
+        }
+        #endregion MeetingGoal
     }
 }

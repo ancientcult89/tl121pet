@@ -11,6 +11,9 @@ namespace tl121pet.Entities.Infrastructure
         MeetingNote MeetingNoteDtoToEntity(MeetingNoteDTO meetingNoteDTO);
         MeetingNoteDTO MeetingNoteEntityToDto(MeetingNote meetingNote);
 
+        MeetingGoal MeetingGoalDtoToEntity(MeetingGoalDTO meetingGoalDTO);
+        MeetingGoalDTO MeetingGoalEntityToDto(MeetingGoal meetingGoal);
+
         User UserDtoToEntity(UserDTO userDTO, byte[] passwordHash, byte[] passwordSalt);
         UserDTO UserEntityToDto(User user);
     }

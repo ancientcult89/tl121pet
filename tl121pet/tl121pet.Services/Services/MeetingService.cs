@@ -125,6 +125,9 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
+        #endregion Meeting
+
+        #region Note
         [Obsolete]
         public async Task<MeetingNote> AddNoteAsync(Guid id, string content, bool feedbackRequired)
         {
@@ -140,6 +143,24 @@ namespace tl121pet.Services.Services
             _dataContext.MeetingNotes.Add(newNote);
             await _dataContext.SaveChangesAsync();
             return newNote;
+        }
+
+        [Obsolete]
+        public async Task UpdateNoteAsync(Guid id, string MeetingNoteContent, bool feedbackRequired)
+        {
+            MeetingNote mn = await _dataContext.MeetingNotes.FindAsync(id);
+            mn.MeetingNoteContent = MeetingNoteContent;
+            mn.FeedbackRequired = feedbackRequired;
+            _dataContext.MeetingNotes.Update(mn);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote)
+        {
+            meetingNote.Meeting = default;
+            _dataContext.MeetingNotes.Update(meetingNote);
+            await _dataContext.SaveChangesAsync();
+            return meetingNote;
         }
 
         public async Task DeleteNoteAsync(Guid id)
@@ -161,11 +182,39 @@ namespace tl121pet.Services.Services
                 .ToListAsync();
         }
 
+        #endregion Note
 
+        #region Goal
+        [Obsolete]
         public async Task AddGoalAsync(Guid id, string content)
         {
             _dataContext.MeetingGoals.Add(new MeetingGoal { MeetingId = id, Meeting = default, MeetingGoalDescription = content });
             await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<MeetingGoal> AddGoalAsync(MeetingGoal newGoal)
+        {
+            newGoal.Meeting = default;
+            _dataContext.MeetingGoals.Add(newGoal);
+            await _dataContext.SaveChangesAsync();
+            return newGoal;
+        }
+
+        [Obsolete]
+        public async Task UpdateGoalTaskAsync(Guid id, string content)
+        {
+            MeetingGoal mg = await _dataContext.MeetingGoals.FindAsync(id);
+            mg.MeetingGoalDescription = content;
+            _dataContext.MeetingGoals.Update(mg);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal)
+        {
+            meetingGoal.Meeting = default;
+            _dataContext.MeetingGoals.Update(meetingGoal);
+            await _dataContext.SaveChangesAsync();
+            return meetingGoal;
         }
 
         public async Task DeleteGoalAsync(Guid id)
@@ -181,7 +230,10 @@ namespace tl121pet.Services.Services
                 .Where(p => p.MeetingId == id)
                 .ToListAsync();
         }
-        #endregion Meeting
+
+        #endregion Goal
+
+        #region MeetingProcessing
 
         public async Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId)
         {
@@ -200,32 +252,6 @@ namespace tl121pet.Services.Services
                 _dataContext.Update(meeting);
                 await _dataContext.SaveChangesAsync();
             }
-        }
-
-        [Obsolete]
-        public async Task UpdateNoteAsync(Guid id, string MeetingNoteContent, bool feedbackRequired)
-        {
-            MeetingNote mn = await _dataContext.MeetingNotes.FindAsync(id);
-            mn.MeetingNoteContent = MeetingNoteContent;
-            mn.FeedbackRequired = feedbackRequired;
-            _dataContext.MeetingNotes.Update(mn);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote)
-        {
-            meetingNote.Meeting = default;
-            _dataContext.MeetingNotes.Update(meetingNote);
-            await _dataContext.SaveChangesAsync();
-            return meetingNote;
-        }
-
-        public async Task UpdateGoalTaskAsync(Guid id, string content)
-        {
-            MeetingGoal mg = await _dataContext.MeetingGoals.FindAsync(id);
-            mg.MeetingGoalDescription = content;
-            _dataContext.MeetingGoals.Update(mg);
-            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId)
@@ -281,5 +307,7 @@ namespace tl121pet.Services.Services
             _dataContext.MeetingGoals.Update(goal);
             await _dataContext.SaveChangesAsync();
         }
+
+        #endregion MeetingProcessing
     }
 }
