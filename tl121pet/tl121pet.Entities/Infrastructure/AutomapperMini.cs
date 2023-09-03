@@ -50,5 +50,29 @@ namespace tl121pet.Entities.Infrastructure
                 RoleId = userDTO.RoleId
             };
         }
+
+        public MeetingNote MeetingNoteDtoToEntity(MeetingNoteDTO meetingNoteDTO)
+        {
+            MeetingNote note = new MeetingNote()
+            {
+                MeetingId = meetingNoteDTO.MeetingId,
+                FeedbackRequired = meetingNoteDTO.FeedbackRequired,
+                MeetingNoteContent = meetingNoteDTO.MeetingNoteContent,
+            };
+            if(meetingNoteDTO.MeetingNoteId != null)
+                note.MeetingNoteId = (Guid)meetingNoteDTO.MeetingNoteId;
+
+            return note;
+        }
+
+        public MeetingNoteDTO MeetingNoteEntityToDto(MeetingNote meetingNote)
+        {
+            return new MeetingNoteDTO() { 
+                MeetingNoteId = meetingNote.MeetingNoteId,
+                MeetingId = meetingNote.MeetingId,
+                MeetingNoteContent = meetingNote.MeetingNoteContent,
+                FeedbackRequired = meetingNote.FeedbackRequired,
+            };
+        }
     }
 }

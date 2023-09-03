@@ -57,5 +57,37 @@ namespace tl121pet.Controllers.v1
         {
             return await _oneToOneService.GetPreviousMeetingNoteAndGoalsAsync(meetingId, personId);
         }
+
+        [HttpGet("{id}/note")]
+        public async Task<ActionResult<List<MeetingNote>>> GetMeetingNotesList(Guid id)
+        {
+            return await _meetingService.GetMeetingNotesAsync(id);
+        }
+
+        [HttpDelete("{id}/note/{meetingNoteId}")]
+        public async Task<ActionResult> DeleteNote(Guid meetingNoteId)
+        {
+            await _meetingService.DeleteNoteAsync(meetingNoteId);
+            return Ok();
+        }
+
+        [HttpPost("{id}/note")]
+        public async Task<ActionResult<MeetingNote>> CreateNote([FromBody] MeetingNoteDTO meetingNote)
+        {
+            return await _meetingService.AddNoteAsync(_automapperMini.MeetingNoteDtoToEntity(meetingNote));
+        }
+
+        [HttpPut("{id}/note")]
+        public async Task<ActionResult<MeetingNote>> UpdateNote([FromBody] MeetingNoteDTO meetingNote)
+        {
+            return await _meetingService.UpdateNoteAsync(_automapperMini.MeetingNoteDtoToEntity(meetingNote));
+        }
+
+
+        [HttpGet("{id}/goal")]
+        public async Task<ActionResult<List<MeetingGoal>>> GetMeetingGoalsList(Guid id)
+        {
+            return await _meetingService.GetMeetingGoalsAsync(id);
+        }
     }
 }

@@ -26,8 +26,10 @@ namespace tl121pet.Services.Interfaces
         #endregion MeetingTypes
 
         #region MeetingNotes
-        public Task AddNoteAsync(Guid id, string content, bool feedbackRequired);
+        public Task<MeetingNote> AddNoteAsync(Guid id, string content, bool feedbackRequired);
+        public Task<MeetingNote> AddNoteAsync(MeetingNote meetingNote);
         public Task UpdateNoteAsync(Guid id, string content, bool feedbackRequired);
+        public Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote);
         public Task DeleteNoteAsync(Guid id);
         public Task<List<MeetingNote>> GetMeetingNotesAsync(Guid id);
         public Task<List<MeetingNote>> GetMeetingFeedbackRequiredNotesAsync(Guid id);

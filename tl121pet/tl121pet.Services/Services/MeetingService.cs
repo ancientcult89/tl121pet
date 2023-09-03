@@ -10,7 +10,6 @@ namespace tl121pet.Services.Services
 
         private readonly IAuthService _authService;
         private readonly IPersonService _personService;
-        //TODO: избавить от зависимости датаконтекста
         private DataContext _dataContext;
 
         public MeetingService(IAuthService authService
@@ -126,10 +125,21 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task AddNoteAsync(Guid id, string content, bool feedbackRequired)
+        [Obsolete]
+        public async Task<MeetingNote> AddNoteAsync(Guid id, string content, bool feedbackRequired)
         {
-            _dataContext.MeetingNotes.Add(new MeetingNote { MeetingId = id, Meeting = default, MeetingNoteContent = content, FeedbackRequired = feedbackRequired });
+            MeetingNote newNote = new MeetingNote { MeetingId = id, Meeting = default, MeetingNoteContent = content, FeedbackRequired = feedbackRequired };
+            _dataContext.MeetingNotes.Add(newNote);
             await _dataContext.SaveChangesAsync();
+            return newNote;
+        }
+
+        public async Task<MeetingNote> AddNoteAsync(MeetingNote newNote)
+        {
+            newNote.Meeting = default;
+            _dataContext.MeetingNotes.Add(newNote);
+            await _dataContext.SaveChangesAsync();
+            return newNote;
         }
 
         public async Task DeleteNoteAsync(Guid id)
@@ -192,6 +202,7 @@ namespace tl121pet.Services.Services
             }
         }
 
+        [Obsolete]
         public async Task UpdateNoteAsync(Guid id, string MeetingNoteContent, bool feedbackRequired)
         {
             MeetingNote mn = await _dataContext.MeetingNotes.FindAsync(id);
@@ -199,6 +210,14 @@ namespace tl121pet.Services.Services
             mn.FeedbackRequired = feedbackRequired;
             _dataContext.MeetingNotes.Update(mn);
             await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote)
+        {
+            meetingNote.Meeting = default;
+            _dataContext.MeetingNotes.Update(meetingNote);
+            await _dataContext.SaveChangesAsync();
+            return meetingNote;
         }
 
         public async Task UpdateGoalTaskAsync(Guid id, string content)
