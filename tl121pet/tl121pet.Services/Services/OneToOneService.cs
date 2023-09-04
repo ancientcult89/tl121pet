@@ -136,13 +136,15 @@ namespace tl121pet.Services.Services
         public async Task SendFollowUpAsync(Guid meetingId, long personId)
         {
             MailRequest mail = await GenerateFollowUpMailRequest(meetingId, personId);
-
-            _mailService.SendMailAsync(mail);
-
-            await MarkAsSendedFollowUpAsync(meetingId);
+            try
+            {
+                _mailService.SendMailAsync(mail);
+                await MarkAsSendedFollowUpAsync(meetingId);
+            }
+            catch (Exception ex) { throw new Exception("e-mail service is unavalable"); }
         }
 
-        private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingService.MarkAsSendedFollowUpAsync(meetingId);
+        private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingService.MarkAsSendedFollowUpAndFillActualDateAsync(meetingId);
 
         private async Task<MailRequest> GenerateFollowUpMailRequest(Guid meetingId, long personId)
         {

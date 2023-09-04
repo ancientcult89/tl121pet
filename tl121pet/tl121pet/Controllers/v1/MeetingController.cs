@@ -124,6 +124,15 @@ namespace tl121pet.Controllers.v1
         {
             return await _oneToOneService.GenerateFollowUpAsync(meetingId, personId);
         }
+
+        //TODO: Логика со старого бекенда: есть метод выше на формирование фолоуаппа, в методе ниже при отправке мы снова его будем генерировать
+        //возможно имеет смысл передавать только айдишку сотрудника и сгенеренный текст фоллоуаппа
+        [HttpPost("{id}/followup")]
+        public async Task<ActionResult> SendFollowUp([FromBody] SendFollowUpRequestDTO request)
+        {
+            await _oneToOneService.SendFollowUpAsync(request.MeetingId, request.PersonId);
+            return Ok();
+        }
         #endregion Processing
     }
 }

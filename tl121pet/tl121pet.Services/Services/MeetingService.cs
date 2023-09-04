@@ -243,12 +243,13 @@ namespace tl121pet.Services.Services
                 .Take(1).FirstOrDefaultAsync();
         }
 
-        public async Task MarkAsSendedFollowUpAsync(Guid meetingId)
+        public async Task MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId)
         {
             Meeting meeting = await _dataContext.Meetings.FindAsync(meetingId);
             if (meeting != null)
             {
                 meeting.FollowUpIsSended = true;
+                meeting.MeetingDate = DateTime.Now;
                 _dataContext.Update(meeting);
                 await _dataContext.SaveChangesAsync();
             }
