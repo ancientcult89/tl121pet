@@ -117,5 +117,13 @@ namespace tl121pet.Controllers.v1
             return await _meetingService.UpdateGoalAsync(_automapperMini.MeetingGoalDtoToEntity(meetingGoal));
         }
         #endregion MeetingGoal
+
+        #region Processing
+        [HttpGet("{id}/followup")]
+        public async Task<ActionResult<string>> GenerateFollowUp(Guid meetingId, long personId)
+        {
+            return await _oneToOneService.GenerateFollowUpAsync(meetingId, personId);
+        }
+        #endregion Processing
     }
 }
