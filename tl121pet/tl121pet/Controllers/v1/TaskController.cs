@@ -25,7 +25,7 @@ namespace tl121pet.Controllers.v1
         [HttpPost]
         public async Task<ActionResult> CompleteTask(TaskCompleteRequestDTO request)
         {
-            await _meetingService.CompleteGoalAsync(request.GoalId, request.CompleteDescription);
+            await _meetingService.CompleteGoalAsync(request.GoalId);
             return Ok();
         }
     }

@@ -24,11 +24,11 @@ namespace tl121pet.Controllers.v0_MVC
         }
 
         [HttpPost]
-        public async Task<IActionResult> CompleteGoal(Guid goalId, long? personId, string CompleteDescription)
+        public async Task<IActionResult> CompleteGoal(Guid goalId, long? personId)
         {
             if (ModelState.IsValid)
             { 
-                await _meetingService.CompleteGoalAsync(goalId, CompleteDescription);
+                await _meetingService.CompleteGoalAsync(goalId);
             }
 
             List<TaskDTO> tasks = await _taskService.GetTaskListAsync(personId);
