@@ -18,13 +18,14 @@ namespace tl121pet.Services.Interfaces
         public Task<string> GetRoleNameByIdAsync(int id);
         public Task<User?> GetUserByIdAsync(long id);
         public Task<List<ProjectTeam>> GetUserProjectsAsync(long userId);
-        public Task UpdateRoleAsync(Role role);
-        public Task CreateRoleAsync(Role role);
+        public Task<Role> UpdateRoleAsync(Role role);
+        public Task<Role> CreateRoleAsync(Role role);
         public Task DeleteRoleAsync(int roleId);
         public Task CreateUserAsync(User user);
         public Task UpdateUserAsync(User user);
         public Task DeleteUserAsync(long userId);
         public Task<List<User>> GetUserListAsync();
         public Task<List<Role>> GetRoleListAsync();
+        public Task<Role> GetRoleByIdAsync(int roleId);
     }
 }

@@ -125,10 +125,11 @@ namespace tl121pet.Services.Services
             }
         }
 
-        public async Task CreateRoleAsync(Role role)
+        public async Task<Role> CreateRoleAsync(Role role)
         {
             _dataContext.Roles.Add(role);
             await _dataContext.SaveChangesAsync();
+            return role;
         }
 
         public async Task CreateUserAsync(User user)
@@ -199,16 +200,22 @@ namespace tl121pet.Services.Services
             return usersProjects;
         }
 
-        public async Task UpdateRoleAsync(Role role)
+        public async Task<Role> UpdateRoleAsync(Role role)
         {
             _dataContext.Roles.Update(role);
             await _dataContext.SaveChangesAsync();
+            return role;
         }
 
         public async Task UpdateUserAsync(User user)
         {
             _dataContext.Users.Update(user);
             await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task<Role> GetRoleByIdAsync(int roleId)
+        {
+            return await _dataContext.Roles.FindAsync(roleId) ?? new Role();
         }
     }
 }

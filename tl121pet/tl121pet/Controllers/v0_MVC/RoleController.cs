@@ -17,7 +17,6 @@ namespace tl121pet.Controllers.v0_MVC
 
         public RoleController(DataContext dataContext, IAuthService authService)
         {
-
             _dataContext = dataContext;
             _authService = authService;
         }
