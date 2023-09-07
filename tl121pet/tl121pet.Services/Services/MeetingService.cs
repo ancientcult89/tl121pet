@@ -300,10 +300,9 @@ namespace tl121pet.Services.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task CompleteGoalAsync(Guid goalId, string completeDescription)
+        public async Task CompleteGoalAsync(Guid goalId)
         {
             MeetingGoal goal = await _dataContext.MeetingGoals.Where(g => g.MeetingGoalId == goalId).FirstOrDefaultAsync();
-            goal.CompleteDescription = completeDescription;
             goal.IsCompleted = true;
             _dataContext.MeetingGoals.Update(goal);
             await _dataContext.SaveChangesAsync();

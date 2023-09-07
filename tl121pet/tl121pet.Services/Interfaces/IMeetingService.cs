@@ -43,7 +43,7 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteGoalAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);
-        public Task CompleteGoalAsync(Guid goalId, string completeDescription);
+        public Task CompleteGoalAsync(Guid goalId);
         #endregion MeetingGoals
     }
 }

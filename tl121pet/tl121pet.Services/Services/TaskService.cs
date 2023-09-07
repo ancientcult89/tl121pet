@@ -27,11 +27,10 @@ namespace tl121pet.Services.Services
             foreach (Person p in people)
             {
                 List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsByPersonAsync(p.PersonId);
-                foreach (MeetingGoal goal in goals)
+                foreach (MeetingGoal goal in goals.Where(g => g.IsCompleted == false))
                 {
                     taskList.Add(new TaskDTO() { 
                         MeetingGoalId = goal.MeetingGoalId,
-                        CompleteDescription = goal.CompleteDescription,
                         IsCompleted = goal.IsCompleted,
                         MeetingGoalDescription = goal.MeetingGoalDescription,
                         PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
