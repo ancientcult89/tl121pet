@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace tl121pet.Entities.Infrastructure
+﻿namespace tl121pet.Entities.Infrastructure
 {
-    public enum AlertLevel { 
+    //TODO: есть сомнения по поводу необходимости данного класса в дальнейшем
+    public enum AlertLevel
+    {
         None,
         Low,
         Normal,
