@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -13,6 +14,8 @@ namespace tl121pet.Controllers.v1
         {
             _projectService = projectService;
         }
+
+        #region ProjectsReference
         [HttpGet]
         public async Task<ActionResult<List<ProjectTeam>>> GetProjectList()
         {
@@ -43,5 +46,37 @@ namespace tl121pet.Controllers.v1
             await _projectService.DeleteProjectTeamAsync(id);
             return Ok();
         }
+        #endregion ProjectsReference
+
+
+        #region PersonProjects
+        [HttpGet("personProjects/{id}")]
+        public async Task<ActionResult<List<ProjectTeam>>> GetProjectsByPersonId(long personId)
+        {
+            return await _projectService.GetPersonMembershipAsync(personId) ?? new List<ProjectTeam>();
+        }
+
+        [HttpPost("personProjects/{id}")]
+        public async Task<ActionResult> AddTeamToPerson([FromBody] ChangePersonMembershipRequestDTO request)
+        {
+            await _projectService.AddPersonMembershipAsync(request.PersonId, request.ProjectId);
+            return Ok();
+        }
+
+        [HttpDelete("personProjects/{id}")]
+        public async Task<ActionResult> DeleteTeamToPerson([FromBody] ChangePersonMembershipRequestDTO request)
+        {
+            await _projectService.DeletePersonMembershipAsync(request.PersonId, request.ProjectId);
+            return Ok();
+        }
+        #endregion PersonProjects
+
+        #region UserProjects
+        [HttpGet("userProjects/{id}")]
+        public async Task<ActionResult<List<ProjectTeam>>> GetProjectsByUserId(long userId)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion UserProjects
     }
 }

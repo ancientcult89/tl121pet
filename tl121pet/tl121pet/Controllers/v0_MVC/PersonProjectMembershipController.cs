@@ -26,7 +26,7 @@ namespace tl121pet.Controllers.v0_MVC
             List<Person> people = await _personService.GetAllPeopleAsync();
             foreach (Person person in people)
             {
-                string projects = await _projectService.GetPersonsProjectsAsync(person.PersonId);
+                string projects = await _projectService.GetPersonsProjectsAsStringAsync(person.PersonId);
                 projectMembers.Add(new ProjectMemberDTO() {
                     PersonId = person.PersonId,
                     PersonName = person.FirstName + " " + person.LastName,
