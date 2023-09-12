@@ -50,7 +50,7 @@ namespace tl121pet.Controllers.v1
 
 
         #region PersonProjects
-        [HttpGet("personProjects/{id}")]
+        [HttpGet("personProjects/{personId}")]
         public async Task<ActionResult<List<ProjectTeam>>> GetProjectsByPersonId(long personId)
         {
             return await _projectService.GetPersonMembershipAsync(personId) ?? new List<ProjectTeam>();
