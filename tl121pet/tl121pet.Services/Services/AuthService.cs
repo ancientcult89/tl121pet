@@ -178,7 +178,7 @@ namespace tl121pet.Services.Services
 
         public async Task<List<User>> GetUserListAsync()
         {
-            return await _dataContext.Users.Include(p => p.Role).ToListAsync();
+            return await _dataContext.Users.Include(p => p.Role).ToListAsync() ?? new List<User>();
         }
 
         public async Task<List<ProjectTeam>> GetUserProjectsAsync(long userId)

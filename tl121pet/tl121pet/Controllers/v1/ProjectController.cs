@@ -64,7 +64,7 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpDelete("personProjects/{id}")]
-        public async Task<ActionResult> DeleteTeamToPerson([FromBody] ChangePersonMembershipRequestDTO request)
+        public async Task<ActionResult> DeleteTeamFromPerson([FromBody] ChangePersonMembershipRequestDTO request)
         {
             await _projectService.DeletePersonMembershipAsync(request.PersonId, request.ProjectId);
             return Ok();
@@ -72,10 +72,24 @@ namespace tl121pet.Controllers.v1
         #endregion PersonProjects
 
         #region UserProjects
-        [HttpGet("userProjects/{id}")]
+        [HttpGet("userProjects/{userId}")]
         public async Task<ActionResult<List<ProjectTeam>>> GetProjectsByUserId(long userId)
         {
-            throw new NotImplementedException();
+            return await _projectService.GetUserMembershipAsync(userId); ;
+        }
+
+        [HttpPost("userProjects/{id}")]
+        public async Task<ActionResult> AddTeamToUser([FromBody] ChangeUserMembershipRequestDTO request)
+        {
+            await _projectService.AddUserMembershipAsync(request.UserId, request.ProjectId);
+            return Ok();
+        }
+
+        [HttpDelete("userProjects/{id}")]
+        public async Task<ActionResult> DeleteTeamFromUser([FromBody] ChangeUserMembershipRequestDTO request)
+        {
+            await _projectService.DeleteUserMembershipAsync(request.UserId, request.ProjectId);
+            return Ok();
         }
         #endregion UserProjects
     }

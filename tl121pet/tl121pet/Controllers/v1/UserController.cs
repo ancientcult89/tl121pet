@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -13,6 +14,14 @@ namespace tl121pet.Controllers.v1
         public UserController(IAuthService authService)
         {
             _authService = authService;
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<List<User>>> GetUserList()
+        {
+            List<User> respond = await _authService.GetUserListAsync();
+            return respond;
         }
 
         [HttpPost("register")]
