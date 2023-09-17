@@ -1,5 +1,4 @@
-﻿using tl121pet.DAL.Interfaces;
-using tl121pet.Entities.DTO;
+﻿using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -8,13 +7,12 @@ namespace tl121pet.Services.Services
     public class TaskService : ITaskService
     {
         private readonly IPersonService _personService;
-        private readonly IMeetingRepository _meetingRepository;
-        private readonly IPeopleRepository _peopleRepository;
-        public TaskService(IPersonService personService, IMeetingRepository meetingRepository, IPeopleRepository peopleRepository)
+        private readonly IMeetingService _meetingService;
+
+        public TaskService(IPersonService personService, IMeetingService meetingService)
         {
             _personService = personService;
-            _meetingRepository = meetingRepository;
-            _peopleRepository = peopleRepository;
+            _meetingService = meetingService;
         }
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
         {
@@ -22,23 +20,22 @@ namespace tl121pet.Services.Services
             List<Person> people = new List<Person>();
 
             if (personId != null)
-                people.Add(await _peopleRepository.GetPersonAsync((long)personId));
+                people.Add(await _personService.GetPersonByIdAsync((long)personId));
             else
                 people = await _personService.GetPeopleAsync();
 
             foreach (Person p in people)
             {
-                List<MeetingGoal> goals = await _meetingRepository.GetMeetingGoalsByPersonAsync(p.PersonId);
-                foreach (MeetingGoal goal in goals)
+                List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsByPersonAsync(p.PersonId);
+                foreach (MeetingGoal goal in goals.Where(g => g.IsCompleted == false))
                 {
                     taskList.Add(new TaskDTO() { 
                         MeetingGoalId = goal.MeetingGoalId,
-                        CompleteDescription = goal.CompleteDescription,
                         IsCompleted = goal.IsCompleted,
                         MeetingGoalDescription = goal.MeetingGoalDescription,
                         PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
                         PersonId = p.PersonId,
-                        FactDate = await _meetingRepository.GetFactMeetingDateByIdAsync(goal.MeetingId)
+                        FactDate = await _meetingService.GetFactMeetingDateByIdAsync(goal.MeetingId)
                     });
                 }
             }

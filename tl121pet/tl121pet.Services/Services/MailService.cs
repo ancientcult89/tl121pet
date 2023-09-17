@@ -17,19 +17,31 @@ namespace tl121pet.Services.Services
         }
         public async void SendMailAsync(MailRequest mail)
         {
-            var email = new MimeMessage();
+            MimeMessage email = BuildMailMessage(mail);
+            using var smtp = ConfigureMailServer(_settings);
+            await smtp.SendAsync(email);
+        }
+
+        private MimeMessage BuildMailMessage(MailRequest mail)
+        {
+            MimeMessage email = new MimeMessage();
             email.From.Add(MailboxAddress.Parse(_settings.Mail));
             email.To.Add(MailboxAddress.Parse(mail.ToEmail));
             email.Subject = mail.Subject;
             email.Body = new TextPart(TextFormat.Text) { Text = mail.Body };
 
-            using var smtp = new SmtpClient();
+            return email;
+        }
+
+        private SmtpClient ConfigureMailServer(MailSettings settings)
+        {
+            SmtpClient smtp = new SmtpClient();
             smtp.Connect(
                 _settings.Host,
                 _settings.Port,
                 true);
             smtp.Authenticate(_settings.Mail, _settings.Password);
-            await smtp.SendAsync(email);
+            return smtp;
         }
     }
 }

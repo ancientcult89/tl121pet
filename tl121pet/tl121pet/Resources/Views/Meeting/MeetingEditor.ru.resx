@@ -123,9 +123,6 @@
   <data name="MeetingDate" xml:space="preserve">
     <value>Дата проведения</value>
   </data>
-  <data name="MeetingType" xml:space="preserve">
-    <value>Тип встречи</value>
-  </data>
   <data name="Person" xml:space="preserve">
     <value>Сотрудник</value>
   </data>

@@ -34,9 +34,6 @@ namespace tl121pet.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("SalaryId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("GradeId");
 
                     b.ToTable("Grades");
@@ -65,8 +62,6 @@ namespace tl121pet.Migrations
 
                     b.HasKey("MeetingId");
 
-                    b.HasIndex("MeetingTypeId");
-
                     b.HasIndex("PersonId");
 
                     b.ToTable("Meetings");
@@ -77,10 +72,6 @@ namespace tl121pet.Migrations
                     b.Property<Guid>("MeetingGoalId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
-
-                    b.Property<string>("CompleteDescription")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("boolean");
@@ -234,67 +225,6 @@ namespace tl121pet.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("tl121pet.Entities.Models.Skill", b =>
-                {
-                    b.Property<long>("SkillId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SkillId"));
-
-                    b.Property<long>("SkillGroupId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("SkillTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SkillsDescription")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("SkillId");
-
-                    b.HasIndex("SkillGroupId");
-
-                    b.HasIndex("SkillTypeId");
-
-                    b.ToTable("Skills");
-                });
-
-            modelBuilder.Entity("tl121pet.Entities.Models.SkillGroup", b =>
-                {
-                    b.Property<long>("SkillGroupId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("SkillGroupId"));
-
-                    b.Property<string>("SkillGroupName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("SkillGroupId");
-
-                    b.ToTable("SkillGroups");
-                });
-
-            modelBuilder.Entity("tl121pet.Entities.Models.SkillType", b =>
-                {
-                    b.Property<int>("SkillTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SkillTypeId"));
-
-                    b.Property<string>("SkillTypeName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("SkillTypeId");
-
-                    b.ToTable("SkillTypes");
-                });
-
             modelBuilder.Entity("tl121pet.Entities.Models.User", b =>
                 {
                     b.Property<long>("Id")
@@ -366,19 +296,11 @@ namespace tl121pet.Migrations
 
             modelBuilder.Entity("tl121pet.Entities.Models.Meeting", b =>
                 {
-                    b.HasOne("tl121pet.Entities.Models.MeetingType", "MeetingType")
-                        .WithMany()
-                        .HasForeignKey("MeetingTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("tl121pet.Entities.Models.Person", "Person")
                         .WithMany()
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("MeetingType");
 
                     b.Navigation("Person");
                 });
@@ -433,25 +355,6 @@ namespace tl121pet.Migrations
                     b.Navigation("Person");
 
                     b.Navigation("ProjectTeam");
-                });
-
-            modelBuilder.Entity("tl121pet.Entities.Models.Skill", b =>
-                {
-                    b.HasOne("tl121pet.Entities.Models.SkillGroup", "SkillGroup")
-                        .WithMany()
-                        .HasForeignKey("SkillGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("tl121pet.Entities.Models.SkillType", "SkillType")
-                        .WithMany()
-                        .HasForeignKey("SkillTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SkillGroup");
-
-                    b.Navigation("SkillType");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.User", b =>

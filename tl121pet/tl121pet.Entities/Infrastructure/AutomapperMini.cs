@@ -12,7 +12,6 @@ namespace tl121pet.Entities.Infrastructure
                 MeetingId = meeting.MeetingId,
                 MeetingDate = meeting.MeetingDate,
                 MeetingPlanDate = meeting.MeetingPlanDate,
-                MeetingTypeId = meeting.MeetingTypeId,
                 PersonId = meeting.PersonId,
                 FollowUpIsSended = meeting.FollowUpIsSended
             } ?? new MeetingDTO();
@@ -25,7 +24,6 @@ namespace tl121pet.Entities.Infrastructure
                 MeetingId = meetingDTO.MeetingId,
                 MeetingDate = meetingDTO.MeetingDate,
                 MeetingPlanDate = meetingDTO.MeetingPlanDate,
-                MeetingTypeId = meetingDTO.MeetingTypeId,
                 FollowUpIsSended= meetingDTO.FollowUpIsSended,
                 PersonId = meetingDTO.PersonId
             };
@@ -50,6 +48,54 @@ namespace tl121pet.Entities.Infrastructure
                 PasswordHash = passwordHash,
                 PasswordSalt = passwordSalt,
                 RoleId = userDTO.RoleId
+            };
+        }
+
+        public MeetingNote MeetingNoteDtoToEntity(MeetingNoteDTO meetingNoteDTO)
+        {
+            MeetingNote note = new MeetingNote()
+            {
+                MeetingId = meetingNoteDTO.MeetingId,
+                FeedbackRequired = meetingNoteDTO.FeedbackRequired,
+                MeetingNoteContent = meetingNoteDTO.MeetingNoteContent,
+            };
+            if(meetingNoteDTO.MeetingNoteId != null)
+                note.MeetingNoteId = (Guid)meetingNoteDTO.MeetingNoteId;
+
+            return note;
+        }
+
+        public MeetingNoteDTO MeetingNoteEntityToDto(MeetingNote meetingNote)
+        {
+            return new MeetingNoteDTO() { 
+                MeetingNoteId = meetingNote.MeetingNoteId,
+                MeetingId = meetingNote.MeetingId,
+                MeetingNoteContent = meetingNote.MeetingNoteContent,
+                FeedbackRequired = meetingNote.FeedbackRequired,
+            };
+        }
+
+        public MeetingGoal MeetingGoalDtoToEntity(MeetingGoalDTO meetingGoalDTO)
+        {
+            MeetingGoal meetingGoal = new MeetingGoal()
+            {
+                IsCompleted = default,
+                MeetingGoalDescription = meetingGoalDTO.MeetingGoalDescription,
+                MeetingId= meetingGoalDTO.MeetingId,
+            };
+            if(meetingGoalDTO.MeetingGoalId != null)
+                meetingGoal.MeetingGoalId = (Guid)meetingGoalDTO.MeetingGoalId;
+
+            return meetingGoal;
+        }
+
+        public MeetingGoalDTO MeetingGoalEntityToDto(MeetingGoal meetingGoal)
+        {
+            return new MeetingGoalDTO() { 
+                MeetingGoalId = meetingGoal.MeetingGoalId,
+                MeetingId = meetingGoal.MeetingId,
+                IsCompleted= meetingGoal.IsCompleted,
+                MeetingGoalDescription= meetingGoal.MeetingGoalDescription,
             };
         }
     }

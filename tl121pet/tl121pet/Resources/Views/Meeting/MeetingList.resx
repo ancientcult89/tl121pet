@@ -103,9 +103,6 @@
   <data name="Person" xml:space="preserve">
     <value>Person</value>
   </data>
-  <data name="MeetingType" xml:space="preserve">
-    <value>Meeting Type</value>
-  </data>
   <data name="PlanDate" xml:space="preserve">
     <value>Plan date</value>
   </data>
