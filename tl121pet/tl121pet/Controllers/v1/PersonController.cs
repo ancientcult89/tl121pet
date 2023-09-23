@@ -6,7 +6,7 @@ namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class PersonController : ControllerBase
+    public class PersonController : ApiController
     {
         private IPersonService _personService;
         public PersonController(IPersonService personService)
