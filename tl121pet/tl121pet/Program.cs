@@ -14,25 +14,27 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
 using tl121pet;
+using System.Security.Claims;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
 
 //auth
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opts => {
-    opts.RequireHttpsMetadata = false;
-    opts.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
-builder.Services.ConfigureApplicationCookie(opts => {
-    opts.LoginPath = "/Auth/Login";
-});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddCookie(opts => { opts.LoginPath = "/auth/Login"; })
+    .AddJwtBearer(opts => {
+        opts.RequireHttpsMetadata = false;
+        opts.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:Token").Value)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero,
+        };
+    });
 
 
 builder.Services.AddControllersWithViews().AddDataAnnotationsLocalization(opts => {
@@ -104,10 +106,21 @@ app.Use(async (context, next) =>
     }
     await next();
 });
-app.UseStatusCodePages(async context => { 
-    var responce = context.HttpContext.Response;
-    if (responce.StatusCode == (int)HttpStatusCode.Unauthorized || responce.StatusCode == (int)HttpStatusCode.Forbidden)
-        responce.Redirect("/auth/AccessDenied");
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+    var request = context.HttpContext.Request;
+    bool isAnauthorized = response.StatusCode == (int)HttpStatusCode.Unauthorized;
+    bool isForbidden = response.StatusCode == (int)HttpStatusCode.Forbidden;
+
+    //дл€ что бы новый фронт не получал ответ в виде разметки со страниццей запрета доступа, 
+    //необходимо проверить Headers.Origin. ¬ случае внешнего фронтенда там будет заполнен хост,
+    //в случае MVC - будет пустота
+    //временное решение, пока не будет полностью выпелен старый фронтенд
+    bool isMVC = context.HttpContext.Request.Headers.Origin.ToString() == "";
+
+    if ((isAnauthorized || isForbidden) && isMVC)
+        response.Redirect("/auth/AccessDenied");
 });
 app.UseAuthentication();
 app.UseAuthorization();
@@ -125,6 +138,5 @@ app.MapControllerRoute(
 
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
 SeedData.SeedDatabase(context);
-
 
 app.Run();
