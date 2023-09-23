@@ -7,7 +7,7 @@ namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ProjectController : Controller
+    public class ProjectController : ApiController
     {
         private readonly IProjectService _projectService;
         public ProjectController(IProjectService projectService)
