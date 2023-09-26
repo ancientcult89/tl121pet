@@ -77,7 +77,6 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITaskService, TaskService>();
-builder.Services.AddSingleton<IAutomapperMini, AutomapperMini>();
 
 builder.Services.AddHttpContextAccessor();
 

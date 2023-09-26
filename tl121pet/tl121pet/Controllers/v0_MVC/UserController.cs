@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
-using tl121pet.Entities.Infrastructure;
+using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Storage;
@@ -13,12 +13,10 @@ namespace tl121pet.Controllers.v0_MVC
     public class UserController : Controller
     {
         private readonly IAuthService _authService;
-        private readonly IAutomapperMini _automapperMini;
 
-        public UserController(IAuthService authService, IAutomapperMini automapperMini)
+        public UserController(IAuthService authService)
         {
             _authService = authService;
-            _automapperMini = automapperMini;
         }
 
         public async Task<IActionResult> UserList()
@@ -29,7 +27,7 @@ namespace tl121pet.Controllers.v0_MVC
         public async Task<IActionResult> Edit(long id)
         {
             User? user = await _authService.GetUserByIdAsync(id);
-            UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
+            UserDTO userEditRequest = user.ToDto();
             return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                 SelectedItem = userEditRequest ?? new UserDTO(),
                 Mode = FormMode.Edit });
@@ -65,11 +63,11 @@ namespace tl121pet.Controllers.v0_MVC
             if (ModelState.IsValid)
             {
                 _authService.CreatePasswordHash(userEditRequestVM.SelectedItem.Password, out byte[] passwordHash, out byte[] passwordSalt);
-                User newUser = _automapperMini.UserDtoToEntity(userEditRequestVM.SelectedItem, passwordHash, passwordSalt);
+                User newUser = userEditRequestVM.SelectedItem.ToEntity(passwordHash, passwordSalt);
                 await _authService.CreateUserAsync(newUser);
 
                 User? user = await _authService.GetUserByEmailAsync(userEditRequestVM.SelectedItem.Email);
-                UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
+                UserDTO userEditRequest = user.ToDto();
 
                 return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                     SelectedItem = userEditRequest ?? new UserDTO(),
@@ -82,7 +80,7 @@ namespace tl121pet.Controllers.v0_MVC
         public async Task<IActionResult> Details(long id)
         {
             User? user = await _authService.GetUserByIdAsync(id);
-            UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
+            UserDTO userEditRequest = user.ToDto();
 
             return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                 SelectedItem = userEditRequest ?? new UserDTO(),
@@ -118,7 +116,7 @@ namespace tl121pet.Controllers.v0_MVC
                     user.PasswordSalt = passwordSalt;
                 }
                 await _authService.UpdateUserAsync(user);
-                UserDTO userEditRequest = _automapperMini.UserEntityToDto(user);
+                UserDTO userEditRequest = user.ToDto();
 
                 return View("UserEditor", new SimpleEditFormVM<UserDTO>() { 
                     SelectedItem = userEditRequest ?? new UserDTO(),
