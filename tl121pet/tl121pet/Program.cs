@@ -14,8 +14,6 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
 using tl121pet;
-using System.Security.Claims;
-using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
