@@ -26,7 +26,7 @@ namespace tl121pet.Services.Services
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
 
-            foreach (Person p in await _personService.GetPeopleAsync())
+            foreach (Person p in await _personService.GetPeopleFilteredByProjectsAsync())
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();

@@ -20,7 +20,7 @@ namespace tl121pet.Services.Services
         public async Task<List<PersonInitials>> GetInitialsAsync()
         {
             List<PersonInitials> personInitials = new List<PersonInitials>();
-            List<Person> people = await GetPeopleAsync();
+            List<Person> people = await GetPeopleFilteredByProjectsAsync();
             personInitials = (List<PersonInitials>)people.Select(p =>
                 new PersonInitials
                 {
@@ -30,7 +30,7 @@ namespace tl121pet.Services.Services
             return personInitials;
         }
 
-        public async Task<List<Person>> GetPeopleAsync()
+        public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
         {
             List<Person> people = new List<Person>();
             long? userId = _authService.GetMyUserId();

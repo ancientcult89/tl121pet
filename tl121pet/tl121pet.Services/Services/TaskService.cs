@@ -22,7 +22,7 @@ namespace tl121pet.Services.Services
             if (personId != null)
                 people.Add(await _personService.GetPersonByIdAsync((long)personId));
             else
-                people = await _personService.GetPeopleAsync();
+                people = await _personService.GetPeopleFilteredByProjectsAsync();
 
             foreach (Person p in people)
             {

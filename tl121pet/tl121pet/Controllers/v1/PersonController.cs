@@ -19,6 +19,12 @@ namespace tl121pet.Controllers.v1
             return await _personService.GetPeopleWithGradeAsync();
         }
 
+        [HttpGet("filtered")]
+        public async Task<ActionResult<List<Person>>> GetFilteredByProjectsPersonList()
+        {
+            return await _personService.GetPeopleFilteredByProjectsAsync();
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Person>> GetPersonById(long id)
         {

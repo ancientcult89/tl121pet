@@ -5,7 +5,7 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IPersonService
     {
-        public Task<List<Person>> GetPeopleAsync();
+        public Task<List<Person>> GetPeopleFilteredByProjectsAsync();
         public Task<List<PersonInitials>> GetInitialsAsync();
         public Task<List<Grade>> GetAllGradesAsync();
         public Task<string> GetGradeNameAsync(long id);
