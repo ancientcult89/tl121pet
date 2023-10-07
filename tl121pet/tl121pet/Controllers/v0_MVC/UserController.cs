@@ -94,7 +94,7 @@ namespace tl121pet.Controllers.v0_MVC
             return RedirectToAction("UserList");
         }
 
-        public IActionResult ChangePassword(long userId)
+        public IActionResult OldChangePassword(long userId)
         {
             return View("ChangePassword", new SimpleEditFormVM<ChangeUserPasswordRequestDTO>() { 
                 SelectedItem = new ChangeUserPasswordRequestDTO() { UserId = userId },
@@ -103,7 +103,7 @@ namespace tl121pet.Controllers.v0_MVC
         }
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword([FromForm] SimpleEditFormVM<ChangeUserPasswordRequestDTO> changePasswordRequest)
+        public async Task<IActionResult> OldChangePassword([FromForm] SimpleEditFormVM<ChangeUserPasswordRequestDTO> changePasswordRequest)
         {
             //TODO: сейчас не понятно - сменили мы пароль или нет
             if (ModelState.IsValid)

@@ -15,5 +15,17 @@ namespace tl121pet.Entities.Extensions
                 RoleId = user.RoleId
             };
         }
+
+        public static UserResponseDTO ToResponseDto(this User user)
+        {
+            return new UserResponseDTO()
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                RoleId = user.RoleId,
+                Role = user.Role
+            };
+        }
     }
 }

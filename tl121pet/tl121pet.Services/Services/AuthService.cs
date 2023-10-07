@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -82,7 +83,8 @@ namespace tl121pet.Services.Services
                 return null;
         }
 
-        public async Task<User?> LoginAsync(UserLoginRequestDTO request)
+        [Obsolete]
+        public async Task<User?> OldLoginAsync(UserLoginRequestDTO request)
         {
             User user = await GetUserByEmailAsync(request.Email);
             if (user == null)
@@ -100,6 +102,24 @@ namespace tl121pet.Services.Services
             return null;
         }
 
+        public async Task<string> LoginAsync(UserLoginRequestDTO request)
+        {
+            User user = await GetUserByEmailAsync(request.Email);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                string token = await CreateTokenAsync(user);
+
+                //temporary
+                Role = "Admin";
+                return token;
+            }
+
+            throw new Exception("Wrong password");
+        }
+
         public async Task Register(UserRegisterRequestDTO request)
         {
             User existsUser = await GetUserByEmailAsync(request.Email);
@@ -114,6 +134,24 @@ namespace tl121pet.Services.Services
                 PasswordSalt = passwordSalt
             };
             await CreateUserAsync(newUser);
+        }
+
+        public async Task ChangePasswordAsync(ChangeUserPasswordRequestDTO changeUserPasswordRequest)
+        {
+            User user = await GetUserByIdAsync(changeUserPasswordRequest.UserId);
+            if (user == null)
+                throw new Exception("User not found");
+            if (VerifyPasswordHash(changeUserPasswordRequest.CurrentPassword, user.PasswordHash, user.PasswordSalt))
+            {
+                CreatePasswordHash(changeUserPasswordRequest.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                await UpdateUserAsync(user);
+            }
+            else
+            {
+                throw new Exception("Wrong password");
+            }
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -216,6 +254,22 @@ namespace tl121pet.Services.Services
         public async Task<Role> GetRoleByIdAsync(int roleId)
         {
             return await _dataContext.Roles.FindAsync(roleId) ?? new Role();
+        }
+
+        public async Task<UserDTO> UpdateUserAsync(UserDTO userDto)
+        {
+            User user = await GetUserByIdAsync(userDto.Id);
+
+            if (user == null)
+                throw new Exception("User not found");
+
+            user.UserName = userDto.UserName;
+            user.Email = userDto.Email;
+            user.RoleId = userDto.RoleId;
+
+            await UpdateUserAsync(user);
+
+            return user.ToDto();
         }
     }
 }
