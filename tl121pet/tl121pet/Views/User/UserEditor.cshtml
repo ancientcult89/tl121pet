@@ -55,6 +55,6 @@
             </button>       
         }
         <a class="btn btn-secondary mt-2" asp-action="UserList">@Localizer["Back"]</a>
-        <a class="btn btn-warning mt-2" asp-action="ChangePassword" asp-route-userId="@Model.SelectedItem.Id">@Localizer["ChangePassword"]</a>
+        <a class="btn btn-warning mt-2" asp-action="OldChangePassword" asp-route-userId="@Model.SelectedItem.Id">@Localizer["ChangePassword"]</a>
     </form>
 </div>

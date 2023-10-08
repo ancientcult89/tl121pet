@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -18,35 +19,76 @@ namespace tl121pet.Controllers.v1
 
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetUserList()
+        public async Task<ActionResult<List<UserResponseDTO>>> GetUserList()
         {
             List<User> respond = await _authService.GetUserListAsync();
-            return respond;
+            return respond.Select(u => u.ToResponseDto()).ToList();
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<int>> CreateUser()
+        public async Task<ActionResult> RegisterUser([FromBody] UserRegisterRequestDTO request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _authService.RegisterAsync(request);
+                return Ok();
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login([FromBody] UserLoginRequestDTO loginRequest)
         {
-            string res = "";
-            User? user = await _authService.LoginAsync(loginRequest);
-            if (user != null)
+            try
             {
-                res = await _authService.CreateTokenAsync(user);
-                return res;
+                return await _authService.LoginAsync(loginRequest);
             }
-            else return BadRequest("Wrong password or username");
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
-        [HttpPut("changepassword")]
-        public async Task<ActionResult> ChangePassword(int id)
+        [Authorize]
+        [HttpPut("{id}/changepassword")]
+        public async Task<ActionResult> ChangePassword([FromBody] ChangeUserPasswordRequestDTO changeUserPasswordRequest)
         {
-            throw new NotImplementedException();
+            try
+            { 
+                await _authService.ChangePasswordAsync(changeUserPasswordRequest);
+                return Ok();
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserDTO>> GetUserById(long id)
+        {
+            User? user = await _authService.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound();
+            else 
+                return user.ToDto();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserDTO>> UpdateUser([FromBody] UserDTO user)
+        {
+            return await _authService.UpdateUserAsync(user);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(long id)
+        {
+            await _authService.DeleteUserAsync(id);
+            return Ok();
         }
     }
 }

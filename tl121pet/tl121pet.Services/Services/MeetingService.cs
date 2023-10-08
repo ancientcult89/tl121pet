@@ -66,37 +66,6 @@ namespace tl121pet.Services.Services
             return meetingsByPerson;
         }
 
-        #region MeetingType
-        public async Task CreateMeetingTypeAsync(MeetingType mt)
-        {
-            _dataContext.MeetingTypes.Add(mt);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task DeleteMeetingTypeAsync(int id)
-        {
-            var meetingTypeToDelete = _dataContext.MeetingTypes.Find(id);
-            _dataContext.MeetingTypes.Remove(meetingTypeToDelete);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task UpdateMeetingTypeAsync(MeetingType mt)
-        {
-            _dataContext.MeetingTypes.Update(mt);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task<List<MeetingType>> GetAllMeetingTypesAsync()
-        {
-            return await _dataContext.MeetingTypes.ToListAsync();
-        }
-
-        public async Task<MeetingType> GetMeetingTypeByIdAsync(int meetingTypeId)
-        {
-            return await _dataContext.MeetingTypes.FindAsync(meetingTypeId) ?? new MeetingType();
-        }
-        #endregion MeetingType
-
         #region Meeting
         public async Task<Meeting> GetMeetingByIdAsync(Guid id)
         {

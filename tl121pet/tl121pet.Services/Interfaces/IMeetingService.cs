@@ -17,14 +17,6 @@ namespace tl121pet.Services.Interfaces
         public Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId);
         #endregion Meetings
 
-        #region MeetingTypes
-        public Task CreateMeetingTypeAsync(MeetingType mt);
-        public Task UpdateMeetingTypeAsync(MeetingType mt);
-        public Task DeleteMeetingTypeAsync(int id);
-        public Task<List<MeetingType>> GetAllMeetingTypesAsync();
-        public Task<MeetingType> GetMeetingTypeByIdAsync(int meetingTypeId);
-        #endregion MeetingTypes
-
         #region MeetingNotes
         public Task<MeetingNote> AddNoteAsync(Guid id, string content, bool feedbackRequired);
         public Task<MeetingNote> AddNoteAsync(MeetingNote meetingNote);

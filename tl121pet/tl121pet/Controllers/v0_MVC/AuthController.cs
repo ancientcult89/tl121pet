@@ -33,7 +33,7 @@ namespace tl121pet.Controllers.v0_MVC
         private async Task<string> LoginApi(UserLoginRequestDTO loginRequest)
         {
             string res = "";
-            User? user = await _authService.LoginAsync(loginRequest);
+            User? user = await _authService.OldLoginAsync(loginRequest);
             if(user != null)
                 res = await _authService.CreateTokenAsync(user);
             return res;

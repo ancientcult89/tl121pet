@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -82,7 +83,8 @@ namespace tl121pet.Services.Services
                 return null;
         }
 
-        public async Task<User?> LoginAsync(UserLoginRequestDTO request)
+        [Obsolete]
+        public async Task<User?> OldLoginAsync(UserLoginRequestDTO request)
         {
             User user = await GetUserByEmailAsync(request.Email);
             if (user == null)
@@ -100,11 +102,32 @@ namespace tl121pet.Services.Services
             return null;
         }
 
-        public async Task Register(UserRegisterRequestDTO request)
+        public async Task<string> LoginAsync(UserLoginRequestDTO request)
         {
-            User existsUser = await GetUserByEmailAsync(request.Email);
-            if (existsUser != null)
-                return;
+            User user = await GetUserByEmailAsync(request.Email);
+            if (user == null)
+                throw new Exception("User not found");
+
+            if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                string token = await CreateTokenAsync(user);
+
+                //temporary
+                Role = "Admin";
+                return token;
+            }
+
+            throw new Exception("Wrong password");
+        }
+
+        public async Task RegisterAsync(UserRegisterRequestDTO request)
+        {
+            User existsUserByEmail = await GetUserByEmailAsync(request.Email);
+            if (existsUserByEmail != null)
+                throw new Exception("A User with the same email already exists");
+            User existsUserByName = await GetUserByNameAsync(request.UserName);
+            if (existsUserByName != null)
+                throw new Exception("A User with the same UserName already exists");
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
             User newUser = new User { 
@@ -114,6 +137,24 @@ namespace tl121pet.Services.Services
                 PasswordSalt = passwordSalt
             };
             await CreateUserAsync(newUser);
+        }
+
+        public async Task ChangePasswordAsync(ChangeUserPasswordRequestDTO changeUserPasswordRequest)
+        {
+            User user = await GetUserByIdAsync(changeUserPasswordRequest.UserId);
+            if (user == null)
+                throw new Exception("User not found");
+            if (VerifyPasswordHash(changeUserPasswordRequest.CurrentPassword, user.PasswordHash, user.PasswordSalt))
+            {
+                CreatePasswordHash(changeUserPasswordRequest.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
+                user.PasswordHash = passwordHash;
+                user.PasswordSalt = passwordSalt;
+                await UpdateUserAsync(user);
+            }
+            else
+            {
+                throw new Exception("Wrong password");
+            }
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -132,13 +173,11 @@ namespace tl121pet.Services.Services
             return role;
         }
 
-        public async Task CreateUserAsync(User user)
+        public async Task<User> CreateUserAsync(User user)
         {
-            if (user != null)
-            {
-                _dataContext.Users.Add(user);
-                await _dataContext.SaveChangesAsync();
-            }
+            _dataContext.Users.Add(user);
+            await _dataContext.SaveChangesAsync();
+            return user;
         }
 
         public async Task DeleteRoleAsync(int roleId)
@@ -160,15 +199,31 @@ namespace tl121pet.Services.Services
             return await _dataContext.Roles.ToListAsync();
         }
 
-        public async Task<string> GetRoleNameByIdAsync(int id)
+        public async Task<string> GetRoleNameByIdAsync(int? id)
         {
-            Role role = await _dataContext.Roles.FindAsync(id);
-            return role.RoleName;
+            if (id != null)
+            {
+                Role role = await _dataContext.Roles.FindAsync(id);
+                return role.RoleName;
+            }
+            else
+                return string.Empty;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _dataContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
+            return await _dataContext.Users
+                .Where(u => u.Email == email)
+                .Include(r => r.Role)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<User?> GetUserByNameAsync(string userName)
+        {
+            return await _dataContext.Users
+                .Where(u => u.UserName == userName)
+                .Include(r => r.Role)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<User?> GetUserByIdAsync(long id)
@@ -216,6 +271,22 @@ namespace tl121pet.Services.Services
         public async Task<Role> GetRoleByIdAsync(int roleId)
         {
             return await _dataContext.Roles.FindAsync(roleId) ?? new Role();
+        }
+
+        public async Task<UserDTO> UpdateUserAsync(UserDTO userDto)
+        {
+            User user = await GetUserByIdAsync(userDto.Id);
+
+            if (user == null)
+                throw new Exception("User not found");
+
+            user.UserName = userDto.UserName;
+            user.Email = userDto.Email;
+            user.RoleId = userDto.RoleId;
+
+            await UpdateUserAsync(user);
+
+            return user.ToDto();
         }
     }
 }

@@ -14,7 +14,6 @@ namespace tl121pet.DAL.Data
         public DbSet<ProjectTeam> ProjectTeams => Set<ProjectTeam>();
         public DbSet<Grade> Grades => Set<Grade>();
         public DbSet<Meeting> Meetings => Set<Meeting>();
-        public DbSet<MeetingType> MeetingTypes => Set<MeetingType>();
         public DbSet<MeetingGoal> MeetingGoals => Set<MeetingGoal>();
         public DbSet<MeetingNote> MeetingNotes => Set<MeetingNote>();
         public DbSet<User> Users => Set<User>();
