@@ -7,7 +7,7 @@ namespace tl121pet.Services.Interfaces
     {
         public string GetMyRole();
         public long? GetMyUserId();
-        public Task Register(UserRegisterRequestDTO request);
+        public Task RegisterAsync(UserRegisterRequestDTO request);
         public Task ChangePasswordAsync(ChangeUserPasswordRequestDTO changeUserPasswordRequest);
         public Task<User?> OldLoginAsync(UserLoginRequestDTO request);
 
@@ -18,13 +18,14 @@ namespace tl121pet.Services.Interfaces
         public string Role { get; set; }
 
         public Task<User?> GetUserByEmailAsync(string email);
-        public Task<string> GetRoleNameByIdAsync(int id);
+        public Task<User?> GetUserByNameAsync(string userName);
+        public Task<string> GetRoleNameByIdAsync(int? id);
         public Task<User?> GetUserByIdAsync(long id);
         public Task<List<ProjectTeam>> GetUserProjectsAsync(long userId);
         public Task<Role> UpdateRoleAsync(Role role);
         public Task<Role> CreateRoleAsync(Role role);
         public Task DeleteRoleAsync(int roleId);
-        public Task CreateUserAsync(User user);
+        public Task<User> CreateUserAsync(User user);
         public Task UpdateUserAsync(User user);
         public Task<UserDTO> UpdateUserAsync(UserDTO user);
         public Task DeleteUserAsync(long userId);

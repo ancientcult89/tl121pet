@@ -120,11 +120,14 @@ namespace tl121pet.Services.Services
             throw new Exception("Wrong password");
         }
 
-        public async Task Register(UserRegisterRequestDTO request)
+        public async Task RegisterAsync(UserRegisterRequestDTO request)
         {
-            User existsUser = await GetUserByEmailAsync(request.Email);
-            if (existsUser != null)
-                return;
+            User existsUserByEmail = await GetUserByEmailAsync(request.Email);
+            if (existsUserByEmail != null)
+                throw new Exception("A User with the same email already exists");
+            User existsUserByName = await GetUserByNameAsync(request.UserName);
+            if (existsUserByName != null)
+                throw new Exception("A User with the same UserName already exists");
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
             User newUser = new User { 
@@ -170,13 +173,11 @@ namespace tl121pet.Services.Services
             return role;
         }
 
-        public async Task CreateUserAsync(User user)
+        public async Task<User> CreateUserAsync(User user)
         {
-            if (user != null)
-            {
-                _dataContext.Users.Add(user);
-                await _dataContext.SaveChangesAsync();
-            }
+            _dataContext.Users.Add(user);
+            await _dataContext.SaveChangesAsync();
+            return user;
         }
 
         public async Task DeleteRoleAsync(int roleId)
@@ -198,15 +199,31 @@ namespace tl121pet.Services.Services
             return await _dataContext.Roles.ToListAsync();
         }
 
-        public async Task<string> GetRoleNameByIdAsync(int id)
+        public async Task<string> GetRoleNameByIdAsync(int? id)
         {
-            Role role = await _dataContext.Roles.FindAsync(id);
-            return role.RoleName;
+            if (id != null)
+            {
+                Role role = await _dataContext.Roles.FindAsync(id);
+                return role.RoleName;
+            }
+            else
+                return string.Empty;
         }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
-            return await _dataContext.Users.Where(u => u.Email == email).FirstOrDefaultAsync();
+            return await _dataContext.Users
+                .Where(u => u.Email == email)
+                .Include(r => r.Role)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<User?> GetUserByNameAsync(string userName)
+        {
+            return await _dataContext.Users
+                .Where(u => u.UserName == userName)
+                .Include(r => r.Role)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<User?> GetUserByIdAsync(long id)

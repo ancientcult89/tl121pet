@@ -16,7 +16,7 @@ namespace tl121pet.Entities.DTO
 
         public string Password { get; set; } = string.Empty;
 
-        [Range(1, long.MaxValue, ErrorMessage = "Required")]
-        public int RoleId { get; set; }
+        [Range(1, long.MaxValue)]
+        public int? RoleId { get; set; }
     }
 }

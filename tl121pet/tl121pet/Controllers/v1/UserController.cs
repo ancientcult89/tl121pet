@@ -26,9 +26,17 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<int>> CreateUser()
+        public async Task<ActionResult> RegisterUser([FromBody] UserRegisterRequestDTO request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await _authService.RegisterAsync(request);
+                return Ok();
+            }
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("login")]
