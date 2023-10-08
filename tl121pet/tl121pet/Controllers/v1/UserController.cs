@@ -34,11 +34,9 @@ namespace tl121pet.Controllers.v1
         [HttpPost("login")]
         public async Task<ActionResult<string>> Login([FromBody] UserLoginRequestDTO loginRequest)
         {
-            string res = "";
             try
             {
-                res = await _authService.LoginAsync(loginRequest);
-                return res;
+                return await _authService.LoginAsync(loginRequest);
             }
             catch (Exception ex)
             {

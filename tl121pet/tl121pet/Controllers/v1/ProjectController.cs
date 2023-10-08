@@ -48,7 +48,6 @@ namespace tl121pet.Controllers.v1
         }
         #endregion ProjectsReference
 
-
         #region PersonProjects
         [HttpGet("personProjects/{personId}")]
         public async Task<ActionResult<List<ProjectTeam>>> GetProjectsByPersonId(long personId)
