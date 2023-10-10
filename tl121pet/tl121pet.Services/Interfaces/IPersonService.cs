@@ -7,13 +7,7 @@ namespace tl121pet.Services.Interfaces
     {
         public Task<List<Person>> GetPeopleFilteredByProjectsAsync();
         public Task<List<PersonInitials>> GetInitialsAsync();
-        public Task<List<Grade>> GetAllGradesAsync();
         public Task<string> GetGradeNameAsync(long id);
-
-        public Task<Grade> CreateGradeAsync(Grade grade);
-        public Task<Grade> UpdateGradeAsync(Grade grade);
-        public Task DeleteGradeAsync(long id);
-        public Task<Grade> GetGradeByIdAsync(long id);
 
         public Task<Person> CreatePersonAsync(Person person);
         public Task<Person> UpdatePersonAsync(Person person);

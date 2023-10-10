@@ -57,43 +57,11 @@ namespace tl121pet.Services.Services
             return peopleFiltered;
         }
 
-        public async Task<List<Grade>> GetAllGradesAsync()
-        {
-            return await _dataContext.Grades.ToListAsync();
-        }
-
+        [Obsolete]
         public async Task<string> GetGradeNameAsync(long id)
         {
             Grade selectedGrade = await _dataContext.Grades.FindAsync(id);
             return selectedGrade.GradeName ?? "not found";
-        }
-
-        public async Task<Grade> CreateGradeAsync(Grade grade)
-        {
-            _dataContext.Grades.Add(grade);
-            await _dataContext.SaveChangesAsync();
-            return grade;
-        }
-
-        public async Task<Grade> UpdateGradeAsync(Grade grade)
-        {
-            _dataContext.Grades.Update(grade);
-            await _dataContext.SaveChangesAsync();
-            return grade;
-        }
-
-        public async Task DeleteGradeAsync(long id)
-        {
-            var gradeToDelete = _dataContext.Grades.Find(id);
-            if (gradeToDelete == null)
-                throw new Exception("Grade to delete not found");
-            _dataContext.Grades.Remove(gradeToDelete);
-            await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task<Grade> GetGradeByIdAsync(long id)
-        {
-            return await _dataContext.Grades.FindAsync(id) ?? throw new Exception("Grade not found");
         }
 
         public async Task<Person> CreatePersonAsync(Person person)
@@ -159,6 +127,7 @@ namespace tl121pet.Services.Services
                 }
             ).ToListAsync();
 
+            //TODO: не очень оптимальная штука, можно выше получить грейд
             foreach (var p in await people)
             {
                 Person person = new Person()

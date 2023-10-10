@@ -10,21 +10,21 @@ namespace tl121pet.Controllers.v0_MVC
     [Authorize]
     public class GradeController : Controller
     {
-        private IPersonService _personService;
-        public GradeController(IPersonService personService)
-        { 
-            _personService = personService;
+        private IGradeService _gradeService;
+        public GradeController(IGradeService gradeService)
+        {
+            _gradeService = gradeService;
         }
 
         public async Task<IActionResult> GradeList()
         {
-            return View("GradeList", await _personService.GetAllGradesAsync());
+            return View("GradeList", await _gradeService.GetAllGradesAsync());
         }
 
         public async Task<IActionResult> Edit(long id)
         {
             return View("GradeEditor", new SimpleEditFormVM<Grade>() { 
-                SelectedItem = await _personService.GetGradeByIdAsync(id),
+                SelectedItem = await _gradeService.GetGradeByIdAsync(id),
                 Mode = FormMode.Edit });
         }
 
@@ -33,7 +33,7 @@ namespace tl121pet.Controllers.v0_MVC
         {
             if (ModelState.IsValid)
             {
-                await _personService.UpdateGradeAsync(gradeVM.SelectedItem);
+                await _gradeService.UpdateGradeAsync(gradeVM.SelectedItem);
                 return View("GradeEditor", gradeVM);
             }
             return View("GradeEditor", gradeVM);
@@ -42,7 +42,7 @@ namespace tl121pet.Controllers.v0_MVC
         public async Task<IActionResult> Details(long id)
         {
             return View("GradeEditor", new SimpleEditFormVM<Grade>() { 
-                SelectedItem = await _personService.GetGradeByIdAsync(id),
+                SelectedItem = await _gradeService.GetGradeByIdAsync(id),
                 Mode = FormMode.Details });
         }
 
@@ -58,7 +58,7 @@ namespace tl121pet.Controllers.v0_MVC
         {
             if (ModelState.IsValid)
             {
-                await _personService.CreateGradeAsync(gradeVM.SelectedItem);
+                await _gradeService.CreateGradeAsync(gradeVM.SelectedItem);
                 gradeVM.Mode = FormMode.Edit;
                 return View("GradeEditor", gradeVM);
             }
@@ -69,7 +69,7 @@ namespace tl121pet.Controllers.v0_MVC
         [HttpPost]
         public async Task<IActionResult> Delete(long id)
         {
-            await _personService.DeleteGradeAsync(id);
+            await _gradeService.DeleteGradeAsync(id);
             return RedirectToAction("GradeList");
         }
     }

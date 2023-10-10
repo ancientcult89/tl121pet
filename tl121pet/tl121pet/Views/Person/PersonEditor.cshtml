@@ -1,4 +1,4 @@
-﻿@inject IPersonService _personService
+﻿@inject IGradeService _gradeService
 @model SimpleEditFormVM<Person>
 @inject IViewLocalizer Localizer
 <partial name="_Validation"></partial>
@@ -54,7 +54,7 @@
             <div>
                 <span asp-validation-for="SelectedItem.GradeId" class="text-danger"></span>
             </div>
-            <select asp-for="SelectedItem.GradeId" class="form-control" asp-items="@(new SelectList(await _personService.GetAllGradesAsync(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
+            <select asp-for="SelectedItem.GradeId" class="form-control" asp-items="@(new SelectList(await _gradeService.GetAllGradesAsync(), "GradeId", "GradeName"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseGrade"]</option>
             </select>
         </div>

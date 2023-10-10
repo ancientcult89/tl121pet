@@ -71,6 +71,7 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailS
 builder.Services.AddScoped<IOneToOneService, OneToOneService>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
+builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
