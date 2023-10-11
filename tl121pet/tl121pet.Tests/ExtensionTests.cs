@@ -35,7 +35,7 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// Метод проверяет что метод расширения класса Meeting возвращает корректную DTO
+        /// Метод проверяет что метод расширения класса MeetingDTO возвращает корректную сущность
         /// </summary>
         [Fact]
         public void MeetingDtoToEntity_ShouldReturnsCorrectEntity()
