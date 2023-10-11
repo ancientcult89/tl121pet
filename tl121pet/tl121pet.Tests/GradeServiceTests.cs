@@ -129,7 +129,7 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// Проверка создания грейда, убеждаемся, что при попытке внести грейд с существующим именем получим ошибку
+        /// Положительная проверка изменения грейда
         /// </summary>
         [Fact]
         public async void UpdateGradeAsync_ShouldChangeGradeName()
