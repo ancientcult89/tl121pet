@@ -18,9 +18,7 @@ namespace tl121pet.Services.Services
         }
         public async Task<Grade> CreateGradeAsync(Grade grade)
         {
-            var examGrade = await _dataContext.Grades.Where(g => g.GradeName == grade.GradeName).FirstOrDefaultAsync();
-            if (examGrade != null)
-                throw new Exception("An Grade with this name exists");
+            await CheckGradeExists(grade);
 
             _dataContext.Grades.Add(grade);
             await _dataContext.SaveChangesAsync();
@@ -29,6 +27,8 @@ namespace tl121pet.Services.Services
 
         public async Task<Grade> UpdateGradeAsync(Grade grade)
         {
+            await CheckGradeExists(grade);
+
             _dataContext.Grades.Update(grade);
             await _dataContext.SaveChangesAsync();
             return grade;
@@ -46,6 +46,13 @@ namespace tl121pet.Services.Services
         public async Task<Grade> GetGradeByIdAsync(long id)
         {
             return await _dataContext.Grades.FindAsync(id) ?? throw new Exception("Grade not found");
+        }
+
+        private async Task CheckGradeExists(Grade grade)
+        {
+            var examGrade = await _dataContext.Grades.Where(g => g.GradeName == grade.GradeName).FirstOrDefaultAsync();
+            if (examGrade != null)
+                throw new Exception("An Grade with this name exists");
         }
     }
 }

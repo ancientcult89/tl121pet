@@ -150,5 +150,30 @@ namespace tl121pet.Tests
             // Assert
             testGrade.Should().BeEquivalentTo(expectGrade);
         }
+
+        /// <summary>
+        /// Проверка создобновления ания грейда, убеждаемся, что при попытке внести имя, которое уже существует в другой записи получим ошибку
+        /// </summary>
+        [Fact]
+        public async void UpdateGradeAsync_CreatingDuplicateShouldThrowExeption()
+        {
+            //Arrange
+            Grade expectGrade = (Grade)GradeTestData.GetSingleGrade();
+            await _gradeService.CreateGradeAsync(expectGrade);
+            Grade expectGrade2 = new Grade
+            {
+                GradeId = 2,
+                GradeName = "Testing Name",
+            };
+            await _gradeService.CreateGradeAsync(expectGrade2);
+
+            expectGrade2.GradeName = "Junior";
+
+            // Act
+            var result = async () => await _gradeService.UpdateGradeAsync(expectGrade2);
+
+            // Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("An Grade with this name exists");
+        }
     }
 }
