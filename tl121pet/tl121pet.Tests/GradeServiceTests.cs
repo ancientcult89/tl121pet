@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -69,7 +68,7 @@ namespace tl121pet.Tests
         public async void GetGradeByIdAsync_ShouldReturnCorrectGrade()
         {
             //Arrange
-            Grade expectGrade = (Grade)GradeTestData.GetSingleGrade();
+            Grade expectGrade = GradeTestData.GetSingleGrade();
             _dataContext.Grades.Add(expectGrade);
             _dataContext.SaveChanges();
 
@@ -100,7 +99,7 @@ namespace tl121pet.Tests
         public async void CreateGradeAsync_ShouldCreateGrade()
         {
             //Arrange
-            Grade expectGrade = (Grade)GradeTestData.GetSingleGrade();
+            Grade expectGrade = GradeTestData.GetSingleGrade();
             await _gradeService.CreateGradeAsync(expectGrade);
 
             //Act
@@ -117,15 +116,15 @@ namespace tl121pet.Tests
         public async void CreateGradeAsync_CreatingDuplicateShouldThrowExeption()
         {
             //Arrange
-            Grade expectGrade = (Grade)GradeTestData.GetSingleGrade();
+            Grade expectGrade = GradeTestData.GetSingleGrade();
             await _gradeService.CreateGradeAsync(expectGrade);
-            Grade expectGrade2 = (Grade)GradeTestData.GetAnotherSingleGrade();
+            Grade expectGrade2 = GradeTestData.GetAnotherSingleGrade();
 
             // Act
             var result = async () => await _gradeService.CreateGradeAsync(expectGrade2);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("An Grade with this name exists");
+            await result.Should().ThrowAsync<Exception>().WithMessage("A Grade with this name exists");
         }
 
         /// <summary>
@@ -135,7 +134,7 @@ namespace tl121pet.Tests
         public async void UpdateGradeAsync_ShouldChangeGradeName()
         {
             //Arrange
-            Grade testGrade = (Grade)GradeTestData.GetSingleGrade();
+            Grade testGrade = GradeTestData.GetSingleGrade();
             await _gradeService.CreateGradeAsync(testGrade);
             Grade expectGrade = new Grade
             {
@@ -152,13 +151,13 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// Проверка создобновления ания грейда, убеждаемся, что при попытке внести имя, которое уже существует в другой записи получим ошибку
+        /// Проверка обновления грейда, убеждаемся, что при попытке внести имя, которое уже существует в другой записи получим ошибку
         /// </summary>
         [Fact]
         public async void UpdateGradeAsync_CreatingDuplicateShouldThrowExeption()
         {
             //Arrange
-            Grade expectGrade = (Grade)GradeTestData.GetSingleGrade();
+            Grade expectGrade = GradeTestData.GetSingleGrade();
             await _gradeService.CreateGradeAsync(expectGrade);
             Grade expectGrade2 = new Grade
             {
@@ -173,7 +172,58 @@ namespace tl121pet.Tests
             var result = async () => await _gradeService.UpdateGradeAsync(expectGrade2);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("An Grade with this name exists");
+            await result.Should().ThrowAsync<Exception>().WithMessage("A Grade with this name exists");
+        }
+
+        /// <summary>
+        /// Убеждаемся что при попытке обновить несуществующий грейд мы получим ошибку
+        /// </summary>
+        [Fact]
+        public async void UpdateNotExistsGrade_ShouldThrowException()
+        { 
+            //Arrange
+            Grade testGrade = GradeTestData.GetSingleGrade();
+
+            //Act
+            var result = async () => await _gradeService.UpdateGradeAsync(testGrade);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Grade not found");
+        }
+
+        /// <summary>
+        /// Проверяем что удаление грейда действительно его удаляет
+        /// </summary>
+        [Fact]
+        public async void DeleteGradeAsync_ShouldDeleteGrade()
+        { 
+            //arrange
+            Grade grade = GradeTestData.GetSingleGrade();
+            _dataContext.Grades.Add(grade);
+            _dataContext.SaveChanges();
+
+            //act
+            await _gradeService.DeleteGradeAsync(grade.GradeId);
+            Grade notExistGrade = _dataContext.Grades.Find(grade.GradeId);
+
+            //assert
+            notExistGrade.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Проверяем что при попытке удалить несуществующий грейд получим соответсвующую ошибку
+        /// </summary>
+        [Fact]
+        public async void DeleteNotExistsGrade_ShouldThrowException()
+        {
+            //arrange
+            Grade grade = GradeTestData.GetSingleGrade();
+
+            //act
+            var result = async () => await _gradeService.DeleteGradeAsync(grade.GradeId);
+
+            //assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Grade not found");
         }
     }
 }
