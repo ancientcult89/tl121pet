@@ -1,4 +1,6 @@
-﻿namespace tl121pet.Entities.Models
+﻿using tl121pet.Entities.Infrastructure;
+
+namespace tl121pet.Entities.Models
 {
     public class User
     {
@@ -13,5 +15,6 @@
         public DateTime? ResetTokenExpired { get; set; }
         public int? RoleId { get; set; }
         public Role? Role { get; set; }
+        public Locale Locale { get; set; } 
     }
 }

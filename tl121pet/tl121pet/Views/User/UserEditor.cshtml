@@ -1,4 +1,4 @@
-﻿@inject IAuthService _authService
+﻿@inject IRoleService _roleService
 @model SimpleEditFormVM<UserDTO>
 @inject IViewLocalizer Localizer
 <partial name="_Validation"></partial>
@@ -43,7 +43,7 @@
             <div>
                 <span asp-validation-for="SelectedItem.RoleId" class="text-danger"></span>
             </div>
-            <select asp-for="SelectedItem.RoleId" class="form-control" asp-items="@(new SelectList(await _authService.GetRoleListAsync(), "RoleId", "RoleName"))" disabled="@Model.IsReadonly">
+            <select asp-for="SelectedItem.RoleId" class="form-control" asp-items="@(new SelectList(await _roleService.GetRoleListAsync(), "RoleId", "RoleName"))" disabled="@Model.IsReadonly">
                 <option value="" disabled selected>@Localizer["ChooseRole"]</option>
             </select>
         </div>

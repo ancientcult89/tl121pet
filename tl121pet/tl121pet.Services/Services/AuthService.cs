@@ -58,19 +58,6 @@ namespace tl121pet.Services.Services
             return jwt;
         }
 
-        //TODO: вспомнить какую логику я хотел авязать на получение роли
-        public string GetMyRole()
-        {
-            var result = string.Empty;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Role);
-                return result;
-            }
-            else
-                return "no role";
-        }
-
         public long? GetMyUserId()
         {
             var result = string.Empty;
@@ -102,7 +89,7 @@ namespace tl121pet.Services.Services
             return null;
         }
 
-        public async Task<string> LoginAsync(UserLoginRequestDTO request)
+        public async Task<LoginResponse> LoginAsync(UserLoginRequestDTO request)
         {
             User user = await GetUserByEmailAsync(request.Email);
             if (user == null)
@@ -111,10 +98,12 @@ namespace tl121pet.Services.Services
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 string token = await CreateTokenAsync(user);
-
-                //temporary
-                Role = "Admin";
-                return token;
+                LoginResponse loginResponse = new LoginResponse() { 
+                    User = user,
+                    Role = user.Role,
+                    Token = token
+                };
+                return loginResponse;
             }
 
             throw new Exception("Wrong password");
@@ -166,25 +155,11 @@ namespace tl121pet.Services.Services
             }
         }
 
-        public async Task<Role> CreateRoleAsync(Role role)
-        {
-            _dataContext.Roles.Add(role);
-            await _dataContext.SaveChangesAsync();
-            return role;
-        }
-
         public async Task<User> CreateUserAsync(User user)
         {
             _dataContext.Users.Add(user);
             await _dataContext.SaveChangesAsync();
             return user;
-        }
-
-        public async Task DeleteRoleAsync(int roleId)
-        {
-            Role role = _dataContext.Roles.Find(roleId);
-            _dataContext.Roles.Remove(role);
-            await _dataContext.SaveChangesAsync();
         }
 
         public async Task DeleteUserAsync(long userId)
@@ -194,21 +169,7 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<Role>> GetRoleListAsync()
-        {
-            return await _dataContext.Roles.ToListAsync();
-        }
 
-        public async Task<string> GetRoleNameByIdAsync(int? id)
-        {
-            if (id != null)
-            {
-                Role role = await _dataContext.Roles.FindAsync(id);
-                return role.RoleName;
-            }
-            else
-                return string.Empty;
-        }
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
@@ -255,22 +216,10 @@ namespace tl121pet.Services.Services
             return usersProjects;
         }
 
-        public async Task<Role> UpdateRoleAsync(Role role)
-        {
-            _dataContext.Roles.Update(role);
-            await _dataContext.SaveChangesAsync();
-            return role;
-        }
-
         public async Task UpdateUserAsync(User user)
         {
             _dataContext.Users.Update(user);
             await _dataContext.SaveChangesAsync();
-        }
-
-        public async Task<Role> GetRoleByIdAsync(int roleId)
-        {
-            return await _dataContext.Roles.FindAsync(roleId) ?? new Role();
         }
 
         public async Task<UserDTO> UpdateUserAsync(UserDTO userDto)
@@ -288,5 +237,18 @@ namespace tl121pet.Services.Services
 
             return user.ToDto();
         }
+
+        #region Role
+        public async Task<string> GetRoleNameByIdAsync(int? id)
+        {
+            if (id != null)
+            {
+                Role role = await _dataContext.Roles.FindAsync(id);
+                return role.RoleName;
+            }
+            else
+                return string.Empty;
+        }
+        #endregion Role
     }
 }
