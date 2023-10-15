@@ -11,8 +11,6 @@ namespace tl121pet.Entities.Models
         public DateTime MeetingPlanDate { get; set; } = DateTime.Now;
         public DateTime? MeetingDate { get; set; }
 
-        public int MeetingTypeId { get; set; }
-
         public bool FollowUpIsSended { get; set; } = false;
 
         public long PersonId { get; set; }

@@ -9,44 +9,41 @@ namespace tl121pet.Controllers.v1
     [Route("api/v1/[controller]")]
     public class RoleController : ApiController
     {
-        //TODO: избавиться от зависимости слоя данных в контроллере
-        private DataContext _dataContext;
-        private readonly IAuthService _authService;
+        private readonly IRoleService _roleService;
 
-        public RoleController(DataContext dataContext, IAuthService authService)
+        public RoleController(IRoleService roleService)
         {
-            _dataContext = dataContext;
-            _authService = authService;
+            _roleService = roleService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Role>>> GetRoleList()
         {
-            return await _authService.GetRoleListAsync();
+            return await _roleService.GetRoleListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Role>> GetRoleById(int id)
         {
-            return await _authService.GetRoleByIdAsync(id);
+            return await _roleService.GetRoleByIdAsync(id);
         }
 
         [HttpPost]
         public async Task<ActionResult<Role>> CreateRole([FromBody] Role newRole)
         {
-            return await _authService.CreateRoleAsync(newRole);
+            return await _roleService.CreateRoleAsync(newRole);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Role>> UpdateRole([FromBody] Role role)
         {
-            return await _authService.UpdateRoleAsync(role);
+            return await _roleService.UpdateRoleAsync(role);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteRole(int id)
         {
-            await _authService.DeleteRoleAsync(id);
+            await _roleService.DeleteRoleAsync(id);
             return Ok();
         }
     }

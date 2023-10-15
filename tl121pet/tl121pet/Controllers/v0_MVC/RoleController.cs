@@ -13,12 +13,12 @@ namespace tl121pet.Controllers.v0_MVC
     {
         //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
-        private readonly IAuthService _authService;
+        private readonly IRoleService _roleService;
 
-        public RoleController(DataContext dataContext, IAuthService authService)
+        public RoleController(DataContext dataContext, IRoleService roleService)
         {
             _dataContext = dataContext;
-            _authService = authService;
+            _roleService = roleService;
         }
 
         public IActionResult RoleList()
@@ -38,7 +38,7 @@ namespace tl121pet.Controllers.v0_MVC
         {
             if (ModelState.IsValid && roleVM.SelectedItem.RoleName != "Admin")
             {
-                await _authService.UpdateRoleAsync(roleVM.SelectedItem);
+                await _roleService.UpdateRoleAsync(roleVM.SelectedItem);
                 return View("RoleEditor", roleVM);
             }
             return View("RoleEditor", roleVM);
@@ -63,7 +63,7 @@ namespace tl121pet.Controllers.v0_MVC
         {
             if (ModelState.IsValid)
             {
-                await _authService.CreateRoleAsync(roleVM.SelectedItem);
+                await _roleService.CreateRoleAsync(roleVM.SelectedItem);
                 roleVM.Mode = FormMode.Edit;
                 return View("RoleEditor", roleVM);
             }
@@ -74,7 +74,7 @@ namespace tl121pet.Controllers.v0_MVC
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            await _authService.DeleteRoleAsync(id);
+            await _roleService.DeleteRoleAsync(id);
             return RedirectToAction("RoleList");
         }
     }
