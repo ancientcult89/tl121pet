@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
-using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -8,43 +7,14 @@ namespace tl121pet.Services.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly IAuthService _authService;
         private DataContext _dataContext;
 
-        public PersonService(IAuthService authService, DataContext dataContext)
+        public PersonService(DataContext dataContext)
         {
-            _authService = authService;
             _dataContext = dataContext;
         }
 
-        public async Task<List<PersonInitials>> GetInitialsAsync()
-        {
-            List<PersonInitials> personInitials = new List<PersonInitials>();
-            List<Person> people = await GetPeopleFilteredByProjectsAsync();
-            personInitials = (List<PersonInitials>)people.Select(p =>
-                new PersonInitials
-                {
-                    PersonId = p.PersonId,
-                    Initials = p.LastName + " " + p.FirstName + " " + p.SurName
-                }).ToList();
-            return personInitials;
-        }
-
-        public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
-        {
-            List<Person> people = new List<Person>();
-            long? userId = _authService.GetMyUserId();
-            List<ProjectTeam> projects = new List<ProjectTeam>();
-            if (userId != null)
-            {
-                projects = await _authService.GetUserProjectsAsync((long)userId);
-                people = await GetPeopleFilteredByProjectsAsync(projects);
-            }
-
-            return people;
-        }
-
-        private async Task<List<Person>> GetPeopleFilteredByProjectsAsync(List<ProjectTeam> projects)
+        public async Task<List<Person>> GetPeopleFilteredByProjectsAsync(List<ProjectTeam> projects)
         {
             List<Person> peopleFiltered = new List<Person>();
             foreach (ProjectTeam pt in projects)

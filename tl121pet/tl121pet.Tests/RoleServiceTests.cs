@@ -48,7 +48,7 @@ namespace tl121pet.Tests
         /// Проверка, что GetRoleListAsync возвращает пустую коллекцию и не вываливается в ошибку, если нет ни одной записи
         /// </summary>
         [Fact]
-        public async void GetRoleListAsync_ShouldReturnEmptyListIfКщдуыNotExists()
+        public async void GetRoleListAsync_ShouldReturnEmptyListIfRolesNotExists()
         {
             //Arrange
             List<Role> expectRoles = new();

@@ -1,5 +1,6 @@
 ﻿using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Application;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
@@ -8,11 +9,13 @@ namespace tl121pet.Services.Services
     {
         private readonly IPersonService _personService;
         private readonly IMeetingService _meetingService;
+        private readonly OneToOneApplication _application;
 
-        public TaskService(IPersonService personService, IMeetingService meetingService)
+        public TaskService(IPersonService personService, IMeetingService meetingService, OneToOneApplication application)
         {
             _personService = personService;
             _meetingService = meetingService;
+            _application = application;
         }
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
         {
@@ -22,7 +25,7 @@ namespace tl121pet.Services.Services
             if (personId != null)
                 people.Add(await _personService.GetPersonByIdAsync((long)personId));
             else
-                people = await _personService.GetPeopleFilteredByProjectsAsync();
+                people = await _application.GetPeopleFilteredByProjectsAsync();
 
             foreach (Person p in people)
             {
