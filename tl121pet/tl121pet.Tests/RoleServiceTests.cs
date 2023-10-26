@@ -17,12 +17,14 @@ namespace tl121pet.Tests
         private readonly IRoleService _roleService;
         public RoleServiceTests()
         {
+            var connectionString = "Server=host.docker.internal;Database=TLRoleTest;Port=49153;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "RoleServiceConnection")
+                .UseNpgsql(connectionString)
                 .Options;
 
             _dataContext = new DataContext(dbContextOptions);
             _dataContext.Database.EnsureDeleted();
+            _dataContext.Database.EnsureCreated();
             _roleService = new RoleService(_dataContext);
         }
 

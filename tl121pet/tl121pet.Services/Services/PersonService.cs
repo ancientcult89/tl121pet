@@ -36,6 +36,8 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> CreatePersonAsync(Person person)
         {
+            await CheckPersonExistsByEmail(person);
+
             _dataContext.People.Add(person);
             await _dataContext.SaveChangesAsync();
             return person;
@@ -50,9 +52,8 @@ namespace tl121pet.Services.Services
 
         public async Task DeletePersonAsync(long id)
         {
+            await CheckPersonExistsById(id);
             var personToDelete = _dataContext.People.Find(id);
-            if (personToDelete is null)
-                throw new Exception("Person to delete not found");
             _dataContext.People.Remove(personToDelete);
             await _dataContext.SaveChangesAsync();
         }
@@ -120,6 +121,22 @@ namespace tl121pet.Services.Services
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
             return await _dataContext.People.Include(p => p.Grade).ToListAsync();
+        }
+
+        private async Task CheckPersonExistsByEmail(Person person)
+        {
+            var res = _dataContext.People.ToList();
+            var examPerson = await _dataContext.People.AsNoTracking().Where(r => r.Email == person.Email).FirstOrDefaultAsync();
+            if (examPerson != null)
+                throw new Exception("A Person with same Email is already exists");
+        }
+
+        private async Task CheckPersonExistsById(long personId)
+        {
+            var res = _dataContext.People.ToList();
+            var examPerson = await _dataContext.People.AsNoTracking().Where(r => r.PersonId == personId).FirstOrDefaultAsync();
+            if (examPerson == null)
+                throw new Exception("Person not found");
         }
     }
 }
