@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -25,6 +26,10 @@ namespace tl121pet.Tests
             _dataContext.Database.EnsureDeleted();
             _dataContext.Database.EnsureCreated();
             _personService = new PersonService(_dataContext);
+        }
+        public void Dispose()
+        {
+            _dataContext.Database.EnsureDeleted();
         }
 
         /// <summary>
@@ -262,9 +267,200 @@ namespace tl121pet.Tests
             await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
         }
 
-        public void Dispose()
+        /// <summary>
+        /// проверяем, что UpdatePersonAsync корректно обновляет сотрудника
+        /// </summary>
+        [Fact]
+        public async void UpdatePersonAsync_ShouldUpdatePerson()
         {
-            _dataContext.Database.EnsureDeleted();
+            //Arrange
+            Grade testGrade = new Grade
+            {
+                GradeName = "Junior entry"
+            };
+            _dataContext.Grades.Add(testGrade);
+
+            Person updatedPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(updatedPerson);
+            _dataContext.SaveChanges();
+
+            Person expectedPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "John",
+                LastName = "Connor",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade,
+                PersonId = updatedPerson.PersonId
+            };
+
+            //act
+            updatedPerson.FirstName = "John";
+            updatedPerson.LastName = "Connor";
+            _dataContext.People.Update(updatedPerson);
+            _dataContext.SaveChanges();
+
+            //assert
+            updatedPerson.Should().BeEquivalentTo(expectedPerson);
+        }
+
+        /// <summary>
+        /// Проверяем, что при попытке обновить несуществующую запись получим ошибку
+        /// </summary>
+        [Fact]
+        public async void UpdateNotExistPerson_ShouldThrowException()
+        {
+            //Arrange
+            Grade testGrade = new Grade
+            {
+                GradeName = "Junior entry"
+            };
+            _dataContext.Grades.Add(testGrade);
+
+            Person updatedPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.SaveChanges();
+
+            updatedPerson.FirstName = "John";
+            updatedPerson.LastName = "Connor";
+
+            //act
+            var result = async () => await _personService.UpdatePersonAsync(updatedPerson);
+
+            //assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
+        }
+
+        /// <summary>
+        /// Проверяем, что при попытке обновить сотрудника если есть сотрудник с таким же email получим ошибку
+        /// </summary>
+        [Fact]
+        public async void UpdatePersonWithDuplicateEmail_ShouldThrowException()
+        {
+            //Arrange
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+
+            List<Person> people = new List<Person>();
+            people.AddRange(new List<Person> {
+                new Person {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+                new Person {
+                    Email = "1111@test1.com",
+                    FirstName = "John",
+                    LastName = "Bon",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 2,
+                    ShortName = "Jovi",
+                    SurName = "Jovison",
+                    Grade = testGrade
+                },
+            });
+            _dataContext.People.AddRange(people);
+            _dataContext.SaveChanges();
+
+            //act
+            Person updatedPerson = _dataContext.People.Where(p => p.PersonId == 1).FirstOrDefault();
+            updatedPerson.Email = "1111@test1.com";
+            var result = async () => await _personService.UpdatePersonAsync(updatedPerson);
+
+            //assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("A Person with same Email is already exists");
+        }
+
+        /// <summary>
+        /// проверяем что GetPersonByIdAsync возвращает корректного сотрудника
+        /// </summary>
+        [Fact]
+        public async void GetPersonByIdAsync_ShouldReturnCorrectPerson()
+        {
+            //Arrange
+            Grade testGrade = new Grade
+            {
+                GradeName = "Junior entry"
+            };
+            _dataContext.Grades.Add(testGrade);
+
+            Person person = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(person);
+            _dataContext.SaveChanges();
+
+            var personId = person.PersonId;
+
+            Person expectedPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade,
+                PersonId = personId
+            };
+
+            //Act
+            Person resultPerson = await _personService.GetPersonByIdAsync(personId);
+
+            //Arrange
+            resultPerson.Should().BeEquivalentTo(expectedPerson);
+        }
+
+        /// <summary>
+        /// проверяем что GetPersonByIdAsync возвращает ошибку в случае поиска сотрудника, которого нет в системе
+        /// </summary>
+        [Fact]
+        public async void GetNotExistPerson_ShouldReturnCorrectPerson()
+        {
+            //Arrange
+            var notExistPersonId = 1;
+
+            //Act
+            var result = async () => await _personService.GetPersonByIdAsync(notExistPersonId);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
         }
     }
 }

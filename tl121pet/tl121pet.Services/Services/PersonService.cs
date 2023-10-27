@@ -45,6 +45,9 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> UpdatePersonAsync(Person person)
         {
+            await CheckPersonExistsById(person.PersonId);
+            await CheckPersonExistsByEmail(person);
+
             _dataContext.People.Update(person);
             await _dataContext.SaveChangesAsync();
             return person;
