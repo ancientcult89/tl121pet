@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
+using tl121pet.Services.Application;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Controllers.v1
@@ -8,18 +9,18 @@ namespace tl121pet.Controllers.v1
     [Route("api/v1/[controller]")]
     public class TaskController : ApiController
     {
-        private ITaskService _taskService;
         private IMeetingService _meetingService;
-        public TaskController(ITaskService taskService, IMeetingService meetingService)
+        private OneToOneApplication _application;
+        public TaskController(IMeetingService meetingService, OneToOneApplication application)
         {
-            _taskService = taskService;
             _meetingService = meetingService;
+            _application = application;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<TaskDTO>>> GetTaskList(long? personId = null)
         {
-            return await  _taskService.GetTaskListAsync(personId);
+            return await  _application.GetTaskListAsync(personId);
         }
 
         [HttpPost]

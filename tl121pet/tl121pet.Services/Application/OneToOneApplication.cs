@@ -9,12 +9,14 @@ namespace tl121pet.Services.Application
         private readonly IAuthService _authService;
         private readonly IPersonService _personService;
         private readonly IProjectService _projectService;
+        private readonly IMeetingService _meetingService;
 
-        public OneToOneApplication(IPersonService personService, IAuthService authService, IProjectService projectService)
+        public OneToOneApplication(IPersonService personService, IAuthService authService, IProjectService projectService, IMeetingService meetingService)
         {
             _authService = authService;
             _personService = personService;
             _projectService = projectService;
+            _meetingService = meetingService;
         }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
@@ -29,6 +31,36 @@ namespace tl121pet.Services.Application
             }
 
             return people;
+        }
+
+        public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
+        {
+            List<TaskDTO> taskList = new List<TaskDTO>();
+            List<Person> people = new List<Person>();
+
+            if (personId != null)
+                people.Add(await _personService.GetPersonByIdAsync((long)personId));
+            else
+                people = await GetPeopleFilteredByProjectsAsync();
+
+            foreach (Person p in people)
+            {
+                List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsByPersonAsync(p.PersonId);
+                foreach (MeetingGoal goal in goals.Where(g => g.IsCompleted == false))
+                {
+                    taskList.Add(new TaskDTO()
+                    {
+                        MeetingGoalId = goal.MeetingGoalId,
+                        IsCompleted = goal.IsCompleted,
+                        MeetingGoalDescription = goal.MeetingGoalDescription,
+                        PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
+                        PersonId = p.PersonId,
+                        FactDate = await _meetingService.GetFactMeetingDateByIdAsync(goal.MeetingId)
+                    });
+                }
+            }
+
+            return taskList.OrderByDescending(t => t.FactDate).ToList();
         }
 
         [Obsolete]
