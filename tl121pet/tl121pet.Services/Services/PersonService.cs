@@ -121,6 +121,7 @@ namespace tl121pet.Services.Services
             return filteredPeople;
         }
 
+        //TODO: есть метод GetAllPeopleAsync, который возвращает тоже самое без грейдов. вряд ли нужны оба метода сразу
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
             return await _dataContext.People.Include(p => p.Grade).ToListAsync();

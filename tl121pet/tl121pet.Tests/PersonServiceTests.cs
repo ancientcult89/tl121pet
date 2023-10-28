@@ -462,5 +462,375 @@ namespace tl121pet.Tests
             //Assert
             await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
         }
+
+        /// <summary>
+        /// проверяем что GetPeopleWithGradeAsync возвращает всех острудников
+        /// </summary>
+        [Fact]
+        public async void GetPeopleWithGradeAsync_ShouldReturnAllPersons()
+        {
+            //Arrange
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+
+            List<Person> people = new List<Person>();
+            people.AddRange(new List<Person> {
+                new Person {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+                new Person {
+                    Email = "1111@test1.com",
+                    FirstName = "John",
+                    LastName = "Bon",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 2,
+                    ShortName = "Jovi",
+                    SurName = "Jovison",
+                    Grade = testGrade
+                },
+            });
+            _dataContext.People.AddRange(people);
+            _dataContext.SaveChanges();
+
+            List<Person> peopleExpected = new List<Person>();
+            peopleExpected.AddRange(new List<Person> {
+                new Person {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+                new Person {
+                    Email = "1111@test1.com",
+                    FirstName = "John",
+                    LastName = "Bon",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 2,
+                    ShortName = "Jovi",
+                    SurName = "Jovison",
+                    Grade = testGrade
+                },
+            });
+
+            //Act
+            var resultPeople = await _personService.GetAllPeopleAsync();
+
+            //Assert
+            resultPeople.Should().BeEquivalentTo(peopleExpected);
+        }
+
+        /// <summary>
+        /// проверяем что GetPeopleWithGradeAsync возвращает грейды
+        /// </summary>
+        [Fact]
+        public async void GetPeopleWithGradeAsync_ShouldReturnCorrectGrade()
+        {
+            //Arrange
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            Grade testGrade2 = new Grade
+            {
+                GradeId = 2,
+                GradeName = "Middle"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.Grades.Add(testGrade2);
+            _dataContext.SaveChanges();
+
+            List<Person> people = new List<Person>();
+            people.AddRange(new List<Person> {
+                new Person {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+                new Person {
+                    Email = "1111@test1.com",
+                    FirstName = "John",
+                    LastName = "Bon",
+                    GradeId = testGrade2.GradeId,
+                    PersonId = 2,
+                    ShortName = "Jovi",
+                    SurName = "Jovison",
+                    Grade = testGrade2
+                },
+            });
+            _dataContext.People.AddRange(people);
+            _dataContext.SaveChanges();
+
+            //Act
+            var resultPeople = await _personService.GetAllPeopleAsync();
+            var resultGrade = resultPeople.Where(p => p.Email == "1111@test1.com").FirstOrDefault().Grade;
+
+            //Assert
+            resultGrade.Should().BeEquivalentTo(testGrade2);
+        }
+
+        /// <summary>
+        /// проверяем что GetPeopleFilteredByProjectAsync возвращает корректных сотрудников
+        /// </summary>
+        [Fact]
+        public async void GetPeopleFilteredByProjectAsync_ShouldReturnCorrectPersons()
+        {
+            //Arrange
+            long testedProjectId = 1;
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+
+            Person testPerson = new Person
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                PersonId = 1,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+
+            Person testPerson2 = new Person
+            {
+                Email = "1111@test1.com",
+                FirstName = "John",
+                LastName = "Bon",
+                GradeId = testGrade.GradeId,
+                PersonId = 2,
+                ShortName = "Jovi",
+                SurName = "Jovison",
+                Grade = testGrade
+            };
+
+            Person testPerson3 = new Person
+            {
+                Email = "2222@test.com",
+                FirstName = "",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                PersonId = 3,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            
+            ProjectTeam testProject = new ProjectTeam { ProjectTeamId = testedProjectId, ProjectTeamName = "SABPEK"};
+            ProjectTeam testProject2 = new ProjectTeam { ProjectTeamId = 2, ProjectTeamName = "SIDE" };
+
+            _dataContext.ProjectTeams.Add(testProject);
+            _dataContext.ProjectTeams.Add(testProject2);
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.People.AddRange(testPerson, testPerson2, testPerson3);
+            _dataContext.SaveChanges();
+
+            ProjectMember projectMember = new ProjectMember {
+                Person = testPerson,
+                PersonId = testPerson.PersonId,
+                ProjectMemberId = 1,
+                ProjectTeam = testProject,
+                ProjectTeamId = testProject.ProjectTeamId,
+            };
+
+            ProjectMember projectMember2 = new ProjectMember {
+                Person = testPerson2,
+                PersonId = testPerson2.PersonId,
+                ProjectMemberId = 2,
+                ProjectTeam = testProject2,
+                ProjectTeamId = testProject2.ProjectTeamId,
+            };
+
+            ProjectMember projectMember3 = new ProjectMember
+            {
+                Person = testPerson3,
+                PersonId = testPerson3.PersonId,
+                ProjectMemberId = 3,
+                ProjectTeam = testProject,
+                ProjectTeamId = testProject.ProjectTeamId,
+            };
+
+            _dataContext.ProjectMembers.AddRange(projectMember, projectMember2, projectMember3);
+            _dataContext.SaveChanges();
+
+            List<Person> expectedPersons = new List<Person>() {
+                new Person
+                {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+                new Person
+                {
+                    Email = "2222@test.com",
+                    FirstName = "",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 3,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                }
+            };
+
+            //Act
+            var resultPeople = await _personService.GetPeopleFilteredByProjectAsync(testedProjectId);
+
+            //Assert
+            resultPeople.Should().BeEquivalentTo(expectedPersons);
+        }
+
+        /// <summary>
+        /// проверяем что GetPeopleFilteredByProjectsAsync возвращает корректных сотрудников
+        /// </summary>
+        [Fact]
+        public async void GetPeopleFilteredByProjectsAsync_ShouldReturnCorrectPersons()
+        {
+            //Arrange
+            long testedProjectId = 1;
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+
+            Person testPerson = new Person
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                PersonId = 1,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+
+            Person testPerson2 = new Person
+            {
+                Email = "1111@test1.com",
+                FirstName = "John",
+                LastName = "Bon",
+                GradeId = testGrade.GradeId,
+                PersonId = 2,
+                ShortName = "Jovi",
+                SurName = "Jovison",
+                Grade = testGrade
+            };
+
+            Person testPerson3 = new Person
+            {
+                Email = "2222@test.com",
+                FirstName = "",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                PersonId = 3,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+
+            ProjectTeam testProject = new ProjectTeam { ProjectTeamId = testedProjectId, ProjectTeamName = "SABPEK" };
+            ProjectTeam testProject2 = new ProjectTeam { ProjectTeamId = 2, ProjectTeamName = "SIDE" };
+            ProjectTeam testProject3 = new ProjectTeam { ProjectTeamId = 3, ProjectTeamName = "STACK" };
+
+            _dataContext.ProjectTeams.Add(testProject);
+            _dataContext.ProjectTeams.Add(testProject2);
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.People.AddRange(testPerson, testPerson2, testPerson3);
+            _dataContext.SaveChanges();
+
+            ProjectMember projectMember = new ProjectMember
+            {
+                Person = testPerson,
+                PersonId = testPerson.PersonId,
+                ProjectMemberId = 1,
+                ProjectTeam = testProject,
+                ProjectTeamId = testProject.ProjectTeamId,
+            };
+
+            ProjectMember projectMember2 = new ProjectMember
+            {
+                Person = testPerson2,
+                PersonId = testPerson2.PersonId,
+                ProjectMemberId = 2,
+                ProjectTeam = testProject2,
+                ProjectTeamId = testProject2.ProjectTeamId,
+            };
+
+            ProjectMember projectMember3 = new ProjectMember
+            {
+                Person = testPerson3,
+                PersonId = testPerson3.PersonId,
+                ProjectMemberId = 3,
+                ProjectTeam = testProject3,
+                ProjectTeamId = testProject3.ProjectTeamId,
+            };
+
+            _dataContext.ProjectMembers.AddRange(projectMember, projectMember2, projectMember3);
+            _dataContext.SaveChanges();
+
+            List<Person> expectedPersons = new List<Person>() {
+                new Person
+                {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+                new Person
+                {
+                    Email = "2222@test.com",
+                    FirstName = "",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 3,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                }
+            };
+
+            List<ProjectTeam> testedPrjects = new List<ProjectTeam>() { testProject, testProject3 };
+
+            //Act
+            var resultPeople = await _personService.GetPeopleFilteredByProjectsAsync(testedPrjects);
+
+            //Assert
+            resultPeople.Should().BeEquivalentTo(expectedPersons);
+        }
     }
 }

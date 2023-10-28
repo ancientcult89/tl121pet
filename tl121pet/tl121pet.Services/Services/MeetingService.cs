@@ -41,6 +41,7 @@ namespace tl121pet.Services.Services
                 .ToList();
         }
 
+        //TODO: странное месторасположение, лучше перенести в PersonService
         private async Task<List<Person>> GetPeopleByProjectsAsync(List<ProjectTeam> projects, long? personId)
         {
             List<Person> personByProjects = new List<Person>();

@@ -4,7 +4,7 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IProjectService
     {
-        public Task<List<ProjectTeam>> GetFilteredProjectsAsync();
+        public Task<List<ProjectTeam>> GetFilteredProjectsAsync(long? userId);
         public Task<List<ProjectTeam>> GetAllTeamsAsync();
         public Task<ProjectTeam> GetProjectTeamByIdAsync(long id);
         public Task<ProjectTeam> CreateProjectTeamAsync(ProjectTeam pt);

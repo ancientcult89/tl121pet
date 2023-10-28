@@ -8,11 +8,13 @@ namespace tl121pet.Services.Application
     {
         private readonly IAuthService _authService;
         private readonly IPersonService _personService;
+        private readonly IProjectService _projectService;
 
-        public OneToOneApplication(IPersonService personService, IAuthService authService)
+        public OneToOneApplication(IPersonService personService, IAuthService authService, IProjectService projectService)
         {
             _authService = authService;
             _personService = personService;
+            _projectService = projectService;
         }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
@@ -28,6 +30,14 @@ namespace tl121pet.Services.Application
 
             return people;
         }
+
+        [Obsolete]
+        public async Task<List<ProjectTeam>> GetFilteredProjectsAsync()
+        {
+            long? userId = _authService.GetMyUserId();
+            return await _projectService.GetFilteredProjectsAsync(userId);
+        }
+
 
         [Obsolete]
         public async Task<List<PersonInitials>> GetInitialsAsync()
