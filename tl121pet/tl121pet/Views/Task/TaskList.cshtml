@@ -1,9 +1,10 @@
-﻿@model TaskListVM
+﻿@using tl121pet.Services.Application
+@model TaskListVM
 @inject IViewLocalizer Localizer
-@inject IPersonService _personService
+@inject OneToOneApplication _oneToOneApplication
 
 <form asp-action="TaskList">
-    <select asp-for="@Model.PersonId" class="form-control" asp-items="@(new SelectList(await _personService.GetInitialsAsync(), "PersonId", "Initials"))">
+    <select asp-for="@Model.PersonId" class="form-control" asp-items="@(new SelectList(await _oneToOneApplication.GetInitialsAsync(), "PersonId", "Initials"))">
         <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
     </select>
     <button type="submit" class="btn btn-sm btn-primary p-2 mt-2">@Localizer["Filter"]</button>

@@ -14,6 +14,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
 using tl121pet;
+using tl121pet.Services.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,8 +76,8 @@ builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<OneToOneApplication>();
 
 builder.Services.AddHttpContextAccessor();
 

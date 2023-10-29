@@ -8,18 +8,16 @@ namespace tl121pet.Services.Services
     public class ProjectService : IProjectService
     {
         private readonly DataContext _dataContext;
-        private readonly IAuthService _authService;
 
-        public ProjectService(DataContext dataContext, IAuthService authService)
+        public ProjectService(DataContext dataContext)
         {
             _dataContext = dataContext;
-            _authService = authService;
         }
-        public async Task<List<ProjectTeam>> GetFilteredProjectsAsync()
+
+        [Obsolete]
+        public async Task<List<ProjectTeam>> GetFilteredProjectsAsync(long? userId)
         {
             List<ProjectTeam> filteredProjects = new List<ProjectTeam>();
-
-            long? userId = _authService.GetMyUserId();
 
             var projects = from up in _dataContext.UserProjects
                            join pr in _dataContext.ProjectTeams on up.ProjectTeamId equals pr.ProjectTeamId

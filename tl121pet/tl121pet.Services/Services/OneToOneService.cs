@@ -1,6 +1,7 @@
 ﻿using tl121pet.Entities.Aggregate;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Application;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
@@ -11,12 +12,14 @@ namespace tl121pet.Services.Services
         private IPersonService _personService;
         private IMeetingService _meetingService;
         private IMailService _mailService;
+        private OneToOneApplication _application;
 
-        public OneToOneService(IMeetingService meetingService, IMailService mailService, IPersonService personService)
+        public OneToOneService(IMeetingService meetingService, IMailService mailService, IPersonService personService, OneToOneApplication application)
         {
             _meetingService = meetingService;
             _mailService = mailService;
             _personService = personService;
+            _application = application;
         }
 
         //TODO: дедлайн знает о репозитории людей и встреч. переделать
@@ -26,7 +29,8 @@ namespace tl121pet.Services.Services
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
 
-            foreach (Person p in await _personService.GetPeopleFilteredByProjectsAsync())
+            //TODO: неверная зависимость, аппликейшн должен по нисходящей отправлять запросы в сервисы, а не наоборот как тут. временно пока перепиливаю архитектуру под тестирование
+            foreach (Person p in await _application.GetPeopleFilteredByProjectsAsync())
             {
                 AlertLevel alert = AlertLevel.None;
                 TimeSpan datediff = new TimeSpan();

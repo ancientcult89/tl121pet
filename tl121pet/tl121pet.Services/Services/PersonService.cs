@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
-using tl121pet.Entities.DTO;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -8,43 +7,14 @@ namespace tl121pet.Services.Services
 {
     public class PersonService : IPersonService
     {
-        private readonly IAuthService _authService;
         private DataContext _dataContext;
 
-        public PersonService(IAuthService authService, DataContext dataContext)
+        public PersonService(DataContext dataContext)
         {
-            _authService = authService;
             _dataContext = dataContext;
         }
 
-        public async Task<List<PersonInitials>> GetInitialsAsync()
-        {
-            List<PersonInitials> personInitials = new List<PersonInitials>();
-            List<Person> people = await GetPeopleFilteredByProjectsAsync();
-            personInitials = (List<PersonInitials>)people.Select(p =>
-                new PersonInitials
-                {
-                    PersonId = p.PersonId,
-                    Initials = p.LastName + " " + p.FirstName + " " + p.SurName
-                }).ToList();
-            return personInitials;
-        }
-
-        public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
-        {
-            List<Person> people = new List<Person>();
-            long? userId = _authService.GetMyUserId();
-            List<ProjectTeam> projects = new List<ProjectTeam>();
-            if (userId != null)
-            {
-                projects = await _authService.GetUserProjectsAsync((long)userId);
-                people = await GetPeopleFilteredByProjectsAsync(projects);
-            }
-
-            return people;
-        }
-
-        private async Task<List<Person>> GetPeopleFilteredByProjectsAsync(List<ProjectTeam> projects)
+        public async Task<List<Person>> GetPeopleFilteredByProjectsAsync(List<ProjectTeam> projects)
         {
             List<Person> peopleFiltered = new List<Person>();
             foreach (ProjectTeam pt in projects)
@@ -66,6 +36,8 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> CreatePersonAsync(Person person)
         {
+            await CheckPersonExistsByEmail(person);
+
             _dataContext.People.Add(person);
             await _dataContext.SaveChangesAsync();
             return person;
@@ -73,16 +45,18 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> UpdatePersonAsync(Person person)
         {
-            _dataContext.People.Update(person);
+            var modifiedPerson = await CheckPersonExistsById(person.PersonId);
+            await CheckPersonExistsByEmail(person);
+
+            _dataContext.Entry(modifiedPerson).CurrentValues.SetValues(person);
             await _dataContext.SaveChangesAsync();
             return person;
         }
 
         public async Task DeletePersonAsync(long id)
         {
+            await CheckPersonExistsById(id);
             var personToDelete = _dataContext.People.Find(id);
-            if (personToDelete is null)
-                throw new Exception("Person to delete not found");
             _dataContext.People.Remove(personToDelete);
             await _dataContext.SaveChangesAsync();
         }
@@ -147,9 +121,29 @@ namespace tl121pet.Services.Services
             return filteredPeople;
         }
 
+        //TODO: есть метод GetAllPeopleAsync, который возвращает тоже самое без грейдов. вряд ли нужны оба метода сразу
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
             return await _dataContext.People.Include(p => p.Grade).ToListAsync();
+        }
+
+        private async Task CheckPersonExistsByEmail(Person person)
+        {
+            var examPerson = await _dataContext.People
+                .AsNoTracking()
+                .Where(r => r.Email == person.Email && r.PersonId != person.PersonId)
+                .FirstOrDefaultAsync();
+
+            if (examPerson != null)
+                throw new Exception("A Person with same Email is already exists");
+        }
+
+        private async Task<Person> CheckPersonExistsById(long personId)
+        {
+            var examPerson = await _dataContext.People.SingleOrDefaultAsync(r => r.PersonId == personId) 
+                ?? throw new Exception("Person not found");
+
+            return examPerson;
         }
     }
 }

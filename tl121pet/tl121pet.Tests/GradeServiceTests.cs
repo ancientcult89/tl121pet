@@ -17,12 +17,14 @@ namespace tl121pet.Tests
         private readonly IGradeService _gradeService;
         public GradeServiceTests()
         {
+            var connectionString = "Server=host.docker.internal;Database=TLGradeTest;Port=49153;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "GradeServiceConnection")
+                .UseNpgsql(connectionString)
                 .Options;
 
             _dataContext = new DataContext(dbContextOptions);
             _dataContext.Database.EnsureDeleted();
+            _dataContext.Database.EnsureCreated();
             _gradeService = new GradeService(_dataContext);
         }
 
@@ -134,8 +136,13 @@ namespace tl121pet.Tests
         public async void UpdateGradeAsync_ShouldChangeGradeName()
         {
             //Arrange
-            Grade testGrade = GradeTestData.GetSingleGrade();
-            await _gradeService.CreateGradeAsync(testGrade);
+            Grade testGrade = new Grade
+            {
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+
             Grade expectGrade = new Grade
             {
                 GradeId = testGrade.GradeId,
@@ -143,11 +150,15 @@ namespace tl121pet.Tests
             };
 
             // Act
-            testGrade.GradeName = "Testing Name";
-            await _gradeService.UpdateGradeAsync(testGrade);
+            Grade testValuedGrade = new Grade
+            {
+                GradeId = testGrade.GradeId,
+                GradeName = "Testing Name"
+            };
+            await _gradeService.UpdateGradeAsync(testValuedGrade);
 
             // Assert
-            testGrade.Should().BeEquivalentTo(expectGrade);
+            testValuedGrade.Should().BeEquivalentTo(expectGrade);
         }
 
         /// <summary>
@@ -157,19 +168,26 @@ namespace tl121pet.Tests
         public async void UpdateGradeAsync_CreatingDuplicateShouldThrowExeption()
         {
             //Arrange
-            Grade expectGrade = GradeTestData.GetSingleGrade();
-            await _gradeService.CreateGradeAsync(expectGrade);
-            Grade expectGrade2 = new Grade
+            Grade testedGrade = new Grade
+            {
+                GradeName = "Junior"
+            };
+            await _gradeService.CreateGradeAsync(testedGrade);
+            Grade testedGrade2 = new Grade
             {
                 GradeId = 2,
                 GradeName = "Testing Name",
             };
-            await _gradeService.CreateGradeAsync(expectGrade2);
+            await _gradeService.CreateGradeAsync(testedGrade2);
 
-            expectGrade2.GradeName = "Junior";
+            Grade newValuedTestedGrade2 = new Grade
+            {
+                GradeId = testedGrade2.GradeId,
+                GradeName = "Junior",
+            };
 
             // Act
-            var result = async () => await _gradeService.UpdateGradeAsync(expectGrade2);
+            var result = async () => await _gradeService.UpdateGradeAsync(newValuedTestedGrade2);
 
             // Assert
             await result.Should().ThrowAsync<Exception>().WithMessage("A Grade with this name exists");

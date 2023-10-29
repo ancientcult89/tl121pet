@@ -17,12 +17,14 @@ namespace tl121pet.Tests
         private readonly IRoleService _roleService;
         public RoleServiceTests()
         {
+            var connectionString = "Server=host.docker.internal;Database=TLRoleTest;Port=49153;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
-                .UseInMemoryDatabase(databaseName: "RoleServiceConnection")
+                .UseNpgsql(connectionString)
                 .Options;
 
             _dataContext = new DataContext(dbContextOptions);
             _dataContext.Database.EnsureDeleted();
+            _dataContext.Database.EnsureCreated();
             _roleService = new RoleService(_dataContext);
         }
 
@@ -48,7 +50,7 @@ namespace tl121pet.Tests
         /// Проверка, что GetRoleListAsync возвращает пустую коллекцию и не вываливается в ошибку, если нет ни одной записи
         /// </summary>
         [Fact]
-        public async void GetRoleListAsync_ShouldReturnEmptyListIfКщдуыNotExists()
+        public async void GetRoleListAsync_ShouldReturnEmptyListIfRolesNotExists()
         {
             //Arrange
             List<Role> expectRoles = new();
@@ -134,20 +136,31 @@ namespace tl121pet.Tests
         public async void UpdateRoleAsync_ShouldChangeRoleName()
         {
             //Arrange
-            Role testRole = RoleTestData.GetTestRole();
-            await _roleService.CreateRoleAsync(testRole);
+            Role testRole = new Role
+            {
+                RoleId = 2,
+                RoleName = "Test"
+            };
+            _dataContext.Roles.Add(testRole);
+            _dataContext.SaveChanges();
+
             Role expectRole = new Role
             {
                 RoleId = testRole.RoleId,
                 RoleName = "Testing Name",
             };
 
+            Role newValuedRole = new Role
+            {
+                RoleId = testRole.RoleId,
+                RoleName = "Testing Name",
+            };
+
             // Act
-            testRole.RoleName = "Testing Name";
-            await _roleService.UpdateRoleAsync(testRole);
+            await _roleService.UpdateRoleAsync(newValuedRole);
 
             // Assert
-            testRole.Should().BeEquivalentTo(expectRole);
+            newValuedRole.Should().BeEquivalentTo(expectRole);
         }
 
         /// <summary>

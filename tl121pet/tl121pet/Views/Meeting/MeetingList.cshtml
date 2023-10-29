@@ -1,5 +1,6 @@
-﻿@inject IViewLocalizer Localizer
-@inject IPersonService _personService
+﻿@using tl121pet.Services.Application
+@inject IViewLocalizer Localizer
+@inject OneToOneApplication _oneToOneApplication
 
 @model List<Meeting>
 @{
@@ -8,7 +9,7 @@
 
 <div class="shadow-lg p-3 mb-5 bg-white rounded">
     <form>
-        <select asp-for="@Model.FirstOrDefault().PersonId" class="form-control" asp-items="@(new SelectList(await _personService.GetInitialsAsync(), "PersonId", "Initials"))">
+        <select asp-for="@Model.FirstOrDefault().PersonId" class="form-control" asp-items="@(new SelectList(await _oneToOneApplication.GetInitialsAsync(), "PersonId", "Initials"))">
             <option value="" disabled selected>@Localizer["ChooseAPerson"]</option>
         </select>
         <button type="submit" class="btn btn-sm btn-primary p-2 mt-2">@Localizer["Filter"]</button>
