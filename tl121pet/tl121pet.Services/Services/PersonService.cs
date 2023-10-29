@@ -45,10 +45,10 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> UpdatePersonAsync(Person person)
         {
-            await CheckPersonExistsById(person.PersonId);
+            var modifiedPerson = await CheckPersonExistsById(person.PersonId);
             await CheckPersonExistsByEmail(person);
 
-            _dataContext.People.Update(person);
+            _dataContext.Entry(modifiedPerson).CurrentValues.SetValues(person);
             await _dataContext.SaveChangesAsync();
             return person;
         }
@@ -129,18 +129,21 @@ namespace tl121pet.Services.Services
 
         private async Task CheckPersonExistsByEmail(Person person)
         {
-            var res = _dataContext.People.ToList();
-            var examPerson = await _dataContext.People.AsNoTracking().Where(r => r.Email == person.Email).FirstOrDefaultAsync();
+            var examPerson = await _dataContext.People
+                .AsNoTracking()
+                .Where(r => r.Email == person.Email && r.PersonId != person.PersonId)
+                .FirstOrDefaultAsync();
+
             if (examPerson != null)
                 throw new Exception("A Person with same Email is already exists");
         }
 
-        private async Task CheckPersonExistsById(long personId)
+        private async Task<Person> CheckPersonExistsById(long personId)
         {
-            var res = _dataContext.People.ToList();
-            var examPerson = await _dataContext.People.AsNoTracking().Where(r => r.PersonId == personId).FirstOrDefaultAsync();
-            if (examPerson == null)
-                throw new Exception("Person not found");
+            var examPerson = await _dataContext.People.SingleOrDefaultAsync(r => r.PersonId == personId) 
+                ?? throw new Exception("Person not found");
+
+            return examPerson;
         }
     }
 }

@@ -280,7 +280,7 @@ namespace tl121pet.Tests
             };
             _dataContext.Grades.Add(testGrade);
 
-            Person updatedPerson = new Person()
+            Person startedPerson = new Person()
             {
                 Email = "1111@test.com",
                 FirstName = "Eric",
@@ -290,7 +290,7 @@ namespace tl121pet.Tests
                 SurName = "Rickson",
                 Grade = testGrade
             };
-            _dataContext.People.Add(updatedPerson);
+            _dataContext.People.Add(startedPerson);
             _dataContext.SaveChanges();
 
             Person expectedPerson = new Person()
@@ -302,14 +302,23 @@ namespace tl121pet.Tests
                 ShortName = "Rick",
                 SurName = "Rickson",
                 Grade = testGrade,
-                PersonId = updatedPerson.PersonId
+                PersonId = startedPerson.PersonId
             };
 
             //act
-            updatedPerson.FirstName = "John";
-            updatedPerson.LastName = "Connor";
-            _dataContext.People.Update(updatedPerson);
-            _dataContext.SaveChanges();
+            Person newValuedPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "John",
+                LastName = "Connor",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = null,
+                PersonId = startedPerson.PersonId
+            };
+            await _personService.UpdatePersonAsync(newValuedPerson);
+            Person updatedPerson = await _personService.GetPersonByIdAsync(startedPerson.PersonId);
 
             //assert
             updatedPerson.Should().BeEquivalentTo(expectedPerson);
@@ -392,8 +401,17 @@ namespace tl121pet.Tests
             _dataContext.SaveChanges();
 
             //act
-            Person updatedPerson = _dataContext.People.Where(p => p.PersonId == 1).FirstOrDefault();
-            updatedPerson.Email = "1111@test1.com";
+            Person updatedPerson = new Person
+            {
+                Email = "1111@test1.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                PersonId = 1,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
             var result = async () => await _personService.UpdatePersonAsync(updatedPerson);
 
             //assert

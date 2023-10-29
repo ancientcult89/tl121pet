@@ -136,20 +136,31 @@ namespace tl121pet.Tests
         public async void UpdateRoleAsync_ShouldChangeRoleName()
         {
             //Arrange
-            Role testRole = RoleTestData.GetTestRole();
-            await _roleService.CreateRoleAsync(testRole);
+            Role testRole = new Role
+            {
+                RoleId = 2,
+                RoleName = "Test"
+            };
+            _dataContext.Roles.Add(testRole);
+            _dataContext.SaveChanges();
+
             Role expectRole = new Role
             {
                 RoleId = testRole.RoleId,
                 RoleName = "Testing Name",
             };
 
+            Role newValuedRole = new Role
+            {
+                RoleId = testRole.RoleId,
+                RoleName = "Testing Name",
+            };
+
             // Act
-            testRole.RoleName = "Testing Name";
-            await _roleService.UpdateRoleAsync(testRole);
+            await _roleService.UpdateRoleAsync(newValuedRole);
 
             // Assert
-            testRole.Should().BeEquivalentTo(expectRole);
+            newValuedRole.Should().BeEquivalentTo(expectRole);
         }
 
         /// <summary>

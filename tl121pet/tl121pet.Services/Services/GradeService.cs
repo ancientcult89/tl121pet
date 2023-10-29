@@ -26,10 +26,10 @@ namespace tl121pet.Services.Services
 
         public async Task<Grade> UpdateGradeAsync(Grade grade)
         {
+            var modifiedGrade = await CheckGradeExistsById(grade.GradeId);
             await CheckGradeExistsByName(grade.GradeName);
-            await CheckGradeExistsById(grade.GradeId);
 
-            _dataContext.Grades.Update(grade);
+            _dataContext.Entry(modifiedGrade).CurrentValues.SetValues(grade);
             await _dataContext.SaveChangesAsync();
             return grade;
         }
@@ -48,16 +48,16 @@ namespace tl121pet.Services.Services
 
         private async Task CheckGradeExistsByName(string gradeName)
         {
-            var examGrade = await _dataContext.Grades.AsNoTracking().Where(g => g.GradeName == gradeName).FirstOrDefaultAsync();
+            var examGrade = await _dataContext.Grades.Where(g => g.GradeName == gradeName).FirstOrDefaultAsync();
             if (examGrade != null)
                 throw new Exception("A Grade with this name exists");
         }
 
-        private async Task CheckGradeExistsById(long gradeId)
+        private async Task<Grade> CheckGradeExistsById(long gradeId)
         {
-            var examGrade = await _dataContext.Grades.AsNoTracking().Where(g => g.GradeId == gradeId).FirstOrDefaultAsync();
-            if (examGrade == null)
-                throw new Exception("Grade not found");
+            var examGrade = await _dataContext.Grades.SingleOrDefaultAsync(g => g.GradeId == gradeId) ?? throw new Exception("Grade not found");
+
+            return examGrade;
         }
     }
 }

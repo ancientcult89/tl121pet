@@ -28,11 +28,11 @@ namespace tl121pet.Services.Services
 
         public async Task<Role> UpdateRoleAsync(Role role)
         {
+            var modifiedRole = await CheckRoleExistsById(role.RoleId);
             await CheckRoleExistsByName(role);
-            await CheckRoleExistsById(role.RoleId);
             await AdminRoleChangeChecking(await GetRoleNameById(role.RoleId));
 
-            _dataContext.Roles.Update(role);
+            _dataContext.Entry(modifiedRole).CurrentValues.SetValues(role);
             await _dataContext.SaveChangesAsync();
             return role;
         }
@@ -57,11 +57,12 @@ namespace tl121pet.Services.Services
                 throw new Exception("A Role with this name exists");
         }
 
-        public async Task CheckRoleExistsById(int roleId)
+        public async Task<Role> CheckRoleExistsById(int roleId)
         {
-            var examRole = await _dataContext.Roles.AsNoTracking().Where(r => r.RoleId == roleId).FirstOrDefaultAsync();
-            if (examRole == null)
-                throw new Exception("Role not found");
+            var examRole = await _dataContext.Roles.SingleOrDefaultAsync(r => r.RoleId == roleId) 
+                ?? throw new Exception("Role not found");
+
+            return examRole;
         }
 
         private async Task AdminRoleChangeChecking(string name)
