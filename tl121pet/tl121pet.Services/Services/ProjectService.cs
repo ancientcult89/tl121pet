@@ -8,12 +8,10 @@ namespace tl121pet.Services.Services
     public class ProjectService : IProjectService
     {
         private readonly DataContext _dataContext;
-        private readonly IAuthService _authService;
 
-        public ProjectService(DataContext dataContext, IAuthService authService)
+        public ProjectService(DataContext dataContext)
         {
             _dataContext = dataContext;
-            _authService = authService;
         }
 
         [Obsolete]

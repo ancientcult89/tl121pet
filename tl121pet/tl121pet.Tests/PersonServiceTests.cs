@@ -832,5 +832,86 @@ namespace tl121pet.Tests
             //Assert
             resultPeople.Should().BeEquivalentTo(expectedPersons);
         }
+
+        /// <summary>
+        /// проверяем что GetPeopleFilteredByProjectsAsync возвращает сотрудников без дублирования записей
+        /// </summary>
+        [Fact]
+        public async void GetPeopleFilteredByProjectsAsync_ShouldReturnCorrectPersonsWIthputDuplicating()
+        {
+            //Arrange
+            long testedProjectId = 1;
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+
+            Person testPerson = new Person
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                PersonId = 1,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+
+            ProjectTeam testProject = new ProjectTeam { ProjectTeamId = testedProjectId, ProjectTeamName = "SABPEK" };
+            ProjectTeam testProject2 = new ProjectTeam { ProjectTeamId = 2, ProjectTeamName = "SIDE" };
+            ProjectTeam testProject3 = new ProjectTeam { ProjectTeamId = 3, ProjectTeamName = "STACK" };
+
+            _dataContext.ProjectTeams.Add(testProject);
+            _dataContext.ProjectTeams.Add(testProject2);
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.People.Add(testPerson);
+            _dataContext.SaveChanges();
+
+            ProjectMember projectMember = new ProjectMember
+            {
+                Person = testPerson,
+                PersonId = testPerson.PersonId,
+                ProjectMemberId = 1,
+                ProjectTeam = testProject,
+                ProjectTeamId = testProject.ProjectTeamId,
+            };
+
+            ProjectMember projectMember2 = new ProjectMember
+            {
+                Person = testPerson,
+                PersonId = testPerson.PersonId,
+                ProjectMemberId = 2,
+                ProjectTeam = testProject3,
+                ProjectTeamId = testProject3.ProjectTeamId,
+            };
+
+
+            _dataContext.ProjectMembers.AddRange(projectMember, projectMember2);
+            _dataContext.SaveChanges();
+
+            List<Person> expectedPersons = new List<Person>() {
+                new Person
+                {
+                    Email = "1111@test.com",
+                    FirstName = "Eric",
+                    LastName = "Cripke",
+                    GradeId = testGrade.GradeId,
+                    PersonId = 1,
+                    ShortName = "Rick",
+                    SurName = "Rickson",
+                    Grade = testGrade
+                },
+            };
+
+            List<ProjectTeam> testedPrjects = new List<ProjectTeam>() { testProject, testProject3 };
+
+            //Act
+            var resultPeople = await _personService.GetPeopleFilteredByProjectsAsync(testedPrjects);
+
+            //Assert
+            resultPeople.Should().BeEquivalentTo(expectedPersons);
+        }
     }
 }
