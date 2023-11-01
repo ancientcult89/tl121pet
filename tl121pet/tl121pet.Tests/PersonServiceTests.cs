@@ -469,7 +469,7 @@ namespace tl121pet.Tests
         /// проверяем что GetPersonByIdAsync возвращает ошибку в случае поиска сотрудника, которого нет в системе
         /// </summary>
         [Fact]
-        public async void GetNotExistPerson_ShouldReturnCorrectPerson()
+        public async void GetNotExistPerson_ShouldThrowException()
         {
             //Arrange
             var notExistPersonId = 1;

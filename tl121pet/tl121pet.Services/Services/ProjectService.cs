@@ -39,7 +39,7 @@ namespace tl121pet.Services.Services
 
         public async Task<ProjectTeam> GetProjectTeamByIdAsync(long id)
         {
-            return await _dataContext.ProjectTeams.FindAsync(id) ?? new ProjectTeam();
+            return await _dataContext.ProjectTeams.FindAsync(id) ?? throw new Exception("Project not found");
         }
 
         public async Task DeleteProjectTeamAsync(long id)

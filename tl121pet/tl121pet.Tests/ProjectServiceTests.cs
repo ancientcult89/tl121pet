@@ -60,7 +60,7 @@ namespace tl121pet.Tests
         /// проверяем, что GetAllTeamsAsync возвращает пустую коллекцию, если нет ни одного проекта
         /// </summary>
         [Fact]
-        public async void GetAllTeamsAsync_SHouldReturnEmptyCOllectionIfProjectsNotExists()
+        public async void GetAllTeamsAsync_SHouldReturnEmptyCollectionIfProjectsNotExists()
         { 
             //Arrange
             List<ProjectTeam> expectedTeams = new List<ProjectTeam>();
@@ -70,6 +70,41 @@ namespace tl121pet.Tests
 
             //Assert
             resultProjects.Should().BeEquivalentTo(expectedTeams);
+        }
+
+        /// <summary>
+        /// проверяем, что GetProjectTeamByIdAsync возвращает корректный проект
+        /// </summary>
+        [Fact]
+        public async void GetProjectTeamByIdAsync_ShouldReturnCorrectProject()
+        {
+            //Arrange
+            ProjectTeam testProject1 = new ProjectTeam { ProjectTeamName = "SABPEK" };
+            _dataContext.ProjectTeams.Add(testProject1);
+            _dataContext.SaveChanges(true);
+            ProjectTeam expectedProject = new ProjectTeam { ProjectTeamName = "SABPEK", ProjectTeamId = testProject1.ProjectTeamId };
+
+            //Act
+            var resultProjects = await _projectService.GetProjectTeamByIdAsync(testProject1.ProjectTeamId);
+
+            //Assert
+            resultProjects.Should().BeEquivalentTo(expectedProject);
+        }
+
+        /// <summary>
+        /// проверяем, что при попытке получить через GetProjectTeamByIdAsync несуществующую запись получим ошибку
+        /// </summary>
+        [Fact]
+        public async void GetNotExistProject_ShouldThrowException()
+        {
+            //Arrange
+            var notExistProjectId = 1;
+
+            //Act
+            var result = async () => await _projectService.GetProjectTeamByIdAsync(notExistProjectId);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
         }
     }
 }
