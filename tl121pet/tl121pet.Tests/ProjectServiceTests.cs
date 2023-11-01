@@ -106,5 +106,41 @@ namespace tl121pet.Tests
             //Assert
             await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
         }
+
+        /// <summary>
+        /// Убеждаемся, что DeleteProjectTeamAsync удаляет нужный объект
+        /// </summary>
+        [Fact]
+        public async void DeleteProjectTeamAsync_ShouldDeletePerson()
+        {
+            //Arrange
+            ProjectTeam testProject1 = new ProjectTeam { ProjectTeamName = "SABPEK" };
+            _dataContext.ProjectTeams.Add(testProject1);
+            _dataContext.SaveChanges(true);
+
+            //Act
+            long deletedId = testProject1.ProjectTeamId;
+            await _projectService.DeleteProjectTeamAsync(testProject1.ProjectTeamId);
+            ProjectTeam deletedProject = _dataContext.ProjectTeams.Find(deletedId);
+
+            //Assert
+            deletedProject.Should().BeNull();
+        }
+
+        /// <summary>
+        /// проверяем, что при попытке удалить несуществующую запись получим ошибку
+        /// </summary>
+        [Fact]
+        public async void DeleteNotExistProject_ShouldThrowException()
+        {
+            //Arrange
+            long notExistProjectId = 1;
+
+            //Act
+            var result = async() => await _projectService.DeleteProjectTeamAsync(notExistProjectId);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
+        }
     }
 }

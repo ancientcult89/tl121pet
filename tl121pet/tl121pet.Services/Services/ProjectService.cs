@@ -44,7 +44,7 @@ namespace tl121pet.Services.Services
 
         public async Task DeleteProjectTeamAsync(long id)
         {
-            ProjectTeam pt = _dataContext.ProjectTeams.Find(id);
+            ProjectTeam pt = await CheckProjectsExistsById(id);
             _dataContext.ProjectTeams.Remove(pt);
             await _dataContext.SaveChangesAsync();
         }
@@ -159,6 +159,14 @@ namespace tl121pet.Services.Services
                 projectsList += $"{up.ProjectTeam.ProjectTeamName}; ";
             }
             return projectsList;
+        }
+
+        private async Task<ProjectTeam> CheckProjectsExistsById(long projectId)
+        {
+            var examProject = await _dataContext.ProjectTeams.SingleOrDefaultAsync(r => r.ProjectTeamId == projectId)
+                ?? throw new Exception("Project not found");
+
+            return examProject;
         }
     }
 }
