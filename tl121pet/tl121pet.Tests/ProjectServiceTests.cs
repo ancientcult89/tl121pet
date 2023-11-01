@@ -41,8 +41,8 @@ namespace tl121pet.Tests
             //Arrange
             ProjectTeam testProject1 = new ProjectTeam { ProjectTeamName = "SABPEK"};
             ProjectTeam testProject2 = new ProjectTeam { ProjectTeamName = "SIDE" };
-            _dataContext.ProjectTeams.AddRange(testProject1, testProject2);
-            _dataContext.SaveChanges();
+            await _projectService.CreateProjectTeamAsync(testProject1);
+            await _projectService.CreateProjectTeamAsync(testProject2);
 
             List<ProjectTeam> expectedTeams = new List<ProjectTeam>() {
                 new ProjectTeam { ProjectTeamName = "SABPEK", ProjectTeamId = testProject1.ProjectTeamId },
@@ -80,8 +80,7 @@ namespace tl121pet.Tests
         {
             //Arrange
             ProjectTeam testProject1 = new ProjectTeam { ProjectTeamName = "SABPEK" };
-            _dataContext.ProjectTeams.Add(testProject1);
-            _dataContext.SaveChanges(true);
+            await _projectService.CreateProjectTeamAsync(testProject1);
             ProjectTeam expectedProject = new ProjectTeam { ProjectTeamName = "SABPEK", ProjectTeamId = testProject1.ProjectTeamId };
 
             //Act
@@ -115,8 +114,7 @@ namespace tl121pet.Tests
         {
             //Arrange
             ProjectTeam testProject1 = new ProjectTeam { ProjectTeamName = "SABPEK" };
-            _dataContext.ProjectTeams.Add(testProject1);
-            _dataContext.SaveChanges(true);
+            await _projectService.CreateProjectTeamAsync(testProject1);
 
             //Act
             long deletedId = testProject1.ProjectTeamId;
@@ -141,6 +139,41 @@ namespace tl121pet.Tests
 
             //Assert
             await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
+        }
+
+        /// <summary>
+        /// проверяем, что CreateProjectTeamAsync создаёт корректный проект
+        /// </summary>
+        [Fact]
+        public async void CreateProjectTeamAsync_ShouldCreateProject()
+        {
+            //Arrange
+            ProjectTeam project = new ProjectTeam { ProjectTeamName = "Test" };
+            ProjectTeam expectedProject = new ProjectTeam { ProjectTeamName = "Test" };
+
+
+            //Act
+            await _projectService.CreateProjectTeamAsync(project);
+            expectedProject.ProjectTeamId = project.ProjectTeamId;
+
+            //Assert
+            project.Should().BeEquivalentTo(expectedProject);
+        }
+
+        [Fact]
+        public async void CreateDuplicatedProject_ShouldThrowException()
+        {
+            //Arrange
+            ProjectTeam project = new ProjectTeam { ProjectTeamName = "Test" };
+            ProjectTeam duplicatedProject = new ProjectTeam { ProjectTeamName = "Test" };
+            await _projectService.CreateProjectTeamAsync(project);
+
+
+            //Act
+            var result = async () => await _projectService.CreateProjectTeamAsync(duplicatedProject);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("A Project with same name is already exists");
         }
     }
 }

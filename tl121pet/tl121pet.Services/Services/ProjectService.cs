@@ -51,6 +51,7 @@ namespace tl121pet.Services.Services
 
         public async Task<ProjectTeam> CreateProjectTeamAsync(ProjectTeam pt)
         {
+            await CheckProjectsExistsByName(pt);
             _dataContext.ProjectTeams.Add(pt);
             await _dataContext.SaveChangesAsync();
             return pt;
@@ -167,6 +168,13 @@ namespace tl121pet.Services.Services
                 ?? throw new Exception("Project not found");
 
             return examProject;
+        }
+
+        private async Task CheckProjectsExistsByName(ProjectTeam project)
+        {
+            var examProject = await _dataContext.ProjectTeams.SingleOrDefaultAsync(r => r.ProjectTeamName == project.ProjectTeamName);
+            if(examProject != null)
+                throw new Exception("A Project with same name is already exists");
         }
     }
 }

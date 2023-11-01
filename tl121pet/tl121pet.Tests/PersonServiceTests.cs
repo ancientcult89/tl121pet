@@ -159,8 +159,8 @@ namespace tl121pet.Tests
             };
 
             //Act
-            _dataContext.People.Add(createdPerson);
-            _dataContext.SaveChanges();
+            await _personService.CreatePersonAsync(createdPerson);
+            expectedPerson.PersonId = createdPerson.PersonId;
 
             //Assert
             createdPerson.Should().BeEquivalentTo(expectedPerson);
