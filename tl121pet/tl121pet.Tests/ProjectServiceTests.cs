@@ -160,6 +160,9 @@ namespace tl121pet.Tests
             project.Should().BeEquivalentTo(expectedProject);
         }
 
+        /// <summary>
+        /// проверяем, что невозможно завести второй проект с одним и тем же названием
+        /// </summary>
         [Fact]
         public async void CreateDuplicatedProject_ShouldThrowException()
         {
@@ -174,6 +177,102 @@ namespace tl121pet.Tests
 
             //Assert
             await result.Should().ThrowAsync<Exception>().WithMessage("A Project with same name is already exists");
+        }
+
+        /// <summary>
+        /// убеждаемся что UpdateProjectTeamAsync корректно обновляет запись
+        /// </summary>
+        [Fact]
+        public async void UpdateProjectTeamAsync_ShouldUpdateProject()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            await _projectService.CreateProjectTeamAsync(sourseTeam);
+            ProjectTeam expectedTeam = new ProjectTeam { ProjectTeamName = "Test1", ProjectTeamId = sourseTeam.ProjectTeamId };
+            ProjectTeam updatedTeam = new ProjectTeam { ProjectTeamName = "Test1", ProjectTeamId = sourseTeam.ProjectTeamId };
+
+            //Act
+            await _projectService.UpdateProjectTeamAsync(updatedTeam);
+
+            //Assert
+            updatedTeam.Should().BeEquivalentTo(expectedTeam);
+        }
+
+        /// <summary>
+        /// проверяем, что при попытке обновить несуществующую запись получим ошибку
+        /// </summary>
+        [Fact]
+        public async void UpdateNotExistProject_ShouldThrowException()
+        {
+            //Arrange
+            ProjectTeam notExistTeam = new ProjectTeam { ProjectTeamName = "Test", ProjectTeamId = 3 };
+
+            //Act
+            var result = async() => await _projectService.UpdateProjectTeamAsync(notExistTeam);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
+        }
+
+        /// <summary>
+        /// проверяем, что при попытке сменить название на такое же, которое уже существует получим ошибку
+        /// </summary>
+        [Fact]
+        public async void UpdateProjectWithDuplicatedName_ShouldThrowException()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            await _projectService.CreateProjectTeamAsync(sourseTeam);
+            ProjectTeam updatedTeam = new ProjectTeam { ProjectTeamName = "Test", ProjectTeamId = sourseTeam.ProjectTeamId };
+
+            //Act
+            var result = async() => await _projectService.UpdateProjectTeamAsync(updatedTeam);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("A Project with same name is already exists");
+        }
+
+        /// <summary>
+        /// проверяем что AddPersonMembershipAsync добавляет запись участия в проекте
+        /// </summary>
+        [Fact]
+        public async void AddPersonMembershipAsync_ShouldAddPersonMemberShip()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            await _projectService.CreateProjectTeamAsync(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            //Act
+            ProjectMember addedProjectMember = await _projectService.AddPersonMembershipAsync(createdPerson.PersonId, sourseTeam.ProjectTeamId);
+            ProjectMember expectedProjectMember = new ProjectMember { 
+                PersonId = createdPerson.PersonId,
+                ProjectTeamId = sourseTeam.ProjectTeamId,
+                ProjectMemberId = addedProjectMember.ProjectMemberId,
+                Person = createdPerson,
+                ProjectTeam = sourseTeam,
+            };
+
+            //Assert
+            addedProjectMember.Should().BeEquivalentTo(expectedProjectMember);
         }
     }
 }

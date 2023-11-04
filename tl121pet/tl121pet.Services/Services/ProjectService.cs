@@ -59,9 +59,35 @@ namespace tl121pet.Services.Services
 
         public async Task<ProjectTeam> UpdateProjectTeamAsync(ProjectTeam pt)
         {
-            _dataContext.ProjectTeams.Update(pt);
+            var modifiedProject = await CheckProjectsExistsById(pt.ProjectTeamId);
+            await CheckProjectsExistsByName(pt);
+            _dataContext.Entry(modifiedProject).CurrentValues.SetValues(pt);
             await _dataContext.SaveChangesAsync();
             return pt;
+        }
+
+        public async Task<ProjectMember> AddPersonMembershipAsync(long personId, long projectTeamId)
+        {
+            ProjectMember pm = new ProjectMember()
+            {
+                PersonId = personId,
+                ProjectTeamId = projectTeamId
+            };
+            _dataContext.ProjectMembers.Add(pm);
+            await _dataContext.SaveChangesAsync();
+            return pm;
+        }
+
+        public async Task<List<ProjectTeam>> GetPersonMembershipAsync(long personId)
+        {
+            var selectedTeams = await (
+                from pt in _dataContext.ProjectTeams
+                join pm in _dataContext.ProjectMembers on pt.ProjectTeamId equals pm.ProjectTeamId
+                where pm.PersonId == personId
+                select pt
+            ).ToListAsync();
+
+            return selectedTeams;
         }
 
         public async Task<string> GetPersonsProjectsAsStringAsync(long id)
@@ -76,18 +102,6 @@ namespace tl121pet.Services.Services
             return projectsList;
         }
 
-        public async Task<List<ProjectTeam>> GetPersonMembershipAsync(long id)
-        {
-            var selectedTeams = await (
-                from pt in _dataContext.ProjectTeams
-                join pm in _dataContext.ProjectMembers on pt.ProjectTeamId equals pm.ProjectTeamId
-                where pm.PersonId == id
-                select pt
-            ).ToListAsync();
-
-            return selectedTeams;
-        }
-
         public async Task DeletePersonMembershipAsync(long userId, long projectTeamId)
         {
             ProjectMember pm = await _dataContext.ProjectMembers
@@ -95,18 +109,6 @@ namespace tl121pet.Services.Services
                 .FirstOrDefaultAsync();
             _dataContext.ProjectMembers.Remove(pm);
             _dataContext.SaveChanges();
-        }
-
-        public async Task<ProjectMember> AddPersonMembershipAsync(long userId, long projectTeamId)
-        {
-            ProjectMember pm = new ProjectMember()
-            {
-                PersonId = userId,
-                ProjectTeamId = projectTeamId
-            };
-            _dataContext.ProjectMembers.Add(pm);
-            await _dataContext.SaveChangesAsync();
-            return pm;
         }
 
         public async Task<List<ProjectTeam>> GetUserMembershipAsync(long id)

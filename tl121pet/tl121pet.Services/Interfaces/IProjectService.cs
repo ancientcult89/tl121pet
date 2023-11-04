@@ -12,7 +12,7 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteProjectTeamAsync(long id);
         public Task<string> GetPersonsProjectsAsStringAsync(long id);
         public Task<string> GetUserProjectsNameAsync(long userId);
-        public Task<List<ProjectTeam>> GetPersonMembershipAsync(long id);
+        public Task<List<ProjectTeam>> GetPersonMembershipAsync(long personId);
         public Task<List<ProjectTeam>> GetUserMembershipAsync(long id);
         public Task DeletePersonMembershipAsync(long userId, long projectTeamId);
         public Task<ProjectMember> AddPersonMembershipAsync(long userId, long projectTeamId);
