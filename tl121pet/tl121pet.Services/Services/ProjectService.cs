@@ -68,6 +68,7 @@ namespace tl121pet.Services.Services
 
         public async Task<ProjectMember> AddPersonMembershipAsync(long personId, long projectTeamId)
         {
+            await CheckExistsPersonProjectsFoDuplicates(personId, projectTeamId);
             ProjectMember pm = new ProjectMember()
             {
                 PersonId = personId,
@@ -104,6 +105,8 @@ namespace tl121pet.Services.Services
 
         public async Task DeletePersonMembershipAsync(long userId, long projectTeamId)
         {
+            await CheckExistsPersonProjects(userId, projectTeamId);
+
             ProjectMember pm = await _dataContext.ProjectMembers
                 .Where(p => p.ProjectTeamId == projectTeamId && p.PersonId == userId)
                 .FirstOrDefaultAsync();
@@ -177,6 +180,25 @@ namespace tl121pet.Services.Services
             var examProject = await _dataContext.ProjectTeams.SingleOrDefaultAsync(r => r.ProjectTeamName == project.ProjectTeamName);
             if(examProject != null)
                 throw new Exception("A Project with same name is already exists");
+        }
+
+        private async Task CheckExistsPersonProjectsFoDuplicates(long personId, long projectTeamId)
+        {
+            var result = await _dataContext.ProjectMembers
+                .Where(pm => pm.PersonId == personId && pm.ProjectTeamId == projectTeamId)
+                .FirstOrDefaultAsync();
+            if(result != null)
+                throw new Exception("The Project is already used");
+        }
+        private async Task<ProjectMember> CheckExistsPersonProjects(long personId, long projectTeamId)
+        {
+            var result = await _dataContext.ProjectMembers
+                .Where(pm => pm.PersonId == personId && pm.ProjectTeamId == projectTeamId)
+                .FirstOrDefaultAsync();
+            if (result == null)
+                throw new Exception("The Persons Project not exist");
+
+            return result;
         }
     }
 }

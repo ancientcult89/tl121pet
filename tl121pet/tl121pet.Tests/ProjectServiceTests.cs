@@ -274,5 +274,234 @@ namespace tl121pet.Tests
             //Assert
             addedProjectMember.Should().BeEquivalentTo(expectedProjectMember);
         }
+
+        /// <summary>
+        /// проверяем что при попытке повторно добавить сотрудника в проект получим ошибку
+        /// </summary>
+        [Fact]
+        public async void AddDuplicatedPersonMembership_ShouldThrowException()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            await _projectService.CreateProjectTeamAsync(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            ProjectMember addedProjectMember = await _projectService.AddPersonMembershipAsync(createdPerson.PersonId, sourseTeam.ProjectTeamId);
+
+            //Act
+            var result = async () => await _projectService.AddPersonMembershipAsync(createdPerson.PersonId, sourseTeam.ProjectTeamId);
+
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("The Project is already used");
+        }
+
+        /// <summary>
+        /// проверяем, что GetPersonMembershipAsync возвращает правильный список проектов по сотруднику
+        /// </summary>
+        [Fact]
+        public async void GetPersonMembershipAsync_ShouldReturnCorrectPersonProjects()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            ProjectTeam sourseTeam2 = new ProjectTeam { ProjectTeamName = "Test2" };
+            _dataContext.ProjectTeams.AddRange(sourseTeam, sourseTeam2);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            ProjectMember pm1 = new ProjectMember { PersonId = createdPerson.PersonId, ProjectTeamId = sourseTeam.ProjectTeamId };
+            ProjectMember pm2 = new ProjectMember { PersonId = createdPerson.PersonId, ProjectTeamId = sourseTeam2.ProjectTeamId };
+            _dataContext.ProjectMembers.Add(pm1);
+            _dataContext.ProjectMembers.Add(pm2);
+            _dataContext.SaveChanges();
+
+            List<ProjectTeam> expectedProjects = new List<ProjectTeam>() { 
+                new ProjectTeam { ProjectTeamId = sourseTeam.ProjectTeamId,ProjectTeamName = sourseTeam.ProjectTeamName },
+                new ProjectTeam { ProjectTeamId = sourseTeam2.ProjectTeamId,ProjectTeamName = sourseTeam2.ProjectTeamName },
+            };
+
+            //Act
+            var resultPersonProjects = await _projectService.GetPersonMembershipAsync(createdPerson.PersonId);
+
+            //Assert
+            resultPersonProjects.Should().BeEquivalentTo(expectedProjects);
+        }
+
+        /// <summary>
+        /// проверяем, что GetPersonMembershipAsync возвращает пустую коллекцию, если нет ни одного проекта
+        /// </summary>
+        [Fact]
+        public async void GetPersonMembershipAsync_ShouldReturnEmptyCollectionIfProjectsNotExists()
+        {
+            //Arrange
+            List<ProjectTeam> expectedProjects = new();
+            long personId = 1;
+
+            //Act
+            var resultPersonProjects = await _projectService.GetPersonMembershipAsync(personId);
+
+            //Assert
+            resultPersonProjects.Should().BeEquivalentTo(expectedProjects);
+        }
+
+        /// <summary>
+        /// проверяем, что GetPersonsProjectsAsStringAsync возвращает корректную строку со списком проектов
+        /// </summary>
+        [Fact]
+        public async void GetPersonsProjectsAsStringAsync_ShouldReturnCorrectProjectsString()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            ProjectTeam sourseTeam2 = new ProjectTeam { ProjectTeamName = "Test2" };
+            _dataContext.ProjectTeams.AddRange(sourseTeam, sourseTeam2);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            ProjectMember pm1 = new ProjectMember { PersonId = createdPerson.PersonId, ProjectTeamId = sourseTeam.ProjectTeamId };
+            ProjectMember pm2 = new ProjectMember { PersonId = createdPerson.PersonId, ProjectTeamId = sourseTeam2.ProjectTeamId };
+            _dataContext.ProjectMembers.Add(pm1);
+            _dataContext.ProjectMembers.Add(pm2);
+            _dataContext.SaveChanges();
+            string expectedProjectsString = "Test; Test2; ";
+
+            //Act
+            var resultPersonProjects = await _projectService.GetPersonsProjectsAsStringAsync(createdPerson.PersonId);
+
+            //Assert
+            resultPersonProjects.Should().BeEquivalentTo(expectedProjectsString);
+        }
+
+        /// <summary>
+        /// проверяем, что GetPersonMembershipAsync возвращает пустую строку, если нет ни одного проекта
+        /// </summary>
+        [Fact]
+        public async void GetPersonsProjectsAsStringAsync_ShouldReturnEmptyStringProjectsNotExists()
+        {
+            //Arrange
+            string expectedStringProjects = "";
+            long personId = 1;
+
+            //Act
+            var resultPersonProjects = await _projectService.GetPersonMembershipAsync(personId);
+
+            //Assert
+            resultPersonProjects.Should().BeEquivalentTo(expectedStringProjects);
+        }
+
+        /// <summary>
+        /// проверяем, что DeletePersonMembershipAsync должен удалять участие сотрудника в проекте
+        /// </summary>
+        [Fact]
+        public async void DeletePersonMembershipAsync_ShouldDeletePersonsProject()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            ProjectTeam sourseTeam2 = new ProjectTeam { ProjectTeamName = "Test2" };
+            _dataContext.ProjectTeams.AddRange(sourseTeam, sourseTeam2);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            ProjectMember pm1 = new ProjectMember { PersonId = createdPerson.PersonId, ProjectTeamId = sourseTeam.ProjectTeamId };
+            ProjectMember pm2 = new ProjectMember { PersonId = createdPerson.PersonId, ProjectTeamId = sourseTeam2.ProjectTeamId };
+            _dataContext.ProjectMembers.Add(pm1);
+            _dataContext.ProjectMembers.Add(pm2);
+            _dataContext.SaveChanges();
+
+            List<ProjectTeam> expectedProjects = new List<ProjectTeam>() {
+                new ProjectTeam { ProjectTeamId = sourseTeam.ProjectTeamId,ProjectTeamName = sourseTeam.ProjectTeamName },
+            };
+
+            //Act
+            await _projectService.DeletePersonMembershipAsync(createdPerson.PersonId, sourseTeam2.ProjectTeamId);
+            var resultPersonProjects = await _projectService.GetPersonMembershipAsync(createdPerson.PersonId);
+
+            //Assert
+            resultPersonProjects.Should().BeEquivalentTo(expectedProjects);
+        }
+
+        /// <summary>
+        /// проверяем, что при попытке удалить несуществующий проект сотрудника получим ошибку
+        /// </summary>
+        [Fact]
+        public async void DeleteNotExistsPersonMembershipAsync_ShouldThrowException()
+        {
+            //Arrange
+            long notExistPersonId = 1;
+            long notExistProjectId = 1;
+
+            //Act
+            var result = async () => await _projectService.DeletePersonMembershipAsync(notExistPersonId, notExistProjectId);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("The Persons Project not exist");
+        }
     }
 }
