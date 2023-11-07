@@ -17,6 +17,6 @@ namespace tl121pet.Services.Interfaces
         public Task DeletePersonMembershipAsync(long userId, long projectTeamId);
         public Task<ProjectMember> AddPersonMembershipAsync(long userId, long projectTeamId);
         public Task DeleteUserMembershipAsync(long userId, long projectTeamId);
-        public Task AddUserMembershipAsync(long userId, long projectTeamId);
+        public Task<UserProject> AddUserMembershipAsync(long userId, long projectTeamId);
     }
 }

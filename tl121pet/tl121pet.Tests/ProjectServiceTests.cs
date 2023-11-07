@@ -423,7 +423,7 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// проверяем, что GetPersonMembershipAsync возвращает пустую строку, если нет ни одного проекта
+        /// проверяем, что GetPersonsProjectsAsStringAsync возвращает пустую строку, если нет ни одного проекта
         /// </summary>
         [Fact]
         public async void GetPersonsProjectsAsStringAsync_ShouldReturnEmptyStringProjectsNotExists()
@@ -433,7 +433,7 @@ namespace tl121pet.Tests
             long personId = 1;
 
             //Act
-            var resultPersonProjects = await _projectService.GetPersonMembershipAsync(personId);
+            var resultPersonProjects = await _projectService.GetPersonsProjectsAsStringAsync(personId);
 
             //Assert
             resultPersonProjects.Should().BeEquivalentTo(expectedStringProjects);
@@ -502,6 +502,277 @@ namespace tl121pet.Tests
 
             //Assert
             await result.Should().ThrowAsync<Exception>().WithMessage("The Persons Project not exist");
+        }
+
+        /// <summary>
+        /// Проверяем что AddUserMembershipAsync добавляет проект пользователю
+        /// </summary>
+        [Fact]
+        public async void AddUserMembershipAsync_ShouldAddProjectToUser()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            _dataContext.SaveChanges();
+
+            User user = new User {
+                UserName = "Test",
+                Email = "test@test.test",                
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            //Act
+            var resultUserProject = await _projectService.AddUserMembershipAsync(user.Id, sourseTeam.ProjectTeamId);
+            UserProject expectedUserProject = new UserProject() { 
+                ProjectTeamId = sourseTeam.ProjectTeamId,
+                ProjectTeam = sourseTeam,
+                User = user,
+                UserId = user.Id,
+                UserProjectId = resultUserProject.UserId
+            };
+
+            //Assert
+            resultUserProject.Should().BeEquivalentTo(expectedUserProject);
+        }
+
+        /// <summary>
+        /// Проверяем что при попытке добавить уже существующий у пользователя проект получим ошибку
+        /// </summary>
+        [Fact]
+        public async void AddExistsUserMembership_ShouldAddThrowException()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            _dataContext.SaveChanges();
+
+            User user = new User
+            {
+                UserName = "Test",
+                Email = "test@test.test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+            var firstUserProject = await _projectService.AddUserMembershipAsync(user.Id, sourseTeam.ProjectTeamId);
+
+            //Act
+            var resultUserProject= async () => await _projectService.AddUserMembershipAsync(user.Id, sourseTeam.ProjectTeamId);
+
+            //Assert
+            await resultUserProject.Should().ThrowAsync<Exception>().WithMessage("The Project is already used");
+        }
+
+        /// <summary>
+        /// проверяем, что GetUserMembershipAsync возвращает корректный список проектов пользователя
+        /// </summary>
+        [Fact]
+        public async void GetUserMembershipAsync_ShouldReturnCorrectProjects()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            ProjectTeam sourseTeam2 = new ProjectTeam { ProjectTeamName = "Test2" };
+            _dataContext.ProjectTeams.Add(sourseTeam2);
+            _dataContext.SaveChanges();
+
+            User user = new User
+            {
+                UserName = "Test",
+                Email = "test@test.test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            UserProject firstUserProject = new UserProject() {
+                User = user,
+                UserId = user.Id,
+                ProjectTeam = sourseTeam,
+                ProjectTeamId = sourseTeam.ProjectTeamId
+            };
+            _dataContext.UserProjects.Add(firstUserProject);
+
+            UserProject secondUserProject = new UserProject()
+            {
+                User = user,
+                UserId = user.Id,
+                ProjectTeam = sourseTeam2,
+                ProjectTeamId = sourseTeam2.ProjectTeamId
+            };
+            _dataContext.UserProjects.Add(secondUserProject);
+            _dataContext.SaveChanges();
+
+            List<ProjectTeam> expectedProjects = new List<ProjectTeam>()
+            {
+                new ProjectTeam {
+                    ProjectTeamId= sourseTeam.ProjectTeamId,
+                    ProjectTeamName = "Test"
+                },
+                new ProjectTeam {
+                    ProjectTeamId= sourseTeam2.ProjectTeamId,
+                    ProjectTeamName = "Test2"
+                },
+            };
+
+            //Act
+            var resultUserProjects = await _projectService.GetUserMembershipAsync(user.Id);
+
+            //Assert
+            resultUserProjects.Should().BeEquivalentTo(expectedProjects);
+        }
+
+        /// <summary>
+        /// проверяем, что при отсутсвии проектов у пользователя получим пустую коллекцию
+        /// </summary>
+        [Fact]
+        public async void GetUserMembershipAsync_ShouldReturnEmptyCollectionIfProjectsNotExists()
+        {
+            //Arrange
+            long userId = 1;
+
+            //Act
+            var result = await _projectService.GetUserMembershipAsync(userId);
+
+            //Assert
+            result.Should().BeEmpty();
+        }
+
+        /// <summary>
+        /// проверяем, что DeleteUserMembershipAsync удаляет проект с пользователя
+        /// </summary>
+        [Fact]
+        public async void DeleteUserMembershipAsync_ShouldDeleteUsersProject()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            ProjectTeam sourseTeam2 = new ProjectTeam { ProjectTeamName = "Test2" };
+            _dataContext.ProjectTeams.Add(sourseTeam2);
+            _dataContext.SaveChanges();
+
+            User user = new User
+            {
+                UserName = "Test",
+                Email = "test@test.test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            UserProject firstUserProject = new UserProject()
+            {
+                User = user,
+                UserId = user.Id,
+                ProjectTeam = sourseTeam,
+                ProjectTeamId = sourseTeam.ProjectTeamId
+            };
+            _dataContext.UserProjects.Add(firstUserProject);
+
+            UserProject secondUserProject = new UserProject()
+            {
+                User = user,
+                UserId = user.Id,
+                ProjectTeam = sourseTeam2,
+                ProjectTeamId = sourseTeam2.ProjectTeamId
+            };
+            _dataContext.UserProjects.Add(secondUserProject);
+            _dataContext.SaveChanges();
+
+            List<ProjectTeam> expectedProjects = new List<ProjectTeam>()
+            {
+                new ProjectTeam {
+                    ProjectTeamId= sourseTeam.ProjectTeamId,
+                    ProjectTeamName = "Test"
+                },
+            };
+
+            //Act
+            await _projectService.DeleteUserMembershipAsync(user.Id, sourseTeam2.ProjectTeamId);
+            var result = await _projectService.GetUserMembershipAsync(user.Id);
+
+            //Assert
+            result.Should().BeEquivalentTo(expectedProjects);
+        }
+
+        /// <summary>
+        /// Проверяем что при попытке удалить проект, которого нет у пользователя получим ошибку
+        /// </summary>
+        [Fact]
+        public async void DeleteNotExistUserProject_ShouldThrowException()
+        {
+            //Arrange
+            long notExistUser = 1;
+            long notExistUserProject = 1;
+
+            //Act
+            var result = async () => await _projectService.DeleteUserMembershipAsync(notExistUser, notExistUserProject);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("The User Project not exist");
+        }
+
+        /// <summary>
+        /// Проверяем, что GetUserProjectsNameAsync возвращает строку с корректным списком проектов
+        /// </summary>
+        [Fact]
+        public async void GetUserProjectsNameAsync_ShouldReturnCorrectProjectsString()
+        {
+            //Arrange
+            string expectedUsersProjectString = "Test; Test2; ";
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            ProjectTeam sourseTeam2 = new ProjectTeam { ProjectTeamName = "Test2" };
+            _dataContext.ProjectTeams.Add(sourseTeam2);
+            _dataContext.SaveChanges();
+
+            User user = new User
+            {
+                UserName = "Test",
+                Email = "test@test.test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            UserProject firstUserProject = new UserProject()
+            {
+                User = user,
+                UserId = user.Id,
+                ProjectTeam = sourseTeam,
+                ProjectTeamId = sourseTeam.ProjectTeamId
+            };
+            _dataContext.UserProjects.Add(firstUserProject);
+
+            UserProject secondUserProject = new UserProject()
+            {
+                User = user,
+                UserId = user.Id,
+                ProjectTeam = sourseTeam2,
+                ProjectTeamId = sourseTeam2.ProjectTeamId
+            };
+            _dataContext.UserProjects.Add(secondUserProject);
+            _dataContext.SaveChanges();
+
+            //Act
+            string result = await _projectService.GetUserProjectsNameAsync(user.Id);
+
+            //Assert
+            result.Should().BeEquivalentTo(expectedUsersProjectString);
+        }
+
+        /// <summary>
+        /// Проверяем что при попытке получить список проектов по пользователю у которого их нет мы получим пустую строку
+        /// </summary>
+        [Fact]
+        public async void GetNotExistsUsersProject_ShouldReturnEmptyString()
+        {
+            //Arrange
+            long userId = 1;
+            string expectedUserProjectString = "";
+
+            //Act
+            var result = await _projectService.GetUserProjectsNameAsync(userId);
+
+            //Assert
+            result.Should().BeEquivalentTo(expectedUserProjectString);
         }
     }
 }
