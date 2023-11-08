@@ -5,13 +5,12 @@ namespace tl121pet.Services.Interfaces
     public interface IMeetingService
     {
         #region Meetings
-        public Task<List<Meeting>> GetMeetingsAsync(long? personId);
+        public Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people);
         public Task<Meeting> GetMeetingByIdAsync(Guid id);
         public Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId);
         public Task<Meeting> CreateMeetingAsync(Meeting m);
         public Task<Meeting> UpdateMeetingAsync(Meeting mtdto);
         public Task DeleteMeetingAsync(Guid id);
-        public Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);
         public Task MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId);
         public Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId);

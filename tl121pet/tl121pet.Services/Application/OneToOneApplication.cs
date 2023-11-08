@@ -84,5 +84,40 @@ namespace tl121pet.Services.Application
                 }).ToList();
             return personInitials;
         }
+
+        private async Task<List<Person>> GetPeopleByProjectsAsync(List<ProjectTeam> projects, long? personId)
+        {
+            List<Person> personByProjects = new List<Person>();
+
+            foreach (ProjectTeam pt in projects)
+            {
+                personByProjects.AddRange(await _personService.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
+            }
+
+            if (personId != null)
+                personByProjects = personByProjects.Where(p => p.PersonId == (long)personId).ToList();
+
+            return personByProjects.Distinct(new PersonComparer()).ToList();
+        }
+
+        public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
+        {
+            List<Meeting> meetingsRes = new List<Meeting>();
+            long? userId = _authService.GetMyUserId();
+            if (userId != null)
+            {
+                List<ProjectTeam> projects = new List<ProjectTeam>();
+                List<Person> people = new List<Person>();
+                projects = await _authService.GetUserProjectsAsync((long)userId);
+                people = await GetPeopleByProjectsAsync(projects, personId);
+                meetingsRes = await _meetingService.GetMeetingsByPersonAsync(people);
+            }
+
+            return meetingsRes
+                .OrderByDescending(m => m.Person.LastName)
+                .OrderByDescending(m => m.MeetingPlanDate)
+                .OrderByDescending(m => m.MeetingDate)
+                .ToList();
+        }
     }
 }

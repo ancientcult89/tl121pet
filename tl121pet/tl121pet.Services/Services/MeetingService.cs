@@ -7,57 +7,29 @@ namespace tl121pet.Services.Services
 {
     public class MeetingService : IMeetingService
     {
-
-        private readonly IAuthService _authService;
-        private readonly IPersonService _personService;
         private DataContext _dataContext;
 
-        public MeetingService(IAuthService authService
-            , IPersonService personService
-            , DataContext dataContext)
+        public MeetingService(DataContext dataContext)
         {
-            _authService = authService;
-            _personService = personService;
             _dataContext = dataContext;
         }
 
-        public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
+        public async Task<Meeting> CreateMeetingAsync(Meeting newMeeting)
         {
-            List<Meeting> meetingsRes = new List<Meeting>();
-            long? userId = _authService.GetMyUserId();
-            if (userId != null)
-            {
-                List<Person> people = new List<Person>();
-                List<ProjectTeam> projects = new List<ProjectTeam>();
-                projects = await _authService.GetUserProjectsAsync((long)userId);
-                people = await GetPeopleByProjectsAsync(projects, personId);
-                meetingsRes = await GetMeetingsByPersonAsync(people);
-            }
+            var existsMeeting = _dataContext.Meetings
+                .Where(m => m.PersonId == newMeeting.PersonId && m.MeetingPlanDate == newMeeting.MeetingPlanDate)
+                .FirstOrDefault();
+            if (existsMeeting != null)
+                throw new Exception("The Meeting with this person is already planned");
 
-            return meetingsRes
-                .OrderByDescending(m => m.Person.LastName)
-                .OrderByDescending(m => m.MeetingPlanDate)
-                .OrderByDescending(m => m.MeetingDate)
-                .ToList();
+            newMeeting.MeetingGoals = default;
+            newMeeting.MeetingNotes = default;
+            _dataContext.Meetings.Add(newMeeting);
+            await _dataContext.SaveChangesAsync();
+            return newMeeting;
         }
 
-        //TODO: странное месторасположение, лучше перенести в PersonService
-        private async Task<List<Person>> GetPeopleByProjectsAsync(List<ProjectTeam> projects, long? personId)
-        {
-            List<Person> personByProjects = new List<Person>();
-
-            foreach (ProjectTeam pt in projects)
-            {
-                personByProjects.AddRange(await _personService.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
-            }
-
-            if (personId != null)
-                personByProjects = personByProjects.Where(p => p.PersonId == (long)personId).ToList();
-
-            return personByProjects.Distinct(new PersonComparer()).ToList();
-        }
-
-        private async Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people)
+        public async Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people)
         {
             List<Meeting> meetingsByPerson = new List<Meeting>();
             foreach (Person person in people)
@@ -71,14 +43,6 @@ namespace tl121pet.Services.Services
         public async Task<Meeting> GetMeetingByIdAsync(Guid id)
         {
             return await _dataContext.Meetings.FindAsync(id) ?? throw new Exception("Meeting not found");
-        }
-        public async Task<Meeting> CreateMeetingAsync(Meeting m)
-        {
-            m.MeetingGoals = default;
-            m.MeetingNotes = default;
-            _dataContext.Meetings.Add(m);
-            await _dataContext.SaveChangesAsync();
-            return m;
         }
 
         public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)
@@ -234,14 +198,6 @@ namespace tl121pet.Services.Services
             return previousMeeting?.MeetingId;
         }
 
-        public async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
-        {
-            return await _dataContext.Meetings
-                .Include(mt => mt.Person)
-                .Where(mt => mt.PersonId == personId)
-                .ToListAsync();
-        }
-
         public async Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId)
         {
             List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
@@ -277,7 +233,13 @@ namespace tl121pet.Services.Services
             _dataContext.MeetingGoals.Update(goal);
             await _dataContext.SaveChangesAsync();
         }
-
         #endregion MeetingProcessing
+        private async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
+        {
+            return await _dataContext.Meetings
+                .Include(mt => mt.Person)
+                .Where(mt => mt.PersonId == personId)
+                .ToListAsync();
+        }
     }
 }

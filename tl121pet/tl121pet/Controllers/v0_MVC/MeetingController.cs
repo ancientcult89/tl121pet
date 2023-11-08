@@ -7,6 +7,7 @@ using tl121pet.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
+using tl121pet.Services.Application;
 
 namespace tl121pet.Controllers.v0_MVC
 {
@@ -17,18 +18,22 @@ namespace tl121pet.Controllers.v0_MVC
         //TODO: избавиться от зависимости слоя данных в контроллере
         private DataContext _dataContext;
         private IOneToOneService _oneToOneService;
+        private OneToOneApplication _oneToOneApplication;
+
         public MeetingController(DataContext dataContext, 
             IMeetingService meetingService,
-            IOneToOneService oneToOneService)
+            IOneToOneService oneToOneService,
+            OneToOneApplication oneToOneApplication)
         {
             _dataContext = dataContext;
             _meetingService = meetingService;
             _oneToOneService = oneToOneService;
+            _oneToOneApplication = oneToOneApplication;
         }
         #region Meeting
         public async Task<IActionResult> MeetingList(long? personId = null)
         {
-            return View("MeetingList", await _meetingService.GetMeetingsAsync(personId));
+            return View("MeetingList", await _oneToOneApplication.GetMeetingsAsync(personId));
         }
         public IActionResult Details(Guid id)
         {

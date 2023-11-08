@@ -2,12 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
 using Xunit;
+
 namespace tl121pet.Tests
 {
     public class ProjectServiceTests : IDisposable

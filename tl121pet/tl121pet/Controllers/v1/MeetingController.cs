@@ -2,6 +2,7 @@
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Models;
+using tl121pet.Services.Application;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Controllers.v1
@@ -12,11 +13,13 @@ namespace tl121pet.Controllers.v1
     {
         private readonly IMeetingService _meetingService;
         private readonly IOneToOneService _oneToOneService;
+        private readonly OneToOneApplication _oneToOneApplication;
 
-        public MeetingController(IMeetingService meetingService, IOneToOneService oneToOneService)
+        public MeetingController(IMeetingService meetingService, IOneToOneService oneToOneService, OneToOneApplication oneToOneApplication)
         {
             _meetingService = meetingService;
             _oneToOneService = oneToOneService;
+            _oneToOneApplication = oneToOneApplication;
         }
 
         #region Meeting
@@ -24,7 +27,7 @@ namespace tl121pet.Controllers.v1
         [HttpGet]
         public async Task<ActionResult<List<Meeting>>> GetMeetingList(long? personId = null)
         {
-            return await _meetingService.GetMeetingsAsync(personId);
+            return await _oneToOneApplication.GetMeetingsAsync(personId);
         }
 
         [HttpGet("{id}")]
