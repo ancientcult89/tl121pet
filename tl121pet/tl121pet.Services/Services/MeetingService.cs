@@ -14,13 +14,10 @@ namespace tl121pet.Services.Services
             _dataContext = dataContext;
         }
 
+        #region Meeting
         public async Task<Meeting> CreateMeetingAsync(Meeting newMeeting)
         {
-            var existsMeeting = _dataContext.Meetings
-                .Where(m => m.PersonId == newMeeting.PersonId && m.MeetingPlanDate == newMeeting.MeetingPlanDate)
-                .FirstOrDefault();
-            if (existsMeeting != null)
-                throw new Exception("The Meeting with this person is already planned");
+            await CheckDuplicatedMeetingAsync(newMeeting);
 
             newMeeting.MeetingGoals = default;
             newMeeting.MeetingNotes = default;
@@ -38,8 +35,7 @@ namespace tl121pet.Services.Services
             }
             return meetingsByPerson;
         }
-
-        #region Meeting
+        
         public async Task<Meeting> GetMeetingByIdAsync(Guid id)
         {
             return await _dataContext.Meetings.FindAsync(id) ?? throw new Exception("Meeting not found");
@@ -47,14 +43,18 @@ namespace tl121pet.Services.Services
 
         public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)
         {
-            _dataContext.Meetings.Update(editedMeeting);
+            Meeting modifiedMeeting = await GetMeetingByIdAsync(editedMeeting.MeetingId);
+            await CheckDuplicatedMeetingAsync(editedMeeting);
+
+            _dataContext.Entry(modifiedMeeting).CurrentValues.SetValues(editedMeeting);
             await _dataContext.SaveChangesAsync();
             return editedMeeting;
         }
 
         public async Task DeleteMeetingAsync(Guid id)
         {
-            var meetingTypeToDelete = await _dataContext.Meetings.FindAsync(id);
+            Meeting meetingTypeToDelete = await GetMeetingByIdAsync(id);
+
             _dataContext.Meetings.Remove(meetingTypeToDelete);
             await _dataContext.SaveChangesAsync();
         }
@@ -168,7 +168,6 @@ namespace tl121pet.Services.Services
         #endregion Goal
 
         #region MeetingProcessing
-
         public async Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId)
         {
             return await _dataContext.Meetings
@@ -234,12 +233,22 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
         #endregion MeetingProcessing
+
         private async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
         {
             return await _dataContext.Meetings
                 .Include(mt => mt.Person)
                 .Where(mt => mt.PersonId == personId)
                 .ToListAsync();
+        }
+
+        private async Task CheckDuplicatedMeetingAsync(Meeting newMeeting)
+        {
+            var existsMeeting = _dataContext.Meetings
+                .Where(m => m.PersonId == newMeeting.PersonId && m.MeetingPlanDate == newMeeting.MeetingPlanDate && m.MeetingId != newMeeting.MeetingId)
+                .FirstOrDefault();
+            if (existsMeeting != null)
+                throw new Exception("The Meeting with this person on that date is already planned");
         }
     }
 }
