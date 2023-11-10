@@ -73,7 +73,9 @@ namespace tl121pet.Services.Services
 
         public async Task<MeetingNote> AddNoteAsync(MeetingNote newNote)
         {
-            newNote.Meeting = default;
+            Meeting processingMeeting = await GetMeetingByIdAsync(newNote.MeetingId);
+
+            newNote.Meeting = processingMeeting;
             _dataContext.MeetingNotes.Add(newNote);
             await _dataContext.SaveChangesAsync();
             return newNote;
@@ -91,22 +93,25 @@ namespace tl121pet.Services.Services
 
         public async Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote)
         {
-            meetingNote.Meeting = default;
-            _dataContext.MeetingNotes.Update(meetingNote);
+            Meeting processingMeeting = await GetMeetingByIdAsync(meetingNote.MeetingId);
+            meetingNote.Meeting = processingMeeting;
+            MeetingNote updatedNote = await GetMeetingNoteByIdAsync(meetingNote.MeetingNoteId);
+
+            _dataContext.Entry(updatedNote).CurrentValues.SetValues(meetingNote);
             await _dataContext.SaveChangesAsync();
             return meetingNote;
         }
 
         public async Task DeleteNoteAsync(Guid id)
         {
-            var meetingNoteToDelete = await _dataContext.MeetingNotes.FindAsync(id);
+            MeetingNote meetingNoteToDelete = await GetMeetingNoteByIdAsync(id);
             _dataContext.MeetingNotes.Remove(meetingNoteToDelete);
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<MeetingNote>> GetMeetingNotesAsync(Guid id)
+        public async Task<List<MeetingNote>> GetMeetingNotesAsync(Guid meetingId)
         {
-            return await _dataContext.MeetingNotes.Where(p => p.MeetingId == id).ToListAsync();
+            return await _dataContext.MeetingNotes.Where(p => p.MeetingId == meetingId).ToListAsync();
         }
 
         public async Task<List<MeetingNote>> GetMeetingFeedbackRequiredNotesAsync(Guid id)
@@ -128,7 +133,8 @@ namespace tl121pet.Services.Services
 
         public async Task<MeetingGoal> AddGoalAsync(MeetingGoal newGoal)
         {
-            newGoal.Meeting = default;
+            Meeting meeting = await GetMeetingByIdAsync(newGoal.MeetingId);
+            newGoal.Meeting = meeting;
             _dataContext.MeetingGoals.Add(newGoal);
             await _dataContext.SaveChangesAsync();
             return newGoal;
@@ -145,15 +151,17 @@ namespace tl121pet.Services.Services
 
         public async Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal)
         {
-            meetingGoal.Meeting = default;
-            _dataContext.MeetingGoals.Update(meetingGoal);
+            Meeting processingMetting = await GetMeetingByIdAsync(meetingGoal.MeetingId);
+            MeetingGoal modifiedGoal = await GetMeetingGoalByIdAsync(meetingGoal.MeetingGoalId);
+            meetingGoal.Meeting = processingMetting;
+            _dataContext.Entry(modifiedGoal).CurrentValues.SetValues(meetingGoal);
             await _dataContext.SaveChangesAsync();
             return meetingGoal;
         }
 
-        public async Task DeleteGoalAsync(Guid id)
+        public async Task DeleteGoalAsync(Guid goalId)
         {
-            var meetingGoalToDelete = await _dataContext.MeetingGoals.FindAsync(id);
+            MeetingGoal meetingGoalToDelete = await GetMeetingGoalByIdAsync(goalId);
             _dataContext.MeetingGoals.Remove(meetingGoalToDelete);
             await _dataContext.SaveChangesAsync();
         }
@@ -249,6 +257,16 @@ namespace tl121pet.Services.Services
                 .FirstOrDefault();
             if (existsMeeting != null)
                 throw new Exception("The Meeting with this person on that date is already planned");
+        }
+
+        private async Task<MeetingNote> GetMeetingNoteByIdAsync(Guid noteId)
+        {
+            return _dataContext.MeetingNotes.Find(noteId) ?? throw new Exception("Note not found");
+        }
+
+        private async Task<MeetingGoal> GetMeetingGoalByIdAsync(Guid goalId)
+        {
+            return _dataContext.MeetingGoals.Find(goalId) ?? throw new Exception("Goal not found");
         }
     }
 }
