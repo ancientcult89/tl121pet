@@ -172,7 +172,13 @@ namespace tl121pet.Services.Services
                 .Where(p => p.MeetingId == id)
                 .ToListAsync();
         }
-
+        public async Task CompleteGoalAsync(Guid goalId)
+        {
+            MeetingGoal goal = await GetMeetingGoalByIdAsync(goalId);
+            goal.IsCompleted = true;
+            _dataContext.MeetingGoals.Update(goal);
+            await _dataContext.SaveChangesAsync();
+        }
         #endregion Goal
 
         #region MeetingProcessing
@@ -184,16 +190,17 @@ namespace tl121pet.Services.Services
                 .Take(1).FirstOrDefaultAsync();
         }
 
-        public async Task MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId)
+        public async Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate)
         {
-            Meeting meeting = await _dataContext.Meetings.FindAsync(meetingId);
+            Meeting meeting = await GetMeetingByIdAsync(meetingId);
             if (meeting != null)
             {
                 meeting.FollowUpIsSended = true;
-                meeting.MeetingDate = DateTime.Now;
+                meeting.MeetingDate = actualDate;
                 _dataContext.Update(meeting);
                 await _dataContext.SaveChangesAsync();
             }
+            return meeting;
         }
 
         public async Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId)
@@ -231,14 +238,6 @@ namespace tl121pet.Services.Services
                 .Where(m => m.MeetingId == meetingId)
                 .Select(m => m.MeetingDate)
                 .FirstOrDefaultAsync();
-        }
-
-        public async Task CompleteGoalAsync(Guid goalId)
-        {
-            MeetingGoal goal = await _dataContext.MeetingGoals.Where(g => g.MeetingGoalId == goalId).FirstOrDefaultAsync();
-            goal.IsCompleted = true;
-            _dataContext.MeetingGoals.Update(goal);
-            await _dataContext.SaveChangesAsync();
         }
         #endregion MeetingProcessing
 

@@ -12,7 +12,7 @@ namespace tl121pet.Services.Interfaces
         public Task<Meeting> UpdateMeetingAsync(Meeting mtdto);
         public Task DeleteMeetingAsync(Guid id);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);
-        public Task MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId);
+        public Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate);
         public Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId);
         #endregion Meetings
 

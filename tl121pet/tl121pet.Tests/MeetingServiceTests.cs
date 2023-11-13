@@ -1509,7 +1509,7 @@ namespace tl121pet.Tests
         /// проверяем что UpdateGoalAsync обновляет цель
         /// </summary>
         [Fact]
-        public async void UpdateGoalAsync_ShouldUpdateNote()
+        public async void UpdateGoalAsync_ShouldUpdateGoal()
         {
             //Arrange
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
@@ -1908,6 +1908,716 @@ namespace tl121pet.Tests
             //Assert
             resultNotes.Should().BeEmpty();
         }
+
+        /// <summary>
+        /// проверяем что CompleteGoalAsync проставляет флаг завершённости
+        /// </summary>
+        [Fact]
+        public async void CompleteGoalAsync_ShouldCompleteGoal()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                Meeting = createdMeeting,
+                MeetingGoalDescription = "test",
+            };
+            _dataContext.MeetingGoals.Add(createdMeetingGoal);
+            _dataContext.SaveChanges();
+
+            //Act
+            await _meetingService.CompleteGoalAsync(createdMeetingGoal.MeetingGoalId);
+
+            MeetingGoal expectedGoal = new MeetingGoal()
+            {
+
+                Meeting = createdMeeting,
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test",
+                MeetingGoalId = createdMeetingGoal.MeetingGoalId,
+                IsCompleted = true,
+            };
+
+            //Assert
+            createdMeetingGoal.Should().BeEquivalentTo(expectedGoal);
+        }
+
+        /// <summary>
+        /// проверяем что при попытке завершить несуществующю цель получим ошибку
+        /// </summary>
+        [Fact]
+        public async void CompleteGoalOnNotExistsMeeting_ShouldThrowException()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+            Guid notExistGoalId = Guid.NewGuid();
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            //Act
+            var result = async () => await _meetingService.CompleteGoalAsync(notExistGoalId);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Goal not found");
+        }
         #endregion MeetinGoal
+
+        #region MeetingProcessing
+        /// <summary>
+        /// проверяем, что GetLastOneToOneByPersonIdAsync возвращает последнюю встречу
+        /// </summary>
+        [Fact]
+        public async void GetLastOneToOneByPersonIdAsync_ShouldReturnLastMeeting()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime meetingDate = DateTime.Now;
+            DateTime meetingDate2 = DateTime.Now.AddDays(+1);
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate,
+                MeetingDate = meetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+            Meeting createdMeeting2 = new Meeting()
+            {
+                MeetingPlanDate = meetingDate2,
+                MeetingDate = meetingDate2,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+            _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2);
+            _dataContext.SaveChanges();
+
+            Meeting expectedMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate2,
+                MeetingDate = meetingDate2,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+                MeetingId = createdMeeting2.MeetingId,
+            };
+
+            //Act
+            Meeting resultMeeting = await _meetingService.GetLastOneToOneByPersonIdAsync(createdPerson.PersonId);
+
+            //Assert
+            resultMeeting.Should().BeEquivalentTo(expectedMeeting);
+        }
+
+        /// <summary>
+        /// проверяем, что GetLastOneToOneByPersonIdAsync возвращает пустое значение, если не было проведённых встреч
+        /// </summary>
+        [Fact]
+        public async void GetLastOneToOneByPersonIdAsync_ShouldReturnEmptyIfMeetingsNotExists()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime meetingDate = DateTime.Now;
+            DateTime meetingDate2 = DateTime.Now.AddDays(+1);
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            //Act
+            Meeting resultMeeting = await _meetingService.GetLastOneToOneByPersonIdAsync(createdPerson.PersonId);
+
+            //Assert
+            resultMeeting.Should().BeNull();
+        }
+
+        /// <summary>
+        /// Проверяем что MarkAsSendedFollowUpAndFillActualDateAsync выставляет флаг, что фолоуапп был отправлен и проставляет входящую дату
+        /// </summary>
+        [Fact]
+        public async void MarkAsSendedFollowUpAndFillActualDateAsync_ShouldMarkAsSendedAndFillActualDate()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime meetingDate = DateTime.Now;
+            DateTime actualMeetingDate = DateTime.Now.AddHours(5);
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+
+            Meeting expectedMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate,
+                MeetingDate = actualMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = true,
+                MeetingId = createdMeeting.MeetingId,
+            };
+
+            //Act
+            Meeting result = await _meetingService.MarkAsSendedFollowUpAndFillActualDateAsync(createdMeeting.MeetingId, actualMeetingDate);
+
+            //Assert
+            result.Should().BeEquivalentTo(expectedMeeting);
+        }
+
+        /// <summary>
+        /// Проверяем что MarkAsSendedFollowUpAndFillActualDateAsync при попытке обновить несуществующую встречу выкинет ошибку
+        /// </summary>
+        [Fact]
+        public async void MarkAsSendedFollowUpAndFillActualDate_ShouldThrowExceptionIfMeetingNotExists()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime meetingDate = DateTime.Now;
+            DateTime actualMeetingDate = DateTime.Now.AddHours(2);
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            Meeting updatedMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = true,
+                MeetingId = new Guid(),
+            };
+
+            //Act
+            var result = async () => await _meetingService.MarkAsSendedFollowUpAndFillActualDateAsync(updatedMeeting.MeetingId, actualMeetingDate);
+
+            //Assert
+            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
+        }
+
+        /// <summary>
+        /// проверяем, что GetPreviousMeetingIdAsync возвращает идентификатор предыдущей встречи
+        /// </summary>
+        [Fact]
+        public async void GetPreviousMeetingIdAsync_ShouldReturnPreviousMeetingID()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime meetingDate = DateTime.Now;
+            DateTime meetingDate2 = DateTime.Now.AddDays(+1);
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate,
+                MeetingDate = meetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+            Meeting createdMeeting2 = new Meeting()
+            {
+                MeetingPlanDate = meetingDate2,
+                MeetingDate = meetingDate2,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+            _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2);
+            _dataContext.SaveChanges();
+
+            Guid? expectedMeetingId = createdMeeting2.MeetingId;
+
+            //Act
+            Guid? resultMeetingId = await _meetingService.GetPreviousMeetingIdAsync(createdMeeting.MeetingId, createdPerson.PersonId);
+
+            //Assert
+            resultMeetingId.Should().Be(expectedMeetingId);
+        }
+
+        /// <summary>
+        /// проверяем, что GetPreviousMeetingIdAsync возвращает null если не было предыдущей встречи
+        /// </summary>
+        [Fact]
+        public async void GetPreviousMeetingIdAsync_ShouldReturnNullIfPreviousMeetingsNotExists()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime meetingDate = DateTime.Now;
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = meetingDate,
+                MeetingDate = meetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            //Act
+            Guid? resultMeetingId = await _meetingService.GetPreviousMeetingIdAsync(createdMeeting.MeetingId, createdPerson.PersonId);
+
+            //Assert
+            resultMeetingId.Should().BeNull();
+        }
+
+        /// <summary>
+        /// проверяем, что GetMeetingGoalsByPersonAsync возвращает цели по конкретному оструднику
+        /// </summary>
+        [Fact]
+        public async void GetMeetingGoalsByPersonAsync_ShouldReturnPersonsGoals()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                Meeting = createdMeeting,
+                MeetingGoalDescription = "test",
+            };
+            MeetingGoal createdMeetingGoal2 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                Meeting = createdMeeting,
+                MeetingGoalDescription = "test2",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal, createdMeetingGoal2);
+            _dataContext.SaveChanges();
+
+            Person createdPerson2 = new Person()
+            {
+                Email = "1111@test2.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson2);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting2 = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson2.PersonId,
+                Person = createdPerson2,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting2);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal3 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                Meeting = createdMeeting2,
+                MeetingGoalDescription = "test",
+            };
+            MeetingGoal createdMeetingGoal4 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                Meeting = createdMeeting2,
+                MeetingGoalDescription = "test2",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal3, createdMeetingGoal4);
+            _dataContext.SaveChanges();
+
+            List<MeetingGoal> expectedGoals = new List<MeetingGoal>()
+            {
+                new MeetingGoal
+                {
+                    MeetingId = createdMeeting.MeetingId,
+                    Meeting = createdMeeting,
+                    MeetingGoalDescription = "test",
+                    MeetingGoalId = createdMeetingGoal.MeetingGoalId,
+                },
+                new MeetingGoal()
+                {
+                    MeetingId = createdMeeting.MeetingId,
+                    Meeting = createdMeeting,
+                    MeetingGoalDescription = "test2",
+                    MeetingGoalId = createdMeetingGoal2.MeetingGoalId,
+                }
+            };
+
+            //Act
+            List<MeetingGoal> resultNotes = await _meetingService.GetMeetingGoalsByPersonAsync(createdPerson.PersonId);
+
+            //Assert
+            resultNotes.Should().BeEquivalentTo(expectedGoals);
+        }
+
+        /// <summary>
+        /// проверяем, что GetMeetingGoalsByPersonAsync возвращает пустую коллекцию, если не было заведено целей во время встречи
+        /// </summary>
+        [Fact]
+        public async void GetMeetingGoalsByPersonAsync_ShouldReturnEmptyCollectionIfGoalsNotExists()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            //Act
+            List<MeetingGoal> resultNotes = await _meetingService.GetMeetingGoalsByPersonAsync(createdPerson.PersonId);
+
+            //Assert
+            resultNotes.Should().BeEmpty();
+        }
+
+        /// <summary>
+        /// проверяем, что  GetFactMeetingDateByIdAsync возвращает верную дату проведения встречи по её идентификатору
+        /// </summary>
+        [Fact]
+        public async void GetFactMeetingDateByIdAsync_ShouldReturnCorrectDateTime()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            //очень важно пожать только дату, т.к. при сохранении в БД могут теряться тысячные секунды и тест завалится 100%, хотя у нас нет таких критериев к точности
+            DateTime plannedMeetingDate = DateTime.Now.Date;
+            DateTime actualMeetingDate = DateTime.Now.Date;
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                MeetingDate = actualMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            //Act
+            DateTime? result = await _meetingService.GetFactMeetingDateByIdAsync(createdMeeting.MeetingId);
+
+            //Assert
+            result.Should().Be(actualMeetingDate);
+        }
+
+        /// <summary>
+        /// проверяем, что  GetFactMeetingDateByIdAsync возвращает пустую дату, если встреча не была проведена
+        /// </summary>
+        [Fact]
+        public async void GetFactMeetingDateByIdAsync_ShouldReturnEmptyDateTimeIfItNotProcessed()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            //Act
+            DateTime? result = await _meetingService.GetFactMeetingDateByIdAsync(createdMeeting.MeetingId);
+
+            //Assert
+            result.Should().BeNull();
+        }
+        #endregion MeetingProcessing
     }
 }
