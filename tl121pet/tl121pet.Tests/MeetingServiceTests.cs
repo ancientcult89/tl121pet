@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
@@ -135,7 +136,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.CreateMeetingAsync(duplicatedMeeting);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("The Meeting with this person on that date is already planned");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("The Meeting with this person on that date is already planned");
         }
 
         /// <summary>
@@ -543,7 +544,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.GetMeetingByIdAsync(notExistMeetingId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Meeting not found");
         }
 
         /// <summary>
@@ -657,7 +658,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.UpdateMeetingAsync(updatedMeeting);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Meeting not found");
         }
 
         /// <summary>
@@ -721,7 +722,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.UpdateMeetingAsync(firstMeetingWithSecondPlannedDate);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("The Meeting with this person on that date is already planned");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("The Meeting with this person on that date is already planned");
         }
 
         /// <summary>
@@ -788,7 +789,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.DeleteMeetingAsync(notExistMeetingId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Meeting not found");
         }
         #endregion Meeting
 
@@ -877,7 +878,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.AddNoteAsync(createdMeetingNote);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Meeting not found");
         }
 
         /// <summary>
@@ -956,77 +957,6 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// проверяем что при попытке обновить запись по несуществующей встрече получим ошибку
-        /// </summary>
-        [Fact]
-        public async void UpdateNoteOnNotExistsMeeting_ShouldThrowException()
-        {
-            //Arrange
-            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
-            DateTime plannedMeetingDate = DateTime.Now;
-
-            _dataContext.ProjectTeams.Add(sourseTeam);
-            Grade testGrade = new Grade
-            {
-                GradeId = 1,
-                GradeName = "Junior"
-            };
-            _dataContext.Grades.Add(testGrade);
-            _dataContext.SaveChanges();
-            Person createdPerson = new Person()
-            {
-                Email = "1111@test.com",
-                FirstName = "Eric",
-                LastName = "Cripke",
-                GradeId = testGrade.GradeId,
-                ShortName = "Rick",
-                SurName = "Rickson",
-                Grade = testGrade
-            };
-            _dataContext.People.Add(createdPerson);
-            _dataContext.SaveChanges();
-            Meeting createdMeeting = new Meeting()
-            {
-                MeetingPlanDate = plannedMeetingDate,
-                PersonId = createdPerson.PersonId,
-                Person = createdPerson,
-                FollowUpIsSended = false,
-            };
-
-            _dataContext.Meetings.Add(createdMeeting);
-            _dataContext.SaveChanges();
-
-            MeetingNote createdMeetingNote = new MeetingNote()
-            {
-                FeedbackRequired = true,
-                MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
-                MeetingNoteContent = "test",
-            };
-            _dataContext.MeetingNotes.Add(createdMeetingNote);
-            _dataContext.SaveChanges();
-
-
-            //Act
-            MeetingNote updatedNote = new MeetingNote()
-            {
-                FeedbackRequired = true,
-                Meeting = createdMeeting,
-                MeetingId = createdMeeting.MeetingId,
-                MeetingNoteContent = "test2",
-                MeetingNoteId = createdMeetingNote.MeetingNoteId,
-            };
-            _dataContext.Meetings.Remove(createdMeeting);
-            _dataContext.SaveChanges();
-
-            //Act
-            var result = async () => await _meetingService.UpdateNoteAsync(updatedNote);
-
-            //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
-        }
-
-        /// <summary>
         /// проверяем что при попытке обновить несуществующую заметку получим ошибку
         /// </summary>
         [Fact]
@@ -1082,7 +1012,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.UpdateNoteAsync(updatedNote);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Note not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Note not found");
         }
 
         /// <summary>
@@ -1157,7 +1087,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.DeleteNoteAsync(notExistNote);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Note not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Note not found");
         }
 
         /// <summary>
@@ -1502,7 +1432,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.AddGoalAsync(createdMeetingGoal);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Meeting not found");
         }
 
         /// <summary>
@@ -1579,75 +1509,6 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// проверяем что при попытке обновить запись по несуществующей встрече получим ошибку
-        /// </summary>
-        [Fact]
-        public async void UpdateGoalOnNotExistsMeeting_ShouldThrowException()
-        {
-            //Arrange
-            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
-            DateTime plannedMeetingDate = DateTime.Now;
-
-            _dataContext.ProjectTeams.Add(sourseTeam);
-            Grade testGrade = new Grade
-            {
-                GradeId = 1,
-                GradeName = "Junior"
-            };
-            _dataContext.Grades.Add(testGrade);
-            _dataContext.SaveChanges();
-            Person createdPerson = new Person()
-            {
-                Email = "1111@test.com",
-                FirstName = "Eric",
-                LastName = "Cripke",
-                GradeId = testGrade.GradeId,
-                ShortName = "Rick",
-                SurName = "Rickson",
-                Grade = testGrade
-            };
-            _dataContext.People.Add(createdPerson);
-            _dataContext.SaveChanges();
-            Meeting createdMeeting = new Meeting()
-            {
-                MeetingPlanDate = plannedMeetingDate,
-                PersonId = createdPerson.PersonId,
-                Person = createdPerson,
-                FollowUpIsSended = false,
-            };
-
-            _dataContext.Meetings.Add(createdMeeting);
-            _dataContext.SaveChanges();
-
-            MeetingGoal createdMeetingGoal = new MeetingGoal()
-            {
-                MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
-                MeetingGoalDescription = "test",
-            };
-            _dataContext.MeetingGoals.Add(createdMeetingGoal);
-            _dataContext.SaveChanges();
-
-
-            //Act
-            MeetingGoal updatedGoal = new MeetingGoal()
-            {
-                Meeting = createdMeeting,
-                MeetingId = createdMeeting.MeetingId,
-                MeetingGoalDescription = "test2",
-                MeetingGoalId = createdMeetingGoal.MeetingGoalId,
-            };
-            _dataContext.Meetings.Remove(createdMeeting);
-            _dataContext.SaveChanges();
-
-            //Act
-            var result = async () => await _meetingService.UpdateGoalAsync(updatedGoal);
-
-            //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Meeting not found");
-        }
-
-        /// <summary>
         /// проверяем что при попытке обновить несуществующую цель получим ошибку
         /// </summary>
         [Fact]
@@ -1703,7 +1564,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.UpdateGoalAsync(updatedGoal);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Goal not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Goal not found");
         }
 
         /// <summary>
@@ -1777,7 +1638,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.DeleteGoalAsync(notExistGoal);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Goal not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Goal not found");
         }
 
         /// <summary>
@@ -2022,7 +1883,7 @@ namespace tl121pet.Tests
             var result = async () => await _meetingService.CompleteGoalAsync(notExistGoalId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Goal not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Goal not found");
         }
         #endregion MeetinGoal
 

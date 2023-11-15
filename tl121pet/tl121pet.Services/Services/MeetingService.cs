@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -38,7 +39,7 @@ namespace tl121pet.Services.Services
         
         public async Task<Meeting> GetMeetingByIdAsync(Guid id)
         {
-            return await _dataContext.Meetings.FindAsync(id) ?? throw new Exception("Meeting not found");
+            return await _dataContext.Meetings.FindAsync(id) ?? throw new DataFoundException("Meeting not found");
         }
 
         public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)
@@ -93,8 +94,6 @@ namespace tl121pet.Services.Services
 
         public async Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote)
         {
-            Meeting processingMeeting = await GetMeetingByIdAsync(meetingNote.MeetingId);
-            meetingNote.Meeting = processingMeeting;
             MeetingNote updatedNote = await GetMeetingNoteByIdAsync(meetingNote.MeetingNoteId);
 
             _dataContext.Entry(updatedNote).CurrentValues.SetValues(meetingNote);
@@ -151,9 +150,7 @@ namespace tl121pet.Services.Services
 
         public async Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal)
         {
-            Meeting processingMetting = await GetMeetingByIdAsync(meetingGoal.MeetingId);
             MeetingGoal modifiedGoal = await GetMeetingGoalByIdAsync(meetingGoal.MeetingGoalId);
-            meetingGoal.Meeting = processingMetting;
             _dataContext.Entry(modifiedGoal).CurrentValues.SetValues(meetingGoal);
             await _dataContext.SaveChangesAsync();
             return meetingGoal;
@@ -255,17 +252,17 @@ namespace tl121pet.Services.Services
                 .Where(m => m.PersonId == newMeeting.PersonId && m.MeetingPlanDate == newMeeting.MeetingPlanDate && m.MeetingId != newMeeting.MeetingId)
                 .FirstOrDefault();
             if (existsMeeting != null)
-                throw new Exception("The Meeting with this person on that date is already planned");
+                throw new LogicException("The Meeting with this person on that date is already planned");
         }
 
         private async Task<MeetingNote> GetMeetingNoteByIdAsync(Guid noteId)
         {
-            return _dataContext.MeetingNotes.Find(noteId) ?? throw new Exception("Note not found");
+            return _dataContext.MeetingNotes.Find(noteId) ?? throw new DataFoundException("Note not found");
         }
 
         private async Task<MeetingGoal> GetMeetingGoalByIdAsync(Guid goalId)
         {
-            return _dataContext.MeetingGoals.Find(goalId) ?? throw new Exception("Goal not found");
+            return _dataContext.MeetingGoals.Find(goalId) ?? throw new DataFoundException("Goal not found");
         }
     }
 }

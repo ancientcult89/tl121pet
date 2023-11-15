@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -39,12 +40,12 @@ namespace tl121pet.Services.Services
 
         public async Task<ProjectTeam> GetProjectTeamByIdAsync(long id)
         {
-            return await _dataContext.ProjectTeams.FindAsync(id) ?? throw new Exception("Project not found");
+            return await _dataContext.ProjectTeams.FindAsync(id) ?? throw new DataFoundException("Project not found");
         }
 
         public async Task DeleteProjectTeamAsync(long id)
         {
-            ProjectTeam pt = await CheckProjectsExistsById(id);
+            ProjectTeam pt = await GetProjectTeamByIdAsync(id);
             _dataContext.ProjectTeams.Remove(pt);
             await _dataContext.SaveChangesAsync();
         }
@@ -59,7 +60,7 @@ namespace tl121pet.Services.Services
 
         public async Task<ProjectTeam> UpdateProjectTeamAsync(ProjectTeam pt)
         {
-            var modifiedProject = await CheckProjectsExistsById(pt.ProjectTeamId);
+            var modifiedProject = await GetProjectTeamByIdAsync(pt.ProjectTeamId);
             await CheckProjectsExistsByName(pt);
             _dataContext.Entry(modifiedProject).CurrentValues.SetValues(pt);
             await _dataContext.SaveChangesAsync();
@@ -172,19 +173,11 @@ namespace tl121pet.Services.Services
             return projectsList;
         }
 
-        private async Task<ProjectTeam> CheckProjectsExistsById(long projectId)
-        {
-            var examProject = await _dataContext.ProjectTeams.SingleOrDefaultAsync(r => r.ProjectTeamId == projectId)
-                ?? throw new Exception("Project not found");
-
-            return examProject;
-        }
-
         private async Task CheckProjectsExistsByName(ProjectTeam project)
         {
             var examProject = await _dataContext.ProjectTeams.SingleOrDefaultAsync(r => r.ProjectTeamName == project.ProjectTeamName);
             if(examProject != null)
-                throw new Exception("A Project with same name is already exists");
+                throw new LogicException("A Project with same name is already exists");
         }
 
         private async Task CheckExistsPersonProjectsFoDuplicates(long personId, long projectTeamId)
@@ -193,7 +186,7 @@ namespace tl121pet.Services.Services
                 .Where(pm => pm.PersonId == personId && pm.ProjectTeamId == projectTeamId)
                 .FirstOrDefaultAsync();
             if(result != null)
-                throw new Exception("The Project is already used");
+                throw new LogicException("The Project is already used");
         }
         private async Task<ProjectMember> CheckExistsPersonProjects(long userId, long projectTeamId)
         {
@@ -201,7 +194,7 @@ namespace tl121pet.Services.Services
                 .Where(pm => pm.PersonId == userId && pm.ProjectTeamId == projectTeamId)
                 .FirstOrDefaultAsync();
             if (result == null)
-                throw new Exception("The Persons Project not exist");
+                throw new DataFoundException("The Persons Project not exist");
 
             return result;
         }
@@ -212,7 +205,7 @@ namespace tl121pet.Services.Services
                 .Where(pm => pm.UserId == userId && pm.ProjectTeamId == projectTeamId)
                 .FirstOrDefaultAsync();
             if (result != null)
-                throw new Exception("The Project is already used");
+                throw new LogicException("The Project is already used");
         }
 
         private async Task<UserProject> CheckExistsUserProjects(long userId, long projectTeamId)
@@ -221,7 +214,7 @@ namespace tl121pet.Services.Services
                 .Where(pm => pm.UserId == userId && pm.ProjectTeamId == projectTeamId)
                 .FirstOrDefaultAsync();
             if (result == null)
-                throw new Exception("The User Project not exist");
+                throw new DataFoundException("The User Project not exist");
 
             return result;
         }

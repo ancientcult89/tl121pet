@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
@@ -103,7 +104,7 @@ namespace tl121pet.Tests
             var result = async () => await _projectService.GetProjectTeamByIdAsync(notExistProjectId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Project not found");
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace tl121pet.Tests
             var result = async() => await _projectService.DeleteProjectTeamAsync(notExistProjectId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Project not found");
         }
 
         /// <summary>
@@ -176,7 +177,7 @@ namespace tl121pet.Tests
             var result = async () => await _projectService.CreateProjectTeamAsync(duplicatedProject);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Project with same name is already exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Project with same name is already exists");
         }
 
         /// <summary>
@@ -211,7 +212,7 @@ namespace tl121pet.Tests
             var result = async() => await _projectService.UpdateProjectTeamAsync(notExistTeam);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Project not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Project not found");
         }
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace tl121pet.Tests
             var result = async() => await _projectService.UpdateProjectTeamAsync(updatedTeam);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Project with same name is already exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Project with same name is already exists");
         }
 
         /// <summary>
@@ -310,7 +311,7 @@ namespace tl121pet.Tests
 
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("The Project is already used");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("The Project is already used");
         }
 
         /// <summary>
@@ -501,7 +502,7 @@ namespace tl121pet.Tests
             var result = async () => await _projectService.DeletePersonMembershipAsync(notExistPersonId, notExistProjectId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("The Persons Project not exist");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("The Persons Project not exist");
         }
 
         /// <summary>
@@ -560,7 +561,7 @@ namespace tl121pet.Tests
             var resultUserProject= async () => await _projectService.AddUserMembershipAsync(user.Id, sourseTeam.ProjectTeamId);
 
             //Assert
-            await resultUserProject.Should().ThrowAsync<Exception>().WithMessage("The Project is already used");
+            await resultUserProject.Should().ThrowAsync<LogicException>().WithMessage("The Project is already used");
         }
 
         /// <summary>
@@ -707,7 +708,7 @@ namespace tl121pet.Tests
             var result = async () => await _projectService.DeleteUserMembershipAsync(notExistUser, notExistUserProject);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("The User Project not exist");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("The User Project not exist");
         }
 
         /// <summary>

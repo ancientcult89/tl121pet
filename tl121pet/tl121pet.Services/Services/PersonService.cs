@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -45,7 +46,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> UpdatePersonAsync(Person person)
         {
-            var modifiedPerson = await CheckPersonExistsById(person.PersonId);
+            var modifiedPerson = await GetPersonByIdAsync(person.PersonId);
             await CheckPersonExistsByEmail(person);
 
             _dataContext.Entry(modifiedPerson).CurrentValues.SetValues(person);
@@ -55,7 +56,7 @@ namespace tl121pet.Services.Services
 
         public async Task DeletePersonAsync(long id)
         {
-            await CheckPersonExistsById(id);
+            await GetPersonByIdAsync(id);
             var personToDelete = _dataContext.People.Find(id);
             _dataContext.People.Remove(personToDelete);
             await _dataContext.SaveChangesAsync();
@@ -68,7 +69,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> GetPersonByIdAsync(long id)
         {
-            return await _dataContext.People.FindAsync(id) ?? throw new Exception("Person not found");
+            return await _dataContext.People.FindAsync(id) ?? throw new DataFoundException("Person not found");
         }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)
@@ -135,15 +136,7 @@ namespace tl121pet.Services.Services
                 .FirstOrDefaultAsync();
 
             if (examPerson != null)
-                throw new Exception("A Person with same Email is already exists");
-        }
-
-        private async Task<Person> CheckPersonExistsById(long personId)
-        {
-            var examPerson = await _dataContext.People.SingleOrDefaultAsync(r => r.PersonId == personId) 
-                ?? throw new Exception("Person not found");
-
-            return examPerson;
+                throw new LogicException("A Person with same Email is already exists");
         }
     }
 }
