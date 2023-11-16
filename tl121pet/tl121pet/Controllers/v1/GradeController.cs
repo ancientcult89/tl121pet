@@ -33,7 +33,7 @@ namespace tl121pet.Controllers.v1
             }
             catch (DataFoundException ex)
             {
-                return NotFound(ex);
+                return NotFound(ex.Message);
             }
         }
 
@@ -42,7 +42,7 @@ namespace tl121pet.Controllers.v1
         {
             try
             {
-                return await _gradeService.CreateGradeAsync(newGrade);
+                return Ok(await _gradeService.CreateGradeAsync(newGrade));
             }
             catch (LogicException ex)
             {
@@ -50,7 +50,7 @@ namespace tl121pet.Controllers.v1
             }
             catch (DataFoundException ex)
             {
-                return NotFound(ex);
+                return NotFound(ex.Message);
             }
         }
 
@@ -67,7 +67,7 @@ namespace tl121pet.Controllers.v1
             }
             catch (DataFoundException ex)
             {
-                return NotFound(ex);
+                return NotFound(ex.Message);
             }
         }
 
@@ -85,7 +85,7 @@ namespace tl121pet.Controllers.v1
             }
             catch (DataFoundException ex)
             {
-                return NotFound(ex);
+                return NotFound(ex.Message);
             }
         }
     }
