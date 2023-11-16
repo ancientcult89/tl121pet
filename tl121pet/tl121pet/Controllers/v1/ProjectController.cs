@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -25,7 +26,7 @@ namespace tl121pet.Controllers.v1
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectTeam>> GetProjectById(long id)
         {
-            return await _projectService.GetProjectTeamByIdAsync(id) ?? new ProjectTeam();
+            return await _projectService.GetProjectTeamByIdAsync(id);
         }
 
         [HttpPost]

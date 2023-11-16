@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -23,70 +22,26 @@ namespace tl121pet.Controllers.v1
         [HttpGet("{id}")]
         public async Task<ActionResult<Grade>> GetGradeById(long id)
         {
-            try
-            {
-                return await _gradeService.GetGradeByIdAsync(id);
-            }
-            catch (LogicException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (DataFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            return await _gradeService.GetGradeByIdAsync(id);
         }
 
         [HttpPost]
         public async Task<ActionResult<Grade>> CreateGrade([FromBody] Grade newGrade)
         {
-            try
-            {
-                return Ok(await _gradeService.CreateGradeAsync(newGrade));
-            }
-            catch (LogicException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (DataFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            return Ok(await _gradeService.CreateGradeAsync(newGrade));
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Grade>> UpdateGrade([FromBody] Grade grade)
         {            
-            try
-            {
-                return await _gradeService.UpdateGradeAsync(grade);
-            }
-            catch (LogicException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (DataFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            return await _gradeService.UpdateGradeAsync(grade);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteGrade(int id)
         {
-            try
-            {
-                await _gradeService.DeleteGradeAsync(id);
-                return Ok();
-            }
-            catch (LogicException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            catch (DataFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            await _gradeService.DeleteGradeAsync(id);
+            return Ok();
         }
     }
 }

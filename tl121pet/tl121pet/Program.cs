@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Filters;
 using System.Net;
 using tl121pet;
 using tl121pet.Services.Application;
+using tl121pet.Middlwares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +93,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapDefaultControllerRoute();
 app.UseRouting();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 var options = app.Services.GetService<IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(options.Value);
 
