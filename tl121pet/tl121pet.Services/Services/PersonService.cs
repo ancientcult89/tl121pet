@@ -28,13 +28,6 @@ namespace tl121pet.Services.Services
             return peopleFiltered;
         }
 
-        [Obsolete]
-        public async Task<string> GetGradeNameAsync(long id)
-        {
-            Grade selectedGrade = await _dataContext.Grades.FindAsync(id);
-            return selectedGrade.GradeName ?? "not found";
-        }
-
         public async Task<Person> CreatePersonAsync(Person person)
         {
             await CheckPersonExistsByEmail(person);
@@ -62,11 +55,6 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<Person>> GetAllPeopleAsync()
-        {
-            return await _dataContext.People.ToListAsync();
-        }
-
         public async Task<Person> GetPersonByIdAsync(long id)
         {
             return await _dataContext.People.FindAsync(id) ?? throw new DataFoundException("Person not found");
@@ -88,7 +76,7 @@ namespace tl121pet.Services.Services
                     p.SurName,
                     p.Email,
                     p.ShortName,
-                    p.GradeId
+                    p.GradeId,
                 } into g
                 select new
                 {
@@ -98,7 +86,7 @@ namespace tl121pet.Services.Services
                     SurName = g.Key.SurName,
                     Email = g.Key.Email,
                     ShortName = g.Key.ShortName,
-                    GradeId = g.Key.GradeId
+                    GradeId = g.Key.GradeId,
                 }
             ).ToListAsync();
 
@@ -122,7 +110,6 @@ namespace tl121pet.Services.Services
             return filteredPeople;
         }
 
-        //TODO: есть метод GetAllPeopleAsync, который возвращает тоже самое без грейдов. вряд ли нужны оба метода сразу
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
             return await _dataContext.People.Include(p => p.Grade).ToListAsync();

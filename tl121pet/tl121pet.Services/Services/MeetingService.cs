@@ -63,33 +63,13 @@ namespace tl121pet.Services.Services
         #endregion Meeting
 
         #region Note
-        [Obsolete]
-        public async Task<MeetingNote> AddNoteAsync(Guid id, string content, bool feedbackRequired)
-        {
-            MeetingNote newNote = new MeetingNote { MeetingId = id, Meeting = default, MeetingNoteContent = content, FeedbackRequired = feedbackRequired };
-            _dataContext.MeetingNotes.Add(newNote);
-            await _dataContext.SaveChangesAsync();
-            return newNote;
-        }
-
         public async Task<MeetingNote> AddNoteAsync(MeetingNote newNote)
         {
             Meeting processingMeeting = await GetMeetingByIdAsync(newNote.MeetingId);
 
-            newNote.Meeting = processingMeeting;
             _dataContext.MeetingNotes.Add(newNote);
             await _dataContext.SaveChangesAsync();
             return newNote;
-        }
-
-        [Obsolete]
-        public async Task UpdateNoteAsync(Guid id, string MeetingNoteContent, bool feedbackRequired)
-        {
-            MeetingNote mn = await _dataContext.MeetingNotes.FindAsync(id);
-            mn.MeetingNoteContent = MeetingNoteContent;
-            mn.FeedbackRequired = feedbackRequired;
-            _dataContext.MeetingNotes.Update(mn);
-            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote)
@@ -123,29 +103,13 @@ namespace tl121pet.Services.Services
         #endregion Note
 
         #region Goal
-        [Obsolete]
-        public async Task AddGoalAsync(Guid id, string content)
-        {
-            _dataContext.MeetingGoals.Add(new MeetingGoal { MeetingId = id, Meeting = default, MeetingGoalDescription = content });
-            await _dataContext.SaveChangesAsync();
-        }
-
         public async Task<MeetingGoal> AddGoalAsync(MeetingGoal newGoal)
         {
             Meeting meeting = await GetMeetingByIdAsync(newGoal.MeetingId);
-            newGoal.Meeting = meeting;
+
             _dataContext.MeetingGoals.Add(newGoal);
             await _dataContext.SaveChangesAsync();
             return newGoal;
-        }
-
-        [Obsolete]
-        public async Task UpdateGoalTaskAsync(Guid id, string content)
-        {
-            MeetingGoal mg = await _dataContext.MeetingGoals.FindAsync(id);
-            mg.MeetingGoalDescription = content;
-            _dataContext.MeetingGoals.Update(mg);
-            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal)

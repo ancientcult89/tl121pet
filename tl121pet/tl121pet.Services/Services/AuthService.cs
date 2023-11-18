@@ -70,26 +70,7 @@ namespace tl121pet.Services.Services
                 return null;
         }
 
-        [Obsolete]
-        public async Task<User?> OldLoginAsync(UserLoginRequestDTO request)
-        {
-            User user = await GetUserByEmailAsync(request.Email);
-            if (user == null)
-                return null;
-
-            if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                string token = await CreateTokenAsync(user);
-                
-                //temporary
-                Role = "Admin";
-                return user;
-            }
-
-            return null;
-        }
-
-        public async Task<LoginResponse> LoginAsync(UserLoginRequestDTO request)
+        public async Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request)
         {
             User user = await GetUserByEmailAsync(request.Email);
             if (user == null)
@@ -98,7 +79,7 @@ namespace tl121pet.Services.Services
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 string token = await CreateTokenAsync(user);
-                LoginResponse loginResponse = new LoginResponse() { 
+                LoginResponseDTO loginResponse = new LoginResponseDTO() { 
                     User = user,
                     Role = user.Role,
                     Token = token

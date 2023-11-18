@@ -8,9 +8,9 @@ namespace tl121pet.Controllers.v1
     [Route("api/v1/[controller]")]
     public class OneToOneDeadlineController : ApiController
     {
-        private IOneToOneService _oneToOneDeadlineService;
+        private IOneToOneApplication _oneToOneDeadlineService;
 
-        public OneToOneDeadlineController(IOneToOneService oneToOneDeadlineService)
+        public OneToOneDeadlineController(IOneToOneApplication oneToOneDeadlineService)
         {
             _oneToOneDeadlineService = oneToOneDeadlineService;
         }

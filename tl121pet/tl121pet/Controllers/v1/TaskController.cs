@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
-using tl121pet.Services.Application;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Controllers.v1
@@ -10,8 +9,8 @@ namespace tl121pet.Controllers.v1
     public class TaskController : ApiController
     {
         private IMeetingService _meetingService;
-        private OneToOneApplication _application;
-        public TaskController(IMeetingService meetingService, OneToOneApplication application)
+        private IOneToOneApplication _application;
+        public TaskController(IMeetingService meetingService, IOneToOneApplication application)
         {
             _meetingService = meetingService;
             _application = application;

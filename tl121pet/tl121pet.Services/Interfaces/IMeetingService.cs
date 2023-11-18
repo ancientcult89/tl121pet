@@ -17,9 +17,7 @@ namespace tl121pet.Services.Interfaces
         #endregion Meetings
 
         #region MeetingNotes
-        public Task<MeetingNote> AddNoteAsync(Guid id, string content, bool feedbackRequired);
         public Task<MeetingNote> AddNoteAsync(MeetingNote meetingNote);
-        public Task UpdateNoteAsync(Guid id, string content, bool feedbackRequired);
         public Task<MeetingNote> UpdateNoteAsync(MeetingNote meetingNote);
         public Task DeleteNoteAsync(Guid id);
         public Task<List<MeetingNote>> GetMeetingNotesAsync(Guid meetingId);
@@ -27,9 +25,7 @@ namespace tl121pet.Services.Interfaces
         #endregion MeetingNotes
 
         #region MeetingGoals
-        public Task AddGoalAsync(Guid id, string content);
         public Task<MeetingGoal> AddGoalAsync(MeetingGoal meetingGoal);
-        public Task UpdateGoalTaskAsync(Guid id, string content);
         public Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal);
         public Task DeleteGoalAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);

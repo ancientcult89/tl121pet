@@ -14,7 +14,6 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Net;
 using tl121pet;
-using tl121pet.Services.Application;
 using tl121pet.Middlwares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,10 +36,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
-builder.Services.AddControllersWithViews().AddDataAnnotationsLocalization(opts => {
-    opts.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedListResource));
-    opts.DataAnnotationLocalizerProvider = (type, factory) => factory.Create(typeof(SharedEditFormResource));
-});
+builder.Services.AddControllers();
 builder.Services.AddSession();
 
 builder.Services.AddSwaggerGen(opts => {
@@ -70,7 +66,7 @@ builder.Services.AddHttpClient();
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
 
-builder.Services.AddScoped<IOneToOneService, OneToOneService>();
+builder.Services.AddScoped<IOneToOneApplication, OneToOneApplication>();
 builder.Services.AddTransient<IMailService, MailService>();
 builder.Services.AddScoped<IMeetingService, MeetingService>();
 builder.Services.AddScoped<IGradeService, GradeService>();
@@ -78,7 +74,6 @@ builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
-builder.Services.AddScoped<OneToOneApplication>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -108,22 +103,22 @@ app.Use(async (context, next) =>
     }
     await next();
 });
-app.UseStatusCodePages(async context =>
-{
-    var response = context.HttpContext.Response;
-    var request = context.HttpContext.Request;
-    bool isAnauthorized = response.StatusCode == (int)HttpStatusCode.Unauthorized;
-    bool isForbidden = response.StatusCode == (int)HttpStatusCode.Forbidden;
+//app.UseStatusCodePages(async context =>
+//{
+//    var response = context.HttpContext.Response;
+//    var request = context.HttpContext.Request;
+//    bool isAnauthorized = response.StatusCode == (int)HttpStatusCode.Unauthorized;
+//    bool isForbidden = response.StatusCode == (int)HttpStatusCode.Forbidden;
 
-    //дл€ что бы новый фронт не получал ответ в виде разметки со страниццей запрета доступа, 
-    //необходимо проверить Headers.Origin. ¬ случае внешнего фронтенда там будет заполнен хост,
-    //в случае MVC - будет пустота
-    //временное решение, пока не будет полностью выпелен старый фронтенд
-    bool isMVC = context.HttpContext.Request.Headers.Origin.ToString() == "";
+//    //дл€ что бы новый фронт не получал ответ в виде разметки со страниццей запрета доступа, 
+//    //необходимо проверить Headers.Origin. ¬ случае внешнего фронтенда там будет заполнен хост,
+//    //в случае MVC - будет пустота
+//    //временное решение, пока не будет полностью выпелен старый фронтенд
+//    bool isMVC = context.HttpContext.Request.Headers.Origin.ToString() == "";
 
-    if ((isAnauthorized || isForbidden) && isMVC)
-        response.Redirect("/auth/AccessDenied");
-});
+//    if ((isAnauthorized || isForbidden) && isMVC)
+//        response.Redirect("/auth/AccessDenied");
+//});
 app.UseAuthentication();
 app.UseAuthorization();
 #endregion auth

@@ -40,7 +40,7 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse>> Login([FromBody] UserLoginRequestDTO loginRequest)
+        public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] UserLoginRequestDTO loginRequest)
         {
             try
             {

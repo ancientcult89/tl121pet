@@ -15,24 +15,6 @@ namespace tl121pet.Services.Services
             _dataContext = dataContext;
         }
 
-        [Obsolete]
-        public async Task<List<ProjectTeam>> GetFilteredProjectsAsync(long? userId)
-        {
-            List<ProjectTeam> filteredProjects = new List<ProjectTeam>();
-
-            var projects = from up in _dataContext.UserProjects
-                           join pr in _dataContext.ProjectTeams on up.ProjectTeamId equals pr.ProjectTeamId
-                           where up.UserId == userId
-                           select pr;
-
-            foreach (ProjectTeam project in projects)
-            {
-                filteredProjects.Add(project);
-            }
-
-            return filteredProjects;
-        }
-
         public async Task<List<ProjectTeam>> GetAllTeamsAsync()
         {
             return await _dataContext.ProjectTeams.ToListAsync();

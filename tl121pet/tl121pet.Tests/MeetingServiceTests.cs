@@ -848,7 +848,6 @@ namespace tl121pet.Tests
             MeetingNote expectedNote = new MeetingNote()
             {
                 FeedbackRequired = true,
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingNoteContent = "test",
                 MeetingNoteId = createdMeetingNote.MeetingNoteId,
@@ -926,7 +925,6 @@ namespace tl121pet.Tests
             {
                 FeedbackRequired = true,
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingNoteContent = "test",
             };
             _dataContext.MeetingNotes.Add(createdMeetingNote);
@@ -936,7 +934,6 @@ namespace tl121pet.Tests
             MeetingNote updatedNote = new MeetingNote()
             {
                 FeedbackRequired = true,
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingNoteContent = "test2",
                 MeetingNoteId = createdMeetingNote.MeetingNoteId,
@@ -946,7 +943,6 @@ namespace tl121pet.Tests
             MeetingNote expectedNote = new MeetingNote()
             {
                 FeedbackRequired = true,
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingNoteContent = "test2",
                 MeetingNoteId = createdMeetingNote.MeetingNoteId,
@@ -1002,7 +998,6 @@ namespace tl121pet.Tests
             MeetingNote updatedNote = new MeetingNote()
             {
                 FeedbackRequired = true,
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingNoteContent = "test2",
                 MeetingNoteId = notExistNoteId,
@@ -1060,7 +1055,6 @@ namespace tl121pet.Tests
             {
                 FeedbackRequired = true,
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingNoteContent = "test",
             };
             _dataContext.MeetingNotes.Add(createdMeetingNote);
@@ -1135,14 +1129,12 @@ namespace tl121pet.Tests
             {
                 FeedbackRequired = true,
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingNoteContent = "test",
             };
             MeetingNote createdMeetingNote2 = new MeetingNote()
             {
                 FeedbackRequired = true,
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingNoteContent = "test2",
             };
             _dataContext.MeetingNotes.AddRange(createdMeetingNote, createdMeetingNote2);
@@ -1154,7 +1146,6 @@ namespace tl121pet.Tests
                 {
                     FeedbackRequired = true,
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingNoteContent = "test",
                     MeetingNoteId = createdMeetingNote.MeetingNoteId,
                 },
@@ -1162,7 +1153,6 @@ namespace tl121pet.Tests
                 {
                     FeedbackRequired = true,
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingNoteContent = "test2",
                     MeetingNoteId = createdMeetingNote2.MeetingNoteId,
                 }
@@ -1269,14 +1259,12 @@ namespace tl121pet.Tests
             {
                 FeedbackRequired = true,
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingNoteContent = "test",
             };
             MeetingNote createdMeetingNote2 = new MeetingNote()
             {
                 FeedbackRequired = false,
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingNoteContent = "test2",
             };
             _dataContext.MeetingNotes.AddRange(createdMeetingNote, createdMeetingNote2);
@@ -1288,7 +1276,6 @@ namespace tl121pet.Tests
                 {
                     FeedbackRequired = true,
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingNoteContent = "test",
                     MeetingNoteId = createdMeetingNote.MeetingNoteId,
                 },
@@ -1403,7 +1390,6 @@ namespace tl121pet.Tests
 
             MeetingGoal expectedNote = new MeetingGoal()
             {
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingGoalDescription = "test",
                 MeetingGoalId = createdMeetingGoal.MeetingGoalId,
@@ -1479,7 +1465,6 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test",
             };
             _dataContext.MeetingGoals.Add(createdMeetingGoal);
@@ -1488,7 +1473,6 @@ namespace tl121pet.Tests
             //Act
             MeetingGoal updatedGoal = new MeetingGoal()
             {
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingGoalDescription = "test2",
                 MeetingGoalId = createdMeetingGoal.MeetingGoalId,
@@ -1497,8 +1481,6 @@ namespace tl121pet.Tests
 
             MeetingGoal expectedGoal = new MeetingGoal()
             {
-
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingGoalDescription = "test2",
                 MeetingGoalId = createdMeetingGoal.MeetingGoalId,
@@ -1553,8 +1535,6 @@ namespace tl121pet.Tests
             //Act
             MeetingGoal updatedGoal = new MeetingGoal()
             {
-
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingGoalDescription = "test2",
                 MeetingGoalId = notExistGoalId,
@@ -1611,7 +1591,6 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test",
             };
             _dataContext.MeetingGoals.Add(createdMeetingGoal);
@@ -1685,13 +1664,11 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test",
             };
             MeetingGoal createdMeetingGoal2 = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test2",
             };
             _dataContext.MeetingGoals.AddRange(createdMeetingGoal, createdMeetingGoal2);
@@ -1702,14 +1679,12 @@ namespace tl121pet.Tests
                 new MeetingGoal
                 {
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingGoalDescription = "test",
                     MeetingGoalId = createdMeetingGoal.MeetingGoalId,
                 },
                 new MeetingGoal()
                 {
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingGoalDescription = "test2",
                     MeetingGoalId = createdMeetingGoal2.MeetingGoalId,
                 }
@@ -1814,7 +1789,6 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test",
             };
             _dataContext.MeetingGoals.Add(createdMeetingGoal);
@@ -1825,8 +1799,6 @@ namespace tl121pet.Tests
 
             MeetingGoal expectedGoal = new MeetingGoal()
             {
-
-                Meeting = createdMeeting,
                 MeetingId = createdMeeting.MeetingId,
                 MeetingGoalDescription = "test",
                 MeetingGoalId = createdMeetingGoal.MeetingGoalId,
@@ -2258,13 +2230,11 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test",
             };
             MeetingGoal createdMeetingGoal2 = new MeetingGoal()
             {
                 MeetingId = createdMeeting.MeetingId,
-                Meeting = createdMeeting,
                 MeetingGoalDescription = "test2",
             };
             _dataContext.MeetingGoals.AddRange(createdMeetingGoal, createdMeetingGoal2);
@@ -2296,13 +2266,11 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal3 = new MeetingGoal()
             {
                 MeetingId = createdMeeting2.MeetingId,
-                Meeting = createdMeeting2,
                 MeetingGoalDescription = "test",
             };
             MeetingGoal createdMeetingGoal4 = new MeetingGoal()
             {
                 MeetingId = createdMeeting2.MeetingId,
-                Meeting = createdMeeting2,
                 MeetingGoalDescription = "test2",
             };
             _dataContext.MeetingGoals.AddRange(createdMeetingGoal3, createdMeetingGoal4);
@@ -2313,14 +2281,12 @@ namespace tl121pet.Tests
                 new MeetingGoal
                 {
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingGoalDescription = "test",
                     MeetingGoalId = createdMeetingGoal.MeetingGoalId,
                 },
                 new MeetingGoal()
                 {
                     MeetingId = createdMeeting.MeetingId,
-                    Meeting = createdMeeting,
                     MeetingGoalDescription = "test2",
                     MeetingGoalId = createdMeetingGoal2.MeetingGoalId,
                 }

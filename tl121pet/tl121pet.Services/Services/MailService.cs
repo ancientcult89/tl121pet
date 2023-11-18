@@ -4,7 +4,6 @@ using MimeKit;
 using MimeKit.Text;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Services.Interfaces;
-using MailKit.Security;
 
 namespace tl121pet.Services.Services
 {
