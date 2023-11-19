@@ -214,5 +214,14 @@ namespace tl121pet.Services.Services
                 .OrderByDescending(m => m.MeetingDate)
                 .ToList();
         }
+
+        public async Task ChangeLocaleAsync(int localeId)
+        {
+            long? userId = _authService.GetMyUserId();
+            if (userId == null)
+                return;
+
+            await _authService.ChangeLocaleByUserIdAsync((long)userId, (Locale)localeId);
+        }
     }
 }

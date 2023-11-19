@@ -1,4 +1,5 @@
 ﻿using tl121pet.Entities.DTO;
+using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 
 namespace tl121pet.Services.Interfaces
@@ -8,6 +9,7 @@ namespace tl121pet.Services.Interfaces
         public long? GetMyUserId();
         public Task RegisterAsync(UserRegisterRequestDTO request);
         public Task ChangePasswordAsync(ChangeUserPasswordRequestDTO changeUserPasswordRequest);
+        public Task ChangeLocaleByUserIdAsync(long userId, Locale locale);
         public Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request);
         public Task<string> CreateTokenAsync(User user);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);

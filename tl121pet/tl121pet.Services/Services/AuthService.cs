@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
+using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -35,6 +36,18 @@ namespace tl121pet.Services.Services
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        public async Task ChangeLocaleByUserIdAsync(long userId, Locale locale)
+        {
+            User user = await _dataContext.Users.FindAsync(userId);
+
+            if (user == null)
+                return;
+
+            user.Locale = locale;
+            _dataContext.Users.Update(user);
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<string> CreateTokenAsync(User user)
@@ -82,7 +95,8 @@ namespace tl121pet.Services.Services
                 LoginResponseDTO loginResponse = new LoginResponseDTO() { 
                     User = user,
                     Role = user.Role,
-                    Token = token
+                    Token = token,
+                    Locale = user.Locale,
                 };
                 return loginResponse;
             }
