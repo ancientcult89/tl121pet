@@ -29,3 +29,6 @@ teamleadhelperconfig.json example:<br>
 
 then:<br>
 `docker compose up` from directory with .yaml<br>
+
+Default user: admin@example.com
+Default password: admin

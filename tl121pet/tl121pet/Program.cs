@@ -12,8 +12,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using System.Net;
-using tl121pet;
 using tl121pet.Middlwares;
 
 var builder = WebApplication.CreateBuilder(args);
