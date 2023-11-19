@@ -1,9 +1,9 @@
 # TeamLead Helper
 
-.env frontend config example:
+.env frontend config example:<br>
 REACT_APP_API_URL='http://localhost:80/'
 
-teamleadhelperconfig.json example:
+teamleadhelperconfig.json example:<br>
 {
   "AppSettings": {
     "Token": "somesecretandhorrobletokenbooo"
@@ -24,8 +24,8 @@ teamleadhelperconfig.json example:
     "Host": "mailserver",
     "Port": 465
   }
-}
+}<br>
 
 
-then:
-`docker compose up` from directory with .yaml
+then:<br>
+`docker compose up` from directory with .yaml<br>
