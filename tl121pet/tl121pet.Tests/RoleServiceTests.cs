@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
@@ -91,7 +92,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.GetRoleByIdAsync(1);
 
             // Act & Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Role not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Role not found");
         }
 
         /// <summary>
@@ -126,7 +127,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.CreateRoleAsync(expectrole2);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Role with this name exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Role with this name exists");
         }
 
         /// <summary>
@@ -185,7 +186,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.UpdateRoleAsync(expectRole2);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Role with this name exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Role with this name exists");
         }
 
         /// <summary>
@@ -201,7 +202,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.UpdateRoleAsync(testGrade);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Role not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Role not found");
         }
 
         /// <summary>
@@ -236,7 +237,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.DeleteRoleAsync(role.RoleId);
 
             //assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Role not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Role not found");
         }
 
         /// <summary>
@@ -254,7 +255,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.DeleteRoleAsync(role.RoleId);
 
             //assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Role \"Admin\" is system Role. You can not change this Role or Create It manually");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("Role \"Admin\" is system Role. You can not change this Role or Create It manually");
         }
 
         /// <summary>
@@ -272,7 +273,7 @@ namespace tl121pet.Tests
             var result = async () => await _roleService.UpdateRoleAsync(expectRole);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Role \"Admin\" is system Role. You can not change this Role or Create It manually");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("Role \"Admin\" is system Role. You can not change this Role or Create It manually");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿//сетка грейда
-//название
 namespace tl121pet.Entities.Models
 {
     public class Grade

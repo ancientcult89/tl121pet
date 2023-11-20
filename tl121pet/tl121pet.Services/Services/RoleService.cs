@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -28,7 +29,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Role> UpdateRoleAsync(Role role)
         {
-            var modifiedRole = await CheckRoleExistsById(role.RoleId);
+            var modifiedRole = await GetRoleByIdAsync(role.RoleId);
             await CheckRoleExistsByName(role);
             await AdminRoleChangeChecking(await GetRoleNameById(role.RoleId));
 
@@ -47,28 +48,20 @@ namespace tl121pet.Services.Services
 
         public async Task<Role> GetRoleByIdAsync(int roleId)
         {
-            return await _dataContext.Roles.FindAsync(roleId) ?? throw new Exception("Role not found");
+            return await _dataContext.Roles.FindAsync(roleId) ?? throw new DataFoundException("Role not found");
         }
 
         private async Task CheckRoleExistsByName(Role role)
         {
             var examRole = await _dataContext.Roles.Where(r => r.RoleName == role.RoleName).FirstOrDefaultAsync();
             if (examRole != null)
-                throw new Exception("A Role with this name exists");
-        }
-
-        public async Task<Role> CheckRoleExistsById(int roleId)
-        {
-            var examRole = await _dataContext.Roles.SingleOrDefaultAsync(r => r.RoleId == roleId) 
-                ?? throw new Exception("Role not found");
-
-            return examRole;
+                throw new LogicException("A Role with this name exists");
         }
 
         private async Task AdminRoleChangeChecking(string name)
         {
             if (name == "Admin")
-                throw new Exception("Role \"Admin\" is system Role. You can not change this Role or Create It manually");
+                throw new LogicException("Role \"Admin\" is system Role. You can not change this Role or Create It manually");
         }
 
         private async Task<string> GetRoleNameById(int roleId)

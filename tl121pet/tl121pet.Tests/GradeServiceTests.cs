@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
@@ -91,7 +92,7 @@ namespace tl121pet.Tests
             var result = async () => await _gradeService.GetGradeByIdAsync(1);
 
             // Act & Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Grade not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Grade not found");
         }
 
         /// <summary>
@@ -126,7 +127,7 @@ namespace tl121pet.Tests
             var result = async () => await _gradeService.CreateGradeAsync(expectGrade2);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Grade with this name exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Grade with this name exists");
         }
 
         /// <summary>
@@ -190,7 +191,7 @@ namespace tl121pet.Tests
             var result = async () => await _gradeService.UpdateGradeAsync(newValuedTestedGrade2);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Grade with this name exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Grade with this name exists");
         }
 
         /// <summary>
@@ -206,7 +207,7 @@ namespace tl121pet.Tests
             var result = async () => await _gradeService.UpdateGradeAsync(testGrade);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Grade not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Grade not found");
         }
 
         /// <summary>
@@ -241,7 +242,7 @@ namespace tl121pet.Tests
             var result = async () => await _gradeService.DeleteGradeAsync(grade.GradeId);
 
             //assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Grade not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Grade not found");
         }
     }
 }

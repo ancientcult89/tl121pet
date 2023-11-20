@@ -28,12 +28,12 @@ namespace tl121pet.Controllers.v1
         [HttpPost]
         public async Task<ActionResult<Grade>> CreateGrade([FromBody] Grade newGrade)
         {
-            return await _gradeService.CreateGradeAsync(newGrade);
+            return Ok(await _gradeService.CreateGradeAsync(newGrade));
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Grade>> UpdateGrade([FromBody] Grade grade)
-        {
+        {            
             return await _gradeService.UpdateGradeAsync(grade);
         }
 

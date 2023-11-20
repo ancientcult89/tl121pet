@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -26,7 +27,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Grade> UpdateGradeAsync(Grade grade)
         {
-            var modifiedGrade = await CheckGradeExistsById(grade.GradeId);
+            var modifiedGrade = await GetGradeByIdAsync(grade.GradeId);
             await CheckGradeExistsByName(grade.GradeName);
 
             _dataContext.Entry(modifiedGrade).CurrentValues.SetValues(grade);
@@ -43,21 +44,14 @@ namespace tl121pet.Services.Services
 
         public async Task<Grade> GetGradeByIdAsync(long id)
         {
-            return await _dataContext.Grades.FindAsync(id) ?? throw new Exception("Grade not found");
+            return await _dataContext.Grades.FindAsync(id) ?? throw new DataFoundException("Grade not found");
         }
 
         private async Task CheckGradeExistsByName(string gradeName)
         {
             var examGrade = await _dataContext.Grades.Where(g => g.GradeName == gradeName).FirstOrDefaultAsync();
             if (examGrade != null)
-                throw new Exception("A Grade with this name exists");
-        }
-
-        private async Task<Grade> CheckGradeExistsById(long gradeId)
-        {
-            var examGrade = await _dataContext.Grades.SingleOrDefaultAsync(g => g.GradeId == gradeId) ?? throw new Exception("Grade not found");
-
-            return examGrade;
+                throw new LogicException("A Grade with this name exists");
         }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
+using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -12,9 +13,11 @@ namespace tl121pet.Controllers.v1
     public class UserController : Controller
     {
         private readonly IAuthService _authService;
-        public UserController(IAuthService authService)
+        private readonly IOneToOneApplication _oneToOneApplication;
+        public UserController(IAuthService authService, IOneToOneApplication oneToOneApplication)
         {
             _authService = authService;
+            _oneToOneApplication = oneToOneApplication;
         }
 
         [Authorize]
@@ -40,7 +43,7 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<LoginResponse>> Login([FromBody] UserLoginRequestDTO loginRequest)
+        public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] UserLoginRequestDTO loginRequest)
         {
             try
             {
@@ -76,6 +79,14 @@ namespace tl121pet.Controllers.v1
                 return NotFound();
             else 
                 return user.ToDto();
+        }
+
+        [Authorize]
+        [HttpPost("changelocale")]
+        public async Task<ActionResult> ChangeLocale([FromBody] ChangeLocaleRequestDTO request)
+        {
+            await _oneToOneApplication.ChangeLocaleAsync(request.Locale);
+            return Ok();
         }
 
         [HttpPut("{id}")]

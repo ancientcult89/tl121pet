@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tl121pet.DAL.Data;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -24,13 +23,13 @@ namespace tl121pet.Controllers.v1
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Role>> GetRoleById(int id)
-        {
+        {            
             return await _roleService.GetRoleByIdAsync(id);
         }
 
         [HttpPost]
         public async Task<ActionResult<Role>> CreateRole([FromBody] Role newRole)
-        {
+        {            
             return await _roleService.CreateRoleAsync(newRole);
         }
 

@@ -11,12 +11,12 @@ namespace tl121pet.Controllers.v1
     public class MeetingController : ApiController
     {
         private readonly IMeetingService _meetingService;
-        private readonly IOneToOneService _oneToOneService;
+        private readonly IOneToOneApplication _application;
 
-        public MeetingController(IMeetingService meetingService, IOneToOneService oneToOneService)
+        public MeetingController(IMeetingService meetingService, IOneToOneApplication application)
         {
             _meetingService = meetingService;
-            _oneToOneService = oneToOneService;
+            _application = application;
         }
 
         #region Meeting
@@ -24,7 +24,7 @@ namespace tl121pet.Controllers.v1
         [HttpGet]
         public async Task<ActionResult<List<Meeting>>> GetMeetingList(long? personId = null)
         {
-            return await _meetingService.GetMeetingsAsync(personId);
+            return await _application.GetMeetingsAsync(personId);
         }
 
         [HttpGet("{id}")]
@@ -55,7 +55,7 @@ namespace tl121pet.Controllers.v1
         [HttpGet("previous")]
         public async Task<ActionResult<string>> GetPreviousMeetingNotesAndGoals(Guid meetingId, long personId)
         {
-            return await _oneToOneService.GetPreviousMeetingNoteAndGoalsAsync(meetingId, personId);
+            return await _application.GetPreviousMeetingNoteAndGoalsAsync(meetingId, personId);
         }
 
         #endregion Meeting
@@ -120,7 +120,7 @@ namespace tl121pet.Controllers.v1
         [HttpGet("{id}/followup")]
         public async Task<ActionResult<string>> GenerateFollowUp(Guid meetingId, long personId)
         {
-            return await _oneToOneService.GenerateFollowUpAsync(meetingId, personId);
+            return await _application.GenerateFollowUpAsync(meetingId, personId);
         }
 
         //TODO: Логика со старого бекенда: есть метод выше на формирование фолоуаппа, в методе ниже при отправке мы снова его будем генерировать
@@ -128,7 +128,7 @@ namespace tl121pet.Controllers.v1
         [HttpPost("{id}/followup")]
         public async Task<ActionResult> SendFollowUp([FromBody] SendFollowUpRequestDTO request)
         {
-            await _oneToOneService.SendFollowUpAsync(request.MeetingId, request.PersonId);
+            await _application.SendFollowUpAsync(request.MeetingId, request.PersonId);
             return Ok();
         }
         #endregion Processing

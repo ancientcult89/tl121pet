@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -27,13 +28,6 @@ namespace tl121pet.Services.Services
             return peopleFiltered;
         }
 
-        [Obsolete]
-        public async Task<string> GetGradeNameAsync(long id)
-        {
-            Grade selectedGrade = await _dataContext.Grades.FindAsync(id);
-            return selectedGrade.GradeName ?? "not found";
-        }
-
         public async Task<Person> CreatePersonAsync(Person person)
         {
             await CheckPersonExistsByEmail(person);
@@ -45,7 +39,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Person> UpdatePersonAsync(Person person)
         {
-            var modifiedPerson = await CheckPersonExistsById(person.PersonId);
+            var modifiedPerson = await GetPersonByIdAsync(person.PersonId);
             await CheckPersonExistsByEmail(person);
 
             _dataContext.Entry(modifiedPerson).CurrentValues.SetValues(person);
@@ -55,20 +49,15 @@ namespace tl121pet.Services.Services
 
         public async Task DeletePersonAsync(long id)
         {
-            await CheckPersonExistsById(id);
+            await GetPersonByIdAsync(id);
             var personToDelete = _dataContext.People.Find(id);
             _dataContext.People.Remove(personToDelete);
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<List<Person>> GetAllPeopleAsync()
-        {
-            return await _dataContext.People.ToListAsync();
-        }
-
         public async Task<Person> GetPersonByIdAsync(long id)
         {
-            return await _dataContext.People.FindAsync(id) ?? throw new Exception("Person not found");
+            return await _dataContext.People.FindAsync(id) ?? throw new DataFoundException("Person not found");
         }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)
@@ -87,7 +76,7 @@ namespace tl121pet.Services.Services
                     p.SurName,
                     p.Email,
                     p.ShortName,
-                    p.GradeId
+                    p.GradeId,
                 } into g
                 select new
                 {
@@ -97,7 +86,7 @@ namespace tl121pet.Services.Services
                     SurName = g.Key.SurName,
                     Email = g.Key.Email,
                     ShortName = g.Key.ShortName,
-                    GradeId = g.Key.GradeId
+                    GradeId = g.Key.GradeId,
                 }
             ).ToListAsync();
 
@@ -121,7 +110,6 @@ namespace tl121pet.Services.Services
             return filteredPeople;
         }
 
-        //TODO: есть метод GetAllPeopleAsync, который возвращает тоже самое без грейдов. вряд ли нужны оба метода сразу
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
             return await _dataContext.People.Include(p => p.Grade).ToListAsync();
@@ -135,15 +123,7 @@ namespace tl121pet.Services.Services
                 .FirstOrDefaultAsync();
 
             if (examPerson != null)
-                throw new Exception("A Person with same Email is already exists");
-        }
-
-        private async Task<Person> CheckPersonExistsById(long personId)
-        {
-            var examPerson = await _dataContext.People.SingleOrDefaultAsync(r => r.PersonId == personId) 
-                ?? throw new Exception("Person not found");
-
-            return examPerson;
+                throw new LogicException("A Person with same Email is already exists");
         }
     }
 }

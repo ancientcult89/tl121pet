@@ -2,8 +2,6 @@
 
 namespace tl121pet.Entities.DTO
 {
-
-    //TODO: необходимо разделить ДТО на 2: редактирование и создание
     public class UserDTO
     {
         public long Id { get; set; }

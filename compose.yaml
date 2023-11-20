@@ -1,0 +1,38 @@
+services:
+  tlPG:
+    image: postgres:latest
+    container_name: tlPG
+    volumes:
+      - c:\configs\pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+    ports:
+      - "49153:5432"
+    networks:
+      - tlHelper
+  tlBackend:
+    image: hakon051/tl121pet:latest
+    container_name: tlBackend
+    volumes:
+      - c:\configs\teamleadhelperconfig.json:/app/appsettings.json hakon051/tl121pet:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - tlPG
+    networks:
+      - tlHelper
+  tlFrontend:
+    image: hakon051/tl121pet.front:latest
+    container_name: tlFrontend
+    volumes:
+      - c:\configs\.env:/app/.env
+    ports:
+      - "3060:3000"
+    depends_on:
+      - tlBackend
+    networks:
+      - tlHelper
+networks:
+  tlHelper:
+    driver: bridge

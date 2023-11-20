@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 using tl121pet.Services.Services;
@@ -33,10 +34,10 @@ namespace tl121pet.Tests
         }
 
         /// <summary>
-        /// Проверка, что GetAllPeopleAsync возвращает всех сотрудников
+        /// Проверка, что GetPeopleWithGradeAsync возвращает всех сотрудников
         /// </summary>
         [Fact]
-        public async void GetAllPeopleAsync_ShouldReturnAllPersons()
+        public async void GetPeopleWithGradeAsync_ShouldReturnAllPersons()
         {
             //Arrange
             Grade testGrade = new Grade
@@ -98,23 +99,23 @@ namespace tl121pet.Tests
             });
 
             //Act
-            var resultPeople = await _personService.GetAllPeopleAsync();
+            var resultPeople = await _personService.GetPeopleWithGradeAsync();
 
             //Assert
             resultPeople.Should().BeEquivalentTo(peopleExpected);
         }
 
         /// <summary>
-        /// Проверка, что GetAllPeopleAsync возвращает пустую коллекцию и не вываливается в ошибку, если нет ни одной записи
+        /// Проверка, что GetPeopleWithGradeAsync возвращает пустую коллекцию и не вываливается в ошибку, если нет ни одной записи
         /// </summary>
         [Fact]
-        public async void GetAllPeopleAsync_ShouldReturnEmptyListIfPersonsNotExists()
+        public async void GetPeopleWithGradeAsync_ShouldReturnEmptyListIfPersonsNotExists()
         {
             //Arrange
             List<Person> expectPeople = new();
 
             //Act
-            IEnumerable<Person> people = await _personService.GetAllPeopleAsync();
+            IEnumerable<Person> people = await _personService.GetPeopleWithGradeAsync();
 
             //Assert
             expectPeople.Should().BeEquivalentTo(people);
@@ -159,8 +160,8 @@ namespace tl121pet.Tests
             };
 
             //Act
-            _dataContext.People.Add(createdPerson);
-            _dataContext.SaveChanges();
+            await _personService.CreatePersonAsync(createdPerson);
+            expectedPerson.PersonId = createdPerson.PersonId;
 
             //Assert
             createdPerson.Should().BeEquivalentTo(expectedPerson);
@@ -205,7 +206,7 @@ namespace tl121pet.Tests
             var result = async () => await _personService.CreatePersonAsync(personWithDuplicateEmail);
 
             // Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Person with same Email is already exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Person with same Email is already exists");
         }
 
         /// <summary>
@@ -264,7 +265,7 @@ namespace tl121pet.Tests
             var result = async () => await _personService.DeletePersonAsync(notExistPerson.PersonId);
 
             //assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Person not found");
         }
 
         /// <summary>
@@ -356,7 +357,7 @@ namespace tl121pet.Tests
             var result = async () => await _personService.UpdatePersonAsync(updatedPerson);
 
             //assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Person not found");
         }
 
         /// <summary>
@@ -415,7 +416,7 @@ namespace tl121pet.Tests
             var result = async () => await _personService.UpdatePersonAsync(updatedPerson);
 
             //assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("A Person with same Email is already exists");
+            await result.Should().ThrowAsync<LogicException>().WithMessage("A Person with same Email is already exists");
         }
 
         /// <summary>
@@ -469,7 +470,7 @@ namespace tl121pet.Tests
         /// проверяем что GetPersonByIdAsync возвращает ошибку в случае поиска сотрудника, которого нет в системе
         /// </summary>
         [Fact]
-        public async void GetNotExistPerson_ShouldReturnCorrectPerson()
+        public async void GetNotExistPerson_ShouldThrowException()
         {
             //Arrange
             var notExistPersonId = 1;
@@ -478,80 +479,8 @@ namespace tl121pet.Tests
             var result = async () => await _personService.GetPersonByIdAsync(notExistPersonId);
 
             //Assert
-            await result.Should().ThrowAsync<Exception>().WithMessage("Person not found");
-        }
-
-        /// <summary>
-        /// проверяем что GetPeopleWithGradeAsync возвращает всех острудников
-        /// </summary>
-        [Fact]
-        public async void GetPeopleWithGradeAsync_ShouldReturnAllPersons()
-        {
-            //Arrange
-            Grade testGrade = new Grade
-            {
-                GradeId = 1,
-                GradeName = "Junior"
-            };
-            _dataContext.Grades.Add(testGrade);
-            _dataContext.SaveChanges();
-
-            List<Person> people = new List<Person>();
-            people.AddRange(new List<Person> {
-                new Person {
-                    Email = "1111@test.com",
-                    FirstName = "Eric",
-                    LastName = "Cripke",
-                    GradeId = testGrade.GradeId,
-                    PersonId = 1,
-                    ShortName = "Rick",
-                    SurName = "Rickson",
-                    Grade = testGrade
-                },
-                new Person {
-                    Email = "1111@test1.com",
-                    FirstName = "John",
-                    LastName = "Bon",
-                    GradeId = testGrade.GradeId,
-                    PersonId = 2,
-                    ShortName = "Jovi",
-                    SurName = "Jovison",
-                    Grade = testGrade
-                },
-            });
-            _dataContext.People.AddRange(people);
-            _dataContext.SaveChanges();
-
-            List<Person> peopleExpected = new List<Person>();
-            peopleExpected.AddRange(new List<Person> {
-                new Person {
-                    Email = "1111@test.com",
-                    FirstName = "Eric",
-                    LastName = "Cripke",
-                    GradeId = testGrade.GradeId,
-                    PersonId = 1,
-                    ShortName = "Rick",
-                    SurName = "Rickson",
-                    Grade = testGrade
-                },
-                new Person {
-                    Email = "1111@test1.com",
-                    FirstName = "John",
-                    LastName = "Bon",
-                    GradeId = testGrade.GradeId,
-                    PersonId = 2,
-                    ShortName = "Jovi",
-                    SurName = "Jovison",
-                    Grade = testGrade
-                },
-            });
-
-            //Act
-            var resultPeople = await _personService.GetAllPeopleAsync();
-
-            //Assert
-            resultPeople.Should().BeEquivalentTo(peopleExpected);
-        }
+            await result.Should().ThrowAsync<DataFoundException>().WithMessage("Person not found");
+        }        
 
         /// <summary>
         /// проверяем что GetPeopleWithGradeAsync возвращает грейды
@@ -601,7 +530,7 @@ namespace tl121pet.Tests
             _dataContext.SaveChanges();
 
             //Act
-            var resultPeople = await _personService.GetAllPeopleAsync();
+            var resultPeople = await _personService.GetPeopleWithGradeAsync();
             var resultGrade = resultPeople.Where(p => p.Email == "1111@test1.com").FirstOrDefault().Grade;
 
             //Assert

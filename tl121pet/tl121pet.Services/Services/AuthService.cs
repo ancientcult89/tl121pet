@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
+using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -35,6 +36,18 @@ namespace tl121pet.Services.Services
                 passwordSalt = hmac.Key;
                 passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
+        }
+
+        public async Task ChangeLocaleByUserIdAsync(long userId, Locale locale)
+        {
+            User user = await _dataContext.Users.FindAsync(userId);
+
+            if (user == null)
+                return;
+
+            user.Locale = locale;
+            _dataContext.Users.Update(user);
+            await _dataContext.SaveChangesAsync();
         }
 
         public async Task<string> CreateTokenAsync(User user)
@@ -70,26 +83,7 @@ namespace tl121pet.Services.Services
                 return null;
         }
 
-        [Obsolete]
-        public async Task<User?> OldLoginAsync(UserLoginRequestDTO request)
-        {
-            User user = await GetUserByEmailAsync(request.Email);
-            if (user == null)
-                return null;
-
-            if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
-            {
-                string token = await CreateTokenAsync(user);
-                
-                //temporary
-                Role = "Admin";
-                return user;
-            }
-
-            return null;
-        }
-
-        public async Task<LoginResponse> LoginAsync(UserLoginRequestDTO request)
+        public async Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request)
         {
             User user = await GetUserByEmailAsync(request.Email);
             if (user == null)
@@ -98,10 +92,11 @@ namespace tl121pet.Services.Services
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 string token = await CreateTokenAsync(user);
-                LoginResponse loginResponse = new LoginResponse() { 
+                LoginResponseDTO loginResponse = new LoginResponseDTO() { 
                     User = user,
                     Role = user.Role,
-                    Token = token
+                    Token = token,
+                    Locale = user.Locale,
                 };
                 return loginResponse;
             }

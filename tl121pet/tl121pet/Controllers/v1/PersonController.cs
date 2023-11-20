@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.Models;
-using tl121pet.Services.Application;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Controllers.v1
@@ -10,8 +9,8 @@ namespace tl121pet.Controllers.v1
     public class PersonController : ApiController
     {
         private IPersonService _personService;
-        private readonly OneToOneApplication _application;
-        public PersonController(IPersonService personService, OneToOneApplication application)
+        private readonly IOneToOneApplication _application;
+        public PersonController(IPersonService personService, IOneToOneApplication application)
         {
             _personService = personService;
             _application = application;
