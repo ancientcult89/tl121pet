@@ -525,7 +525,7 @@ namespace tl121pet.Tests
             };
 
             //Act
-            var result = await _meetingService.GetMeetingByIdAsync(createdMeeting.MeetingId);
+            var result = await _meetingService.GetMeetingByIdMeetingAsync(createdMeeting.MeetingId);
 
             //Assert
             result.Should().BeEquivalentTo(expectedMeeting);
@@ -541,7 +541,7 @@ namespace tl121pet.Tests
             Guid notExistMeetingId = new Guid();
 
             //Act
-            var result = async () => await _meetingService.GetMeetingByIdAsync(notExistMeetingId);
+            var result = async () => await _meetingService.GetMeetingByIdMeetingAsync(notExistMeetingId);
 
             //Assert
             await result.Should().ThrowAsync<DataFoundException>().WithMessage("Meeting not found");

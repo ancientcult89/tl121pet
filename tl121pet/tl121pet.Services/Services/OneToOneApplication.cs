@@ -1,6 +1,8 @@
 ﻿using tl121pet.Entities.Aggregate;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Infrastructure;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -34,15 +36,21 @@ namespace tl121pet.Services.Services
             {
                 TimeSpan datediff = new TimeSpan();
                 Meeting lastMeeting = await _meetingService.GetLastOneToOneByPersonIdAsync(p.PersonId) ?? new Meeting();
-                DateTime lastMeetingDate = (DateTime)lastMeeting.MeetingDate;
-                datediff = lastMeetingDate.AddMonths(1).Date - DateTime.Now.Date;
+                if (lastMeeting.MeetingDate != null)
+                {
+                    DateTime lastMeetingDate = (DateTime)lastMeeting.MeetingDate;
+                    datediff = lastMeetingDate.AddMonths(1).Date - DateTime.Now.Date;
+                }
+
+                DateTime deadlineDate = lastMeeting.MeetingDate != null ? ((DateTime)lastMeeting.MeetingDate).AddMonths(1) : DateTime.Now;
 
                 deadLines.Add(new OneToOneDeadline
                 {
                     Person = p,
                     LastMeetingOneToOne = lastMeeting,
-                    LastOneToOneMeetingDate = lastMeeting.MeetingDate ?? DateTime.Now,
-                    DayToDeadline = datediff.Days
+                    LastOneToOneMeetingDate = lastMeeting.MeetingDate,
+                    DeadLine = deadlineDate,
+                    DayToDeadline = datediff.Days,
                 });
             }
             return deadLines;
@@ -201,11 +209,7 @@ namespace tl121pet.Services.Services
             long? userId = _authService.GetMyUserId();
             if (userId != null)
             {
-                List<ProjectTeam> projects = new List<ProjectTeam>();
-                List<Person> people = new List<Person>();
-                projects = await _authService.GetUserProjectsAsync((long)userId);
-                people = await GetPeopleByProjectsAsync(projects, personId);
-                meetingsRes = await _meetingService.GetMeetingsByPersonAsync(people);
+                meetingsRes = await _meetingService.GetMeetingsByUserIdAsync((long)userId, personId);
             }
 
             return meetingsRes
@@ -222,6 +226,17 @@ namespace tl121pet.Services.Services
                 return;
 
             await _authService.ChangeLocaleByUserIdAsync((long)userId, (Locale)localeId);
+        }
+
+        public async Task<Meeting> CreateMeetingAsync(MeetingDTO meetingDto)
+        {
+            Meeting newMeeting = meetingDto.ToEntity();
+            long? userId = _authService.GetMyUserId();
+            if (userId == null)
+                throw new DataFoundException("User not found");
+
+                newMeeting.UserId = (long)userId;
+            return await _meetingService.CreateMeetingAsync(newMeeting);
         }
     }
 }

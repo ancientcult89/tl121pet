@@ -37,14 +37,22 @@ namespace tl121pet.Services.Services
             return meetingsByPerson;
         }
         
-        public async Task<Meeting> GetMeetingByIdAsync(Guid id)
+        public async Task<Meeting> GetMeetingByIdMeetingAsync(Guid id)
         {
             return await _dataContext.Meetings.FindAsync(id) ?? throw new DataFoundException("Meeting not found");
         }
 
+        public async Task<List<Meeting>> GetMeetingsByUserIdAsync(long userId, long? personId)
+        {
+            return await _dataContext.Meetings
+                .Include(mt => mt.Person)
+                .Where(m => m.UserId == userId && (personId == null || m.PersonId == personId))
+                .ToListAsync();
+        }
+
         public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)
         {
-            Meeting modifiedMeeting = await GetMeetingByIdAsync(editedMeeting.MeetingId);
+            Meeting modifiedMeeting = await GetMeetingByIdMeetingAsync(editedMeeting.MeetingId);
             await CheckDuplicatedMeetingAsync(editedMeeting);
 
             _dataContext.Entry(modifiedMeeting).CurrentValues.SetValues(editedMeeting);
@@ -54,7 +62,7 @@ namespace tl121pet.Services.Services
 
         public async Task DeleteMeetingAsync(Guid id)
         {
-            Meeting meetingTypeToDelete = await GetMeetingByIdAsync(id);
+            Meeting meetingTypeToDelete = await GetMeetingByIdMeetingAsync(id);
 
             _dataContext.Meetings.Remove(meetingTypeToDelete);
             await _dataContext.SaveChangesAsync();
@@ -65,7 +73,7 @@ namespace tl121pet.Services.Services
         #region Note
         public async Task<MeetingNote> AddNoteAsync(MeetingNote newNote)
         {
-            Meeting processingMeeting = await GetMeetingByIdAsync(newNote.MeetingId);
+            Meeting processingMeeting = await GetMeetingByIdMeetingAsync(newNote.MeetingId);
 
             _dataContext.MeetingNotes.Add(newNote);
             await _dataContext.SaveChangesAsync();
@@ -105,7 +113,7 @@ namespace tl121pet.Services.Services
         #region Goal
         public async Task<MeetingGoal> AddGoalAsync(MeetingGoal newGoal)
         {
-            Meeting meeting = await GetMeetingByIdAsync(newGoal.MeetingId);
+            Meeting meeting = await GetMeetingByIdMeetingAsync(newGoal.MeetingId);
 
             _dataContext.MeetingGoals.Add(newGoal);
             await _dataContext.SaveChangesAsync();
@@ -153,7 +161,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate)
         {
-            Meeting meeting = await GetMeetingByIdAsync(meetingId);
+            Meeting meeting = await GetMeetingByIdMeetingAsync(meetingId);
             if (meeting != null)
             {
                 meeting.FollowUpIsSended = true;

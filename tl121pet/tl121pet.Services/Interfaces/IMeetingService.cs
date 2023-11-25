@@ -6,7 +6,8 @@ namespace tl121pet.Services.Interfaces
     {
         #region Meetings
         public Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people);
-        public Task<Meeting> GetMeetingByIdAsync(Guid id);
+        public Task<Meeting> GetMeetingByIdMeetingAsync(Guid id);
+        public Task<List<Meeting>> GetMeetingsByUserIdAsync(long userId, long? personId);
         public Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId);
         public Task<Meeting> CreateMeetingAsync(Meeting m);
         public Task<Meeting> UpdateMeetingAsync(Meeting mtdto);
