@@ -161,46 +161,14 @@ namespace tl121pet.Services.Services
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
         {
             List<TaskDTO> taskList = new List<TaskDTO>();
-            List<Person> people = new List<Person>();
+            long? userId = _authService.GetMyUserId();
 
-            if (personId != null)
-                people.Add(await _personService.GetPersonByIdAsync((long)personId));
-            else
-                people = await GetPeopleFilteredByProjectsAsync();
+            if(userId == null)
+                return taskList;
 
-            foreach (Person p in people)
-            {
-                List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsByPersonAsync(p.PersonId);
-                foreach (MeetingGoal goal in goals.Where(g => g.IsCompleted == false))
-                {
-                    taskList.Add(new TaskDTO()
-                    {
-                        MeetingGoalId = goal.MeetingGoalId,
-                        IsCompleted = goal.IsCompleted,
-                        MeetingGoalDescription = goal.MeetingGoalDescription,
-                        PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
-                        PersonId = p.PersonId,
-                        FactDate = await _meetingService.GetFactMeetingDateByIdAsync(goal.MeetingId)
-                    });
-                }
-            }
+            taskList = await _meetingService.GetTasksByUserId((long)userId);
 
-            return taskList.OrderByDescending(t => t.FactDate).ToList();
-        }
-
-        private async Task<List<Person>> GetPeopleByProjectsAsync(List<ProjectTeam> projects, long? personId)
-        {
-            List<Person> personByProjects = new List<Person>();
-
-            foreach (ProjectTeam pt in projects)
-            {
-                personByProjects.AddRange(await _personService.GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
-            }
-
-            if (personId != null)
-                personByProjects = personByProjects.Where(p => p.PersonId == (long)personId).ToList();
-
-            return personByProjects.Distinct(new PersonComparer()).ToList();
+            return taskList;
         }
 
         public async Task<List<Meeting>> GetMeetingsAsync(long? personId)

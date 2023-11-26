@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -181,6 +182,7 @@ namespace tl121pet.Services.Services
             return previousMeeting?.MeetingId;
         }
 
+        [Obsolete]
         public async Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId)
         {
             List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
@@ -200,15 +202,29 @@ namespace tl121pet.Services.Services
 
             return meetingGoals;
         }
-
-        public async Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId)
-        {
-            return await _dataContext.Meetings
-                .Where(m => m.MeetingId == meetingId)
-                .Select(m => m.MeetingDate)
-                .FirstOrDefaultAsync();
-        }
         #endregion MeetingProcessing
+
+        #region Tasks
+        public async Task<List<TaskDTO>> GetTasksByUserId(long userId)
+        {
+            List<TaskDTO> tasks = await (
+                from g in _dataContext.MeetingGoals
+                join m in _dataContext.Meetings on g.MeetingId equals m.MeetingId
+                join p in _dataContext.People on m.PersonId equals p.PersonId
+                where m.UserId == userId
+                select new TaskDTO {
+                    MeetingGoalId = g.MeetingGoalId,
+                    IsCompleted = g.IsCompleted,
+                    MeetingGoalDescription = g.MeetingGoalDescription,
+                    PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
+                    PersonId = p.PersonId,
+                    FactDate = m.MeetingDate
+                }
+            ).ToListAsync();
+
+            return tasks;
+        }
+        #endregion
 
         private async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
         {

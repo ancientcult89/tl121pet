@@ -43,6 +43,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime createdAt = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -71,6 +79,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             await _meetingService.CreateMeetingAsync(createdMeeting);
             Meeting expectedMeeting = new Meeting()
@@ -80,6 +89,8 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = false,
                 MeetingId = createdMeeting.MeetingId,
+                User = user,
+                UserId = user.Id,
             };
 
             //Assert
@@ -95,6 +106,14 @@ namespace tl121pet.Tests
             //Arrange
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime createdAt = DateTime.Now;
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
 
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
@@ -122,6 +141,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             await _meetingService.CreateMeetingAsync(createdMeeting);
             Meeting duplicatedMeeting = new Meeting()
@@ -130,6 +150,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId= user.Id,
             };
 
             //Act
@@ -149,6 +170,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime meetingDate = DateTime.Now;
             DateTime meetingDate2 = DateTime.Now.AddDays(-1);
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
 
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
@@ -177,6 +206,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting2 = new Meeting()
             {
@@ -184,6 +214,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2);
             _dataContext.SaveChanges();
@@ -198,6 +229,8 @@ namespace tl121pet.Tests
                     Person = createdPerson,
                     FollowUpIsSended = false,
                     MeetingId = createdMeeting.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 },
                 new Meeting()
                 {
@@ -206,6 +239,8 @@ namespace tl121pet.Tests
                     Person = createdPerson,
                     FollowUpIsSended = false,
                     MeetingId = createdMeeting2.MeetingId,
+                    User= user,
+                    UserId= user.Id,
                 },
             };
 
@@ -227,6 +262,14 @@ namespace tl121pet.Tests
             DateTime meetingDate = DateTime.Now;
             DateTime meetingDate2 = DateTime.Now.AddDays(-1);
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -264,6 +307,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting2 = new Meeting()
             {
@@ -271,6 +315,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting3 = new Meeting()
             {
@@ -278,6 +323,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson2.PersonId,
                 Person = createdPerson2,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting4 = new Meeting()
             {
@@ -285,6 +331,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson2.PersonId,
                 Person = createdPerson2,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2, createdMeeting3, createdMeeting4);
             _dataContext.SaveChanges();
@@ -299,6 +346,8 @@ namespace tl121pet.Tests
                     Person = createdPerson,
                     FollowUpIsSended = false,
                     MeetingId = createdMeeting.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 },
                 new Meeting()
                 {
@@ -307,6 +356,8 @@ namespace tl121pet.Tests
                     Person = createdPerson,
                     FollowUpIsSended = false,
                     MeetingId = createdMeeting2.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 },
                 new Meeting()
                 {
@@ -315,6 +366,8 @@ namespace tl121pet.Tests
                     Person = createdPerson2,
                     FollowUpIsSended = false,
                     MeetingId= createdMeeting3.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 },
                 new Meeting()
                 {
@@ -322,7 +375,9 @@ namespace tl121pet.Tests
                     PersonId = createdPerson2.PersonId,
                     Person = createdPerson2,
                     FollowUpIsSended = false,
-                    MeetingId = createdMeeting4.MeetingId
+                    MeetingId = createdMeeting4.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 }
             };
 
@@ -344,6 +399,14 @@ namespace tl121pet.Tests
             DateTime meetingDate = DateTime.Now;
             DateTime meetingDate2 = DateTime.Now.AddDays(-1);
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -381,6 +444,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting2 = new Meeting()
             {
@@ -388,6 +452,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting3 = new Meeting()
             {
@@ -395,6 +460,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson2.PersonId,
                 Person = createdPerson2,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting4 = new Meeting()
             {
@@ -402,6 +468,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson2.PersonId,
                 Person = createdPerson2,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2, createdMeeting3, createdMeeting4);
             _dataContext.SaveChanges();
@@ -416,6 +483,8 @@ namespace tl121pet.Tests
                     Person = createdPerson,
                     FollowUpIsSended = false,
                     MeetingId = createdMeeting.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 },
                 new Meeting()
                 {
@@ -424,6 +493,8 @@ namespace tl121pet.Tests
                     Person = createdPerson,
                     FollowUpIsSended = false,
                     MeetingId = createdMeeting2.MeetingId,
+                    User = user,
+                    UserId = user.Id,
                 },
             };
 
@@ -483,6 +554,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime meetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -510,6 +589,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -522,6 +602,8 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = false,
                 MeetingId = createdMeeting.MeetingId,
+                User = user,
+                UserId = user.Id,
             };
 
             //Act
@@ -557,6 +639,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime meetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -584,6 +674,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -596,6 +687,7 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = true,
                 MeetingId = createdMeeting.MeetingId,
+                UserId = user.Id,
             };
 
             Meeting expectedMeeting = new Meeting()
@@ -605,6 +697,7 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = true,
                 MeetingId = createdMeeting.MeetingId,
+                UserId = user.Id,
             };
 
             //Act
@@ -672,6 +765,14 @@ namespace tl121pet.Tests
             DateTime plannedMeetingDate = DateTime.Now;
             DateTime plannedMeetingDate2 = DateTime.Now.AddDays(-1);
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -698,6 +799,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting2 = new Meeting()
             {
@@ -705,6 +807,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             _dataContext.Meetings.AddRange(createdMeeting2, createdMeeting);
             _dataContext.SaveChanges();
@@ -716,6 +819,7 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = false,
                 MeetingId = createdMeeting.MeetingId,
+                UserId = user.Id,
             };
 
             //Act
@@ -736,6 +840,14 @@ namespace tl121pet.Tests
             DateTime plannedMeetingDate = DateTime.Now;
             DateTime plannedMeetingDate2 = DateTime.Now.AddDays(-1);
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -762,6 +874,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -804,6 +917,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -830,6 +951,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -890,6 +1012,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -916,6 +1046,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -963,6 +1094,14 @@ namespace tl121pet.Tests
             DateTime plannedMeetingDate = DateTime.Now;
             Guid notExistNoteId = new Guid();
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -989,6 +1128,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1020,6 +1160,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1046,6 +1194,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1094,6 +1243,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1120,6 +1277,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1176,6 +1334,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1202,6 +1368,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1224,6 +1391,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1250,6 +1425,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1298,6 +1474,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1324,6 +1508,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1348,6 +1533,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1374,6 +1567,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1431,6 +1625,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1457,6 +1659,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1501,6 +1704,14 @@ namespace tl121pet.Tests
             DateTime plannedMeetingDate = DateTime.Now;
             Guid notExistGoalId = new Guid();
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1527,6 +1738,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1557,6 +1769,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1583,6 +1803,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1630,6 +1851,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1656,6 +1885,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1707,6 +1937,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1733,6 +1971,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1755,6 +1994,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1781,6 +2028,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1820,6 +2068,14 @@ namespace tl121pet.Tests
             DateTime plannedMeetingDate = DateTime.Now;
             Guid notExistGoalId = Guid.NewGuid();
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -1846,6 +2102,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -1870,6 +2127,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime meetingDate = DateTime.Now;
             DateTime meetingDate2 = DateTime.Now.AddDays(+1);
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
 
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
@@ -1899,6 +2164,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting2 = new Meeting()
             {
@@ -1907,6 +2173,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2);
             _dataContext.SaveChanges();
@@ -1919,6 +2186,8 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = false,
                 MeetingId = createdMeeting2.MeetingId,
+                User = user,
+                UserId = user.Id,
             };
 
             //Act
@@ -1978,6 +2247,14 @@ namespace tl121pet.Tests
             DateTime meetingDate = DateTime.Now;
             DateTime actualMeetingDate = DateTime.Now.AddHours(5);
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -2005,6 +2282,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -2019,6 +2297,8 @@ namespace tl121pet.Tests
                 Person = createdPerson,
                 FollowUpIsSended = true,
                 MeetingId = createdMeeting.MeetingId,
+                User = user,
+                UserId = user.Id,
             };
 
             //Act
@@ -2087,6 +2367,14 @@ namespace tl121pet.Tests
             DateTime meetingDate = DateTime.Now;
             DateTime meetingDate2 = DateTime.Now.AddDays(+1);
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -2115,6 +2403,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             Meeting createdMeeting2 = new Meeting()
             {
@@ -2123,6 +2412,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
             _dataContext.Meetings.AddRange(createdMeeting, createdMeeting2);
             _dataContext.SaveChanges();
@@ -2146,6 +2436,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime meetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -2174,6 +2472,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -2195,6 +2494,14 @@ namespace tl121pet.Tests
             //Arrange
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
 
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
@@ -2222,6 +2529,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -2258,6 +2566,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson2.PersonId,
                 Person = createdPerson2,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting2);
@@ -2309,6 +2618,14 @@ namespace tl121pet.Tests
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
             DateTime plannedMeetingDate = DateTime.Now;
 
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
             _dataContext.ProjectTeams.Add(sourseTeam);
             Grade testGrade = new Grade
             {
@@ -2335,6 +2652,7 @@ namespace tl121pet.Tests
                 PersonId = createdPerson.PersonId,
                 Person = createdPerson,
                 FollowUpIsSended = false,
+                UserId = user.Id,
             };
 
             _dataContext.Meetings.Add(createdMeeting);
@@ -2345,105 +2663,6 @@ namespace tl121pet.Tests
 
             //Assert
             resultNotes.Should().BeEmpty();
-        }
-
-        /// <summary>
-        /// проверяем, что  GetFactMeetingDateByIdAsync возвращает верную дату проведения встречи по её идентификатору
-        /// </summary>
-        [Fact]
-        public async void GetFactMeetingDateByIdAsync_ShouldReturnCorrectDateTime()
-        {
-            //Arrange
-            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
-            //очень важно пожать только дату, т.к. при сохранении в БД могут теряться тысячные секунды и тест завалится 100%, хотя у нас нет таких критериев к точности
-            DateTime plannedMeetingDate = DateTime.Now.Date;
-            DateTime actualMeetingDate = DateTime.Now.Date;
-
-            _dataContext.ProjectTeams.Add(sourseTeam);
-            Grade testGrade = new Grade
-            {
-                GradeId = 1,
-                GradeName = "Junior"
-            };
-            _dataContext.Grades.Add(testGrade);
-            _dataContext.SaveChanges();
-            Person createdPerson = new Person()
-            {
-                Email = "1111@test.com",
-                FirstName = "Eric",
-                LastName = "Cripke",
-                GradeId = testGrade.GradeId,
-                ShortName = "Rick",
-                SurName = "Rickson",
-                Grade = testGrade
-            };
-            _dataContext.People.Add(createdPerson);
-            _dataContext.SaveChanges();
-            Meeting createdMeeting = new Meeting()
-            {
-                MeetingPlanDate = plannedMeetingDate,
-                MeetingDate = actualMeetingDate,
-                PersonId = createdPerson.PersonId,
-                Person = createdPerson,
-                FollowUpIsSended = false,
-            };
-
-            _dataContext.Meetings.Add(createdMeeting);
-            _dataContext.SaveChanges();
-
-            //Act
-            DateTime? result = await _meetingService.GetFactMeetingDateByIdAsync(createdMeeting.MeetingId);
-
-            //Assert
-            result.Should().Be(actualMeetingDate);
-        }
-
-        /// <summary>
-        /// проверяем, что  GetFactMeetingDateByIdAsync возвращает пустую дату, если встреча не была проведена
-        /// </summary>
-        [Fact]
-        public async void GetFactMeetingDateByIdAsync_ShouldReturnEmptyDateTimeIfItNotProcessed()
-        {
-            //Arrange
-            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
-            DateTime plannedMeetingDate = DateTime.Now;
-
-            _dataContext.ProjectTeams.Add(sourseTeam);
-            Grade testGrade = new Grade
-            {
-                GradeId = 1,
-                GradeName = "Junior"
-            };
-            _dataContext.Grades.Add(testGrade);
-            _dataContext.SaveChanges();
-            Person createdPerson = new Person()
-            {
-                Email = "1111@test.com",
-                FirstName = "Eric",
-                LastName = "Cripke",
-                GradeId = testGrade.GradeId,
-                ShortName = "Rick",
-                SurName = "Rickson",
-                Grade = testGrade
-            };
-            _dataContext.People.Add(createdPerson);
-            _dataContext.SaveChanges();
-            Meeting createdMeeting = new Meeting()
-            {
-                MeetingPlanDate = plannedMeetingDate,
-                PersonId = createdPerson.PersonId,
-                Person = createdPerson,
-                FollowUpIsSended = false,
-            };
-
-            _dataContext.Meetings.Add(createdMeeting);
-            _dataContext.SaveChanges();
-
-            //Act
-            DateTime? result = await _meetingService.GetFactMeetingDateByIdAsync(createdMeeting.MeetingId);
-
-            //Assert
-            result.Should().BeNull();
         }
         #endregion MeetingProcessing
     }

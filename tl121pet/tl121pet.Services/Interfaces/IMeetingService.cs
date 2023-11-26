@@ -1,4 +1,5 @@
-﻿using tl121pet.Entities.Models;
+﻿using tl121pet.Entities.DTO;
+using tl121pet.Entities.Models;
 
 namespace tl121pet.Services.Interfaces
 {
@@ -14,7 +15,7 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteMeetingAsync(Guid id);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);
         public Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate);
-        public Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId);
+        public Task<List<TaskDTO>> GetTasksByUserId(long userId);
         #endregion Meetings
 
         #region MeetingNotes
@@ -30,6 +31,7 @@ namespace tl121pet.Services.Interfaces
         public Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal);
         public Task DeleteGoalAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);
+        [Obsolete]
         public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);
         public Task CompleteGoalAsync(Guid goalId);
         #endregion MeetingGoals
