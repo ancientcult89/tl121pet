@@ -11,6 +11,7 @@ namespace tl121pet.Services.Interfaces
         public Task<List<Meeting>> GetMeetingsByUserIdAsync(long userId, long? personId);
         public Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId);
         public Task<Meeting> CreateMeetingAsync(Meeting m);
+        public Task<Meeting> CreateCurrentMeetingByPersonIdAsync(long userId, long personId);
         public Task<Meeting> UpdateMeetingAsync(Meeting mtdto);
         public Task DeleteMeetingAsync(Guid id);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);

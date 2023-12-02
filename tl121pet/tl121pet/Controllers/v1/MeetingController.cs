@@ -39,6 +39,12 @@ namespace tl121pet.Controllers.v1
             return await _application.CreateMeetingAsync(newMeeting);
         }
 
+        [HttpPost("{personId}")]
+        public async Task<ActionResult<Meeting>> CreateMeetingForProcessing(long personId)
+        {
+            return await _application.CreateMeetingByPersonIdAsync(personId);
+        }
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Meeting>> UpdateMeeting([FromBody] MeetingDTO meeting)
         {

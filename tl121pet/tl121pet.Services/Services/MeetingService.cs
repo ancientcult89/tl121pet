@@ -28,6 +28,22 @@ namespace tl121pet.Services.Services
             return newMeeting;
         }
 
+        public async Task<Meeting> CreateCurrentMeetingByPersonIdAsync(long userId, long personId)
+        {
+            Meeting newMeeting = new Meeting() { 
+                PersonId = personId,
+                UserId = userId,
+                MeetingPlanDate = DateTime.Now.Date,
+            };
+            await CheckDuplicatedMeetingAsync(newMeeting);
+
+            newMeeting.MeetingGoals = default;
+            newMeeting.MeetingNotes = default;
+            _dataContext.Meetings.Add(newMeeting);
+            await _dataContext.SaveChangesAsync();
+            return newMeeting;
+        }
+
         public async Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people)
         {
             List<Meeting> meetingsByPerson = new List<Meeting>();

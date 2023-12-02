@@ -206,5 +206,14 @@ namespace tl121pet.Services.Services
                 newMeeting.UserId = (long)userId;
             return await _meetingService.CreateMeetingAsync(newMeeting);
         }
+
+        public async Task<Meeting> CreateMeetingByPersonIdAsync(long personId)
+        {
+            long? userId = _authService.GetMyUserId();
+            if (userId == null)
+                throw new DataFoundException("User not found");
+
+            return await _meetingService.CreateCurrentMeetingByPersonIdAsync((long)userId, personId);
+        }
     }
 }
