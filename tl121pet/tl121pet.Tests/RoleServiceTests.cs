@@ -12,7 +12,7 @@ using Xunit;
 
 namespace tl121pet.Tests
 {
-    public class RoleServiceTests
+    public class RoleServiceTests : IDisposable
     {
         private readonly DataContext _dataContext;
         private readonly IRoleService _roleService;
@@ -27,6 +27,10 @@ namespace tl121pet.Tests
             _dataContext.Database.EnsureDeleted();
             _dataContext.Database.EnsureCreated();
             _roleService = new RoleService(_dataContext);
+        }
+        public void Dispose()
+        {
+            _dataContext.Database.EnsureDeleted();
         }
 
         /// <summary>

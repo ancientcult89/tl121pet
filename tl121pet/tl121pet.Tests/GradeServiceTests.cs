@@ -12,7 +12,7 @@ using Xunit;
 
 namespace tl121pet.Tests
 {
-    public class GradeServiceTests
+    public class GradeServiceTests : IDisposable
     {
         private readonly DataContext _dataContext;
         private readonly IGradeService _gradeService;
@@ -27,6 +27,10 @@ namespace tl121pet.Tests
             _dataContext.Database.EnsureDeleted();
             _dataContext.Database.EnsureCreated();
             _gradeService = new GradeService(_dataContext);
+        }
+        public void Dispose()
+        {
+            _dataContext.Database.EnsureDeleted();
         }
 
         /// <summary>

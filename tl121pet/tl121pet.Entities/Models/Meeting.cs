@@ -12,6 +12,8 @@ namespace tl121pet.Entities.Models
 
         public long PersonId { get; set; }
         public Person Person { get; set; }
+        public long UserId { get; set; }
+        public User User { get; set; }
 
         public List<MeetingGoal> MeetingGoals { get; set; }
         public List<MeetingNote> MeetingNotes { get; set; }

@@ -30,13 +30,19 @@ namespace tl121pet.Controllers.v1
         [HttpGet("{id}")]
         public async Task<ActionResult<Meeting>> GetMeetingById(Guid id)
         {
-            return await _meetingService.GetMeetingByIdAsync(id);
+            return await _meetingService.GetMeetingByIdMeetingAsync(id);
         }
 
         [HttpPost]
         public async Task<ActionResult<Meeting>> CreateMeeting([FromBody] MeetingDTO newMeeting)
         {
-            return await _meetingService.CreateMeetingAsync(newMeeting.ToEntity());
+            return await _application.CreateMeetingAsync(newMeeting);
+        }
+
+        [HttpPost("{personId}")]
+        public async Task<ActionResult<Meeting>> CreateMeetingForProcessing(long personId)
+        {
+            return await _application.CreateMeetingByPersonIdAsync(personId);
         }
 
         [HttpPut("{id}")]

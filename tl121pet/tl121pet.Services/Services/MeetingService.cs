@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -27,6 +28,22 @@ namespace tl121pet.Services.Services
             return newMeeting;
         }
 
+        public async Task<Meeting> CreateCurrentMeetingByPersonIdAsync(long userId, long personId)
+        {
+            Meeting newMeeting = new Meeting() { 
+                PersonId = personId,
+                UserId = userId,
+                MeetingPlanDate = DateTime.Now.Date,
+            };
+            await CheckDuplicatedMeetingAsync(newMeeting);
+
+            newMeeting.MeetingGoals = default;
+            newMeeting.MeetingNotes = default;
+            _dataContext.Meetings.Add(newMeeting);
+            await _dataContext.SaveChangesAsync();
+            return newMeeting;
+        }
+
         public async Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people)
         {
             List<Meeting> meetingsByPerson = new List<Meeting>();
@@ -37,14 +54,22 @@ namespace tl121pet.Services.Services
             return meetingsByPerson;
         }
         
-        public async Task<Meeting> GetMeetingByIdAsync(Guid id)
+        public async Task<Meeting> GetMeetingByIdMeetingAsync(Guid id)
         {
             return await _dataContext.Meetings.FindAsync(id) ?? throw new DataFoundException("Meeting not found");
         }
 
+        public async Task<List<Meeting>> GetMeetingsByUserIdAsync(long userId, long? personId)
+        {
+            return await _dataContext.Meetings
+                .Include(mt => mt.Person)
+                .Where(m => m.UserId == userId && (personId == null || m.PersonId == personId))
+                .ToListAsync();
+        }
+
         public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)
         {
-            Meeting modifiedMeeting = await GetMeetingByIdAsync(editedMeeting.MeetingId);
+            Meeting modifiedMeeting = await GetMeetingByIdMeetingAsync(editedMeeting.MeetingId);
             await CheckDuplicatedMeetingAsync(editedMeeting);
 
             _dataContext.Entry(modifiedMeeting).CurrentValues.SetValues(editedMeeting);
@@ -54,7 +79,7 @@ namespace tl121pet.Services.Services
 
         public async Task DeleteMeetingAsync(Guid id)
         {
-            Meeting meetingTypeToDelete = await GetMeetingByIdAsync(id);
+            Meeting meetingTypeToDelete = await GetMeetingByIdMeetingAsync(id);
 
             _dataContext.Meetings.Remove(meetingTypeToDelete);
             await _dataContext.SaveChangesAsync();
@@ -65,7 +90,7 @@ namespace tl121pet.Services.Services
         #region Note
         public async Task<MeetingNote> AddNoteAsync(MeetingNote newNote)
         {
-            Meeting processingMeeting = await GetMeetingByIdAsync(newNote.MeetingId);
+            Meeting processingMeeting = await GetMeetingByIdMeetingAsync(newNote.MeetingId);
 
             _dataContext.MeetingNotes.Add(newNote);
             await _dataContext.SaveChangesAsync();
@@ -105,7 +130,7 @@ namespace tl121pet.Services.Services
         #region Goal
         public async Task<MeetingGoal> AddGoalAsync(MeetingGoal newGoal)
         {
-            Meeting meeting = await GetMeetingByIdAsync(newGoal.MeetingId);
+            Meeting meeting = await GetMeetingByIdMeetingAsync(newGoal.MeetingId);
 
             _dataContext.MeetingGoals.Add(newGoal);
             await _dataContext.SaveChangesAsync();
@@ -153,7 +178,7 @@ namespace tl121pet.Services.Services
 
         public async Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate)
         {
-            Meeting meeting = await GetMeetingByIdAsync(meetingId);
+            Meeting meeting = await GetMeetingByIdMeetingAsync(meetingId);
             if (meeting != null)
             {
                 meeting.FollowUpIsSended = true;
@@ -173,6 +198,7 @@ namespace tl121pet.Services.Services
             return previousMeeting?.MeetingId;
         }
 
+        [Obsolete]
         public async Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId)
         {
             List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
@@ -192,15 +218,29 @@ namespace tl121pet.Services.Services
 
             return meetingGoals;
         }
-
-        public async Task<DateTime?> GetFactMeetingDateByIdAsync(Guid meetingId)
-        {
-            return await _dataContext.Meetings
-                .Where(m => m.MeetingId == meetingId)
-                .Select(m => m.MeetingDate)
-                .FirstOrDefaultAsync();
-        }
         #endregion MeetingProcessing
+
+        #region Tasks
+        public async Task<List<TaskDTO>> GetTasksByUserId(long userId)
+        {
+            List<TaskDTO> tasks = await (
+                from g in _dataContext.MeetingGoals
+                join m in _dataContext.Meetings on g.MeetingId equals m.MeetingId
+                join p in _dataContext.People on m.PersonId equals p.PersonId
+                where m.UserId == userId
+                select new TaskDTO {
+                    MeetingGoalId = g.MeetingGoalId,
+                    IsCompleted = g.IsCompleted,
+                    MeetingGoalDescription = g.MeetingGoalDescription,
+                    PersonName = p.LastName + " " + p.FirstName + " " + p.SurName,
+                    PersonId = p.PersonId,
+                    FactDate = m.MeetingDate
+                }
+            ).ToListAsync();
+
+            return tasks;
+        }
+        #endregion
 
         private async Task<List<Meeting>> GetMeetingsByPersonIdAsync(long personId)
         {

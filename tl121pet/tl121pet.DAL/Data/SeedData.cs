@@ -9,7 +9,7 @@ namespace tl121pet.DAL.Data
         public static void SeedDatabase(DataContext dataContext)
         {
             dataContext.Database.Migrate();
-            if (dataContext.People.Count() == 0)
+            if (dataContext.ProjectTeams.Count() == 0)
             {
                 ProjectTeam pt1 = new ProjectTeam() { ProjectTeamName = "САБПЭК" };
                 ProjectTeam pt2 = new ProjectTeam() { ProjectTeamName = "УРВП" };
