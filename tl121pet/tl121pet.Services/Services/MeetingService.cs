@@ -221,13 +221,13 @@ namespace tl121pet.Services.Services
         #endregion MeetingProcessing
 
         #region Tasks
-        public async Task<List<TaskDTO>> GetTasksByUserId(long userId)
+        public async Task<List<TaskDTO>> GetTasksByUserId(long userId, long? personId)
         {
             List<TaskDTO> tasks = await (
                 from g in _dataContext.MeetingGoals
                 join m in _dataContext.Meetings on g.MeetingId equals m.MeetingId
                 join p in _dataContext.People on m.PersonId equals p.PersonId
-                where m.UserId == userId
+                where m.UserId == userId && (personId == null || p.PersonId == personId )
                 select new TaskDTO {
                     MeetingGoalId = g.MeetingGoalId,
                     IsCompleted = g.IsCompleted,

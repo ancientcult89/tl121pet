@@ -111,7 +111,7 @@ namespace tl121pet.Services.Services
             if(userId == null)
                 return taskList;
 
-            taskList = await _meetingService.GetTasksByUserId((long)userId);
+            taskList = await _meetingService.GetTasksByUserId((long)userId, personId);
 
             return taskList;
         }

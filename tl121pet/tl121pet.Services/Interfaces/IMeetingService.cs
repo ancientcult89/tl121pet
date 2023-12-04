@@ -16,7 +16,7 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteMeetingAsync(Guid id);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);
         public Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate);
-        public Task<List<TaskDTO>> GetTasksByUserId(long userId);
+        public Task<List<TaskDTO>> GetTasksByUserId(long userId, long? personId);
         #endregion Meetings
 
         #region MeetingNotes
