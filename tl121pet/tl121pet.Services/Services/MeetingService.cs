@@ -227,7 +227,7 @@ namespace tl121pet.Services.Services
                 from g in _dataContext.MeetingGoals
                 join m in _dataContext.Meetings on g.MeetingId equals m.MeetingId
                 join p in _dataContext.People on m.PersonId equals p.PersonId
-                where m.UserId == userId && (personId == null || p.PersonId == personId )
+                where m.UserId == userId && (personId == null || p.PersonId == personId ) && g.IsCompleted == false
                 select new TaskDTO {
                     MeetingGoalId = g.MeetingGoalId,
                     IsCompleted = g.IsCompleted,
