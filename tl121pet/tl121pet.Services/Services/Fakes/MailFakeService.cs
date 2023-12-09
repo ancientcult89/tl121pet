@@ -5,9 +5,10 @@ namespace tl121pet.Services.Services.Fakes
 {
     public class MailFakeService : IMailService
     {
-        public void SendMailAsync(MailRequest mail)
+        public async Task SendMailAsync(MailRequest mail)
         {
-            return;
+            Task emptyTask = Task.CompletedTask;
+            await emptyTask;
         }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace tl121pet.Controllers.v1
+namespace tl121pet.Controllers
 {
     [Authorize]
     [ApiController]

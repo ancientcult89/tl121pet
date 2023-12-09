@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -59,12 +60,35 @@ namespace tl121pet.Services.Services
             return await _dataContext.Meetings.FindAsync(id) ?? throw new DataFoundException("Meeting not found");
         }
 
+        [Obsolete]
         public async Task<List<Meeting>> GetMeetingsByUserIdAsync(long userId, long? personId)
         {
             return await _dataContext.Meetings
                 .Include(mt => mt.Person)
                 .Where(m => m.UserId == userId && (personId == null || m.PersonId == personId))
                 .ToListAsync();
+        }
+
+        public async Task<MeetingPagedResponseDTO> GetMeetingsByUserIdAsync(MeetingPagedRequestDTO request, long userId)
+        {
+            List<Meeting> meetings = await _dataContext.Meetings
+                .Include(mt => mt.Person)
+                .Where(m => m.UserId == userId && (request.PersonId == null || m.PersonId == request.PersonId))
+                .OrderBy(m => m.MeetingId)
+                .Skip((request.CurrentPage - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .ToListAsync();
+            PageInfo pageInfo = new PageInfo() { 
+                CurrentPage = request.CurrentPage,
+                ItemsPerPage = request.PageSize,
+                TotalItems = request.PersonId == null
+                    ? _dataContext.Meetings.Where(m => m.UserId == userId).Count()
+                    : _dataContext.Meetings.Where(m => m.UserId == userId && m.PersonId == request.PersonId).Count()
+            };
+            return new MeetingPagedResponseDTO() { 
+                Meetings = meetings, 
+                PageInfo = pageInfo 
+            };
         }
 
         public async Task<Meeting> UpdateMeetingAsync(Meeting editedMeeting)

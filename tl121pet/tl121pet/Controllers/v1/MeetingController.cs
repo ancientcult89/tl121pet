@@ -20,7 +20,7 @@ namespace tl121pet.Controllers.v1
         }
 
         #region Meeting
-
+        [Obsolete]
         [HttpGet]
         public async Task<ActionResult<List<Meeting>>> GetMeetingList(long? personId = null)
         {

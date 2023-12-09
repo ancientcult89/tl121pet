@@ -14,7 +14,7 @@ namespace tl121pet.Services.Services
         { 
             _settings = mailSettings.Value;
         }
-        public async void SendMailAsync(MailRequest mail)
+        public async Task SendMailAsync(MailRequest mail)
         {
             MimeMessage email = BuildMailMessage(mail);
             using var smtp = ConfigureMailServer(_settings);
