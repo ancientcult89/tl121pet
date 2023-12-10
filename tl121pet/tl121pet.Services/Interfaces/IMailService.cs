@@ -4,6 +4,6 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IMailService
     {
-        public void SendMailAsync(MailRequest mail);
+        public Task SendMailAsync(MailRequest mail);
     }
 }

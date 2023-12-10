@@ -8,7 +8,11 @@ namespace tl121pet.Services.Interfaces
         #region Meetings
         public Task<List<Meeting>> GetMeetingsByPersonAsync(List<Person> people);
         public Task<Meeting> GetMeetingByIdMeetingAsync(Guid id);
+
+        [Obsolete]
         public Task<List<Meeting>> GetMeetingsByUserIdAsync(long userId, long? personId);
+
+        public Task<MeetingPagedResponseDTO> GetMeetingsByUserIdAsync(MeetingPagedRequestDTO request, long userId);
         public Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId);
         public Task<Meeting> CreateMeetingAsync(Meeting m);
         public Task<Meeting> CreateCurrentMeetingByPersonIdAsync(long userId, long personId);

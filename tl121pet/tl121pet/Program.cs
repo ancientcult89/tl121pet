@@ -101,22 +101,7 @@ app.Use(async (context, next) =>
     }
     await next();
 });
-//app.UseStatusCodePages(async context =>
-//{
-//    var response = context.HttpContext.Response;
-//    var request = context.HttpContext.Request;
-//    bool isAnauthorized = response.StatusCode == (int)HttpStatusCode.Unauthorized;
-//    bool isForbidden = response.StatusCode == (int)HttpStatusCode.Forbidden;
 
-//    //дл€ что бы новый фронт не получал ответ в виде разметки со страниццей запрета доступа, 
-//    //необходимо проверить Headers.Origin. ¬ случае внешнего фронтенда там будет заполнен хост,
-//    //в случае MVC - будет пустота
-//    //временное решение, пока не будет полностью выпелен старый фронтенд
-//    bool isMVC = context.HttpContext.Request.Headers.Origin.ToString() == "";
-
-//    if ((isAnauthorized || isForbidden) && isMVC)
-//        response.Redirect("/auth/AccessDenied");
-//});
 app.UseAuthentication();
 app.UseAuthorization();
 #endregion auth

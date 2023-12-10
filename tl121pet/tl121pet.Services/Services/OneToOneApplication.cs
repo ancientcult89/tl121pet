@@ -83,7 +83,7 @@ namespace tl121pet.Services.Services
             MailRequest mail = await GenerateFollowUpMailRequest(meetingId, personId);
             try
             {
-                _mailService.SendMailAsync(mail);
+                await _mailService.SendMailAsync(mail);
                 await MarkAsSendedFollowUpAsync(meetingId);
             }
             catch { throw new Exception("e-mail service is unavalable"); }
@@ -116,6 +116,7 @@ namespace tl121pet.Services.Services
             return taskList;
         }
 
+        [Obsolete]
         public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
         {
             List<Meeting> meetingsRes = new List<Meeting>();
@@ -125,11 +126,18 @@ namespace tl121pet.Services.Services
                 meetingsRes = await _meetingService.GetMeetingsByUserIdAsync((long)userId, personId);
             }
 
-            return meetingsRes
-                .OrderByDescending(m => m.Person.LastName)
-                .OrderByDescending(m => m.MeetingPlanDate)
-                .OrderByDescending(m => m.MeetingDate)
-                .ToList();
+            return meetingsRes;
+        }
+        public async Task<MeetingPagedResponseDTO> GetPagedMeetingsAsync(MeetingPagedRequestDTO request)
+        {
+            MeetingPagedResponseDTO response = new MeetingPagedResponseDTO();
+            long? userId = _authService.GetMyUserId();
+            if (userId != null)
+            {
+                response = await _meetingService.GetMeetingsByUserIdAsync(request, (long)userId);
+            }
+
+            return response;
         }
 
         public async Task ChangeLocaleAsync(int localeId)
