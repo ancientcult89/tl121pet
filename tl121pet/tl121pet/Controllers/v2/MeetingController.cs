@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
+using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -17,7 +18,7 @@ namespace tl121pet.Controllers.v2
         }
 
         [HttpGet]
-        public async Task<ActionResult<MeetingPagedResponseDTO>> GetMeetingList([FromBody] MeetingPagedRequestDTO requestDTO)
+        public async Task<ActionResult<MeetingPagedResponseDTO>> GetMeetingList([FromQuery] MeetingPagedRequestDTO requestDTO)
         {
             return await _application.GetPagedMeetingsAsync(requestDTO);
         }

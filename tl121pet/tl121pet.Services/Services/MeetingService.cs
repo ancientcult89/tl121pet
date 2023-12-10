@@ -78,13 +78,15 @@ namespace tl121pet.Services.Services
                 .Skip((request.CurrentPage - 1) * request.PageSize)
                 .Take(request.PageSize)
                 .ToListAsync();
-            PageInfo pageInfo = new PageInfo() { 
+
+            PageInfoResponse pageInfo = new PageInfoResponse() { 
                 CurrentPage = request.CurrentPage,
                 ItemsPerPage = request.PageSize,
                 TotalItems = request.PersonId == null
                     ? _dataContext.Meetings.Where(m => m.UserId == userId).Count()
                     : _dataContext.Meetings.Where(m => m.UserId == userId && m.PersonId == request.PersonId).Count()
             };
+
             return new MeetingPagedResponseDTO() { 
                 Meetings = meetings, 
                 PageInfo = pageInfo 

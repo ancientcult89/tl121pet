@@ -5,7 +5,7 @@ namespace tl121pet.Entities.DTO
 {
     public class MeetingPagedResponseDTO
     {
-        public List<Meeting> Meetings = new List<Meeting>();
-        public PageInfo PageInfo { get; set; }
+        public List<Meeting> Meetings { get; set; }
+        public PageInfoResponse PageInfo { get; set; }
     }
 }
