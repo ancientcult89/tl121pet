@@ -83,7 +83,7 @@ namespace tl121pet.Services.Services
             MailRequest mail = await GenerateFollowUpMailRequest(meetingId, personId);
             try
             {
-                _mailService.SendMailAsync(mail);
+                await _mailService.SendMailAsync(mail);
                 await MarkAsSendedFollowUpAsync(meetingId);
             }
             catch { throw new Exception("e-mail service is unavalable"); }
