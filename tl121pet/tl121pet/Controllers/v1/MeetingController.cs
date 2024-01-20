@@ -48,7 +48,7 @@ namespace tl121pet.Controllers.v1
         [HttpPut("{id}")]
         public async Task<ActionResult<Meeting>> UpdateMeeting([FromBody] MeetingDTO meeting)
         {
-            return await _meetingService.UpdateMeetingAsync(meeting.ToEntity());
+            return await _application.UpdateMeetingAsync(meeting);
         }
 
         [HttpDelete("{id}")]
