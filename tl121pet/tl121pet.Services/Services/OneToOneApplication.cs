@@ -103,7 +103,7 @@ namespace tl121pet.Services.Services
             return people;
         }
 
-        public async Task<List<TaskDTO>> GetTaskListAsync(long? personId)
+        public async Task<List<TaskDTO>> GetTaskListAsync(long? personId, Guid? currentMeetingId)
         {
             List<TaskDTO> taskList = new List<TaskDTO>();
             long? userId = _authService.GetMyUserId();
@@ -111,7 +111,7 @@ namespace tl121pet.Services.Services
             if(userId == null)
                 return taskList;
 
-            taskList = await _meetingService.GetTasksByUserId((long)userId, personId);
+            taskList = await _meetingService.GetTasksByUserId((long)userId, personId, currentMeetingId);
 
             return taskList;
         }
@@ -142,31 +142,27 @@ namespace tl121pet.Services.Services
 
         public async Task ChangeLocaleAsync(int localeId)
         {
-            long? userId = _authService.GetMyUserId();
-            if (userId == null)
-                return;
-
-            await _authService.ChangeLocaleByUserIdAsync((long)userId, (Locale)localeId);
+            await _authService.ChangeLocaleByUserIdAsync(GetUserId(), (Locale)localeId);
         }
 
         public async Task<Meeting> CreateMeetingAsync(MeetingDTO meetingDto)
         {
             Meeting newMeeting = meetingDto.ToEntity();
-            long? userId = _authService.GetMyUserId();
-            if (userId == null)
-                throw new DataFoundException("User not found");
-
-                newMeeting.UserId = (long)userId;
+            newMeeting.UserId = GetUserId();
             return await _meetingService.CreateMeetingAsync(newMeeting);
+        }
+
+        public async Task<Meeting> UpdateMeetingAsync(MeetingDTO meetingDto)
+        {
+            Meeting newMeeting = meetingDto.ToEntity();
+
+            newMeeting.UserId = GetUserId();
+            return await _meetingService.UpdateMeetingAsync(newMeeting);
         }
 
         public async Task<Meeting> CreateMeetingByPersonIdAsync(long personId)
         {
-            long? userId = _authService.GetMyUserId();
-            if (userId == null)
-                throw new DataFoundException("User not found");
-
-            return await _meetingService.CreateCurrentMeetingByPersonIdAsync((long)userId, personId);
+            return await _meetingService.CreateCurrentMeetingByPersonIdAsync(GetUserId(), personId);
         }
 
         private async Task<string> GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(Guid meetingId)
@@ -222,6 +218,15 @@ namespace tl121pet.Services.Services
             mail.Subject = "1-2-1 Follow-up";
 
             return mail;
+        }
+
+        private long GetUserId()
+        {
+            long? userId = _authService.GetMyUserId();
+            if (userId == null)
+                throw new DataFoundException("User not found");
+            else 
+                return (long)userId;
         }
     }
 }

@@ -17,9 +17,9 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<TaskDTO>>> GetTaskList(long? personId = null)
+        public async Task<ActionResult<List<TaskDTO>>> GetTaskList(Guid? currentMeetingId, long? personId = null)
         {
-            return await  _application.GetTaskListAsync(personId);
+            return await  _application.GetTaskListAsync(personId, currentMeetingId);
         }
 
         [HttpPost]
