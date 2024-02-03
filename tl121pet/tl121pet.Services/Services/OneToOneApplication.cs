@@ -61,8 +61,9 @@ namespace tl121pet.Services.Services
             string result = "";
             Person person = await _personService.GetPersonByIdAsync(personId);
             result = $"{(!String.IsNullOrEmpty(person.ShortName) ? person.ShortName : person.FirstName)}, спасибо за проведённую встречу!\n\n";
-            result += await GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(meetingId);
-            result += "\n\nЕсли что-то упустил - обязательно сообщи мне об этом!";
+            result += await GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(meetingId, personId);
+            result += await GetPreviousMeetingUnclosedGoals(meetingId, personId);
+            result += "Если что-то упустил - обязательно сообщи мне об этом!";
             return result;
         }
 
@@ -165,11 +166,10 @@ namespace tl121pet.Services.Services
             return await _meetingService.CreateCurrentMeetingByPersonIdAsync(GetUserId(), personId);
         }
 
-        private async Task<string> GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(Guid meetingId)
+        private async Task<string> GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(Guid meetingId, long personId)
         {
             string result = "";
             result += await GetMeetingFeedbackRequiredNotesByMeetingId(meetingId);
-            result += "\n\n";
             result += await GetMeetingGoalsByMeetingId(meetingId);
 
             return result;
@@ -177,18 +177,19 @@ namespace tl121pet.Services.Services
 
         private async Task<string> GetMeetingFeedbackRequiredNotesByMeetingId(Guid meetingId)
         {
-            string meetingGoals = "";
+            string meetingNotes = "";
             List<MeetingNote> notes = await _meetingService.GetMeetingFeedbackRequiredNotesAsync(meetingId);
             if (notes.Count() > 0)
             {
-                meetingGoals += "На встрече обсудили:\n";
+                meetingNotes += "На встрече обсудили:\n";
                 foreach (MeetingNote mn in notes)
                 {
-                    meetingGoals += $"\t- {mn.MeetingNoteContent};\n";
+                    meetingNotes += $"\t- {mn.MeetingNoteContent};\n";
                 }
+                meetingNotes += "\n\n";
             }
 
-            return meetingGoals;
+            return meetingNotes;
         }
 
         private async Task<string> GetMeetingGoalsByMeetingId(Guid meetingId)
@@ -202,6 +203,24 @@ namespace tl121pet.Services.Services
                 {
                     meetingGoals += $"\t- {mg.MeetingGoalDescription};\n";
                 }
+                meetingGoals += "\n\n";
+            }
+
+            return meetingGoals;
+        }
+
+        private async Task<string> GetPreviousMeetingUnclosedGoals(Guid meetingId, long personId)
+        {
+            string meetingGoals = "";
+            List<MeetingGoal> goals = await _meetingService.GetPrevoiusUnclosedMeetingGoalsAsync(meetingId, personId);
+            if (goals.Count() > 0)
+            {
+                meetingGoals += "С прошлой встречи остались цели:\n";
+                foreach (MeetingGoal mg in goals)
+                {
+                    meetingGoals += $"\t- {mg.MeetingGoalDescription};\n";
+                }
+                meetingGoals += "\n\n";
             }
 
             return meetingGoals;

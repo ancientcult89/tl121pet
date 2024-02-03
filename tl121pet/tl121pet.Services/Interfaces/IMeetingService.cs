@@ -36,6 +36,7 @@ namespace tl121pet.Services.Interfaces
         public Task<MeetingGoal> UpdateGoalAsync(MeetingGoal meetingGoal);
         public Task DeleteGoalAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);
+        public Task<List<MeetingGoal>> GetPrevoiusUnclosedMeetingGoalsAsync(Guid id, long personId);
         [Obsolete]
         public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);
         public Task CompleteGoalAsync(Guid goalId);
