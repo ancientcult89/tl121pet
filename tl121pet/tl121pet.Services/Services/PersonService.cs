@@ -74,7 +74,7 @@ namespace tl121pet.Services.Services
             var people = (
                 from p in _dataContext.People
                 join up in _dataContext.ProjectMembers on p.PersonId equals up.PersonId
-                where up.ProjectTeamId == projectTeam
+                where up.ProjectTeamId == projectTeam && p.IsArchive == false
                 group p by new
                 {
                     p.PersonId,
@@ -119,7 +119,7 @@ namespace tl121pet.Services.Services
 
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
-            return await _dataContext.People.Include(p => p.Grade).ToListAsync();
+            return await _dataContext.People.Include(p => p.Grade).Where(p => p.IsArchive == false).ToListAsync();
         }
 
         private async Task CheckPersonExistsByEmail(Person person)

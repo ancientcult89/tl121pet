@@ -108,8 +108,8 @@ namespace tl121pet.Services.Services
         {
             try
             {
-                _personService.ArchivePersonAsync(personId);
-                //_meetingService.CompleteAllPersonGoalsAsync(personId);
+                await _personService.ArchivePersonAsync(personId);
+                await _meetingService.CompleteAllPersonGoalsAsync(personId);
             }
             catch { throw new Exception("Failed to archive employee"); }
         }
