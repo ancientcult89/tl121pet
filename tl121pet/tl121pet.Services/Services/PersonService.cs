@@ -55,6 +55,13 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
+        public async Task ArchivePersonAsync(long id)
+        {
+            Person archivedPerson = await GetPersonByIdAsync(id);
+            archivedPerson.IsArchive = true;
+            await _dataContext.SaveChangesAsync();
+        }
+
         public async Task<Person> GetPersonByIdAsync(long id)
         {
             return await _dataContext.People.FindAsync(id) ?? throw new DataFoundException("Person not found");

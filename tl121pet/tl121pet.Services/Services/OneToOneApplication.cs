@@ -104,6 +104,16 @@ namespace tl121pet.Services.Services
             return people;
         }
 
+        public async Task ArchivePersonAsync(long personId)
+        {
+            try
+            {
+                _personService.ArchivePersonAsync(personId);
+                //_meetingService.CompleteAllPersonGoalsAsync(personId);
+            }
+            catch { throw new Exception("Failed to archive employee"); }
+        }
+
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId, Guid? currentMeetingId)
         {
             List<TaskDTO> taskList = new List<TaskDTO>();

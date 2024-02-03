@@ -40,6 +40,7 @@ namespace tl121pet.Services.Interfaces
         [Obsolete]
         public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);
         public Task CompleteGoalAsync(Guid goalId);
+        public Task CompleteAllPersonGoalsAsync(long personId);
         #endregion MeetingGoals
     }
 }

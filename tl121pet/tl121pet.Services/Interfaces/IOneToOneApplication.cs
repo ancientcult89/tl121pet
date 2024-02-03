@@ -20,5 +20,6 @@ namespace tl121pet.Services.Interfaces
         public Task<Meeting> CreateMeetingAsync(MeetingDTO m);
         public Task<Meeting> UpdateMeetingAsync(MeetingDTO m);
         public Task<Meeting> CreateMeetingByPersonIdAsync(long personId);
+        public Task ArchivePersonAsync(long id);
     }
 }

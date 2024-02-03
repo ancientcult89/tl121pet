@@ -197,6 +197,24 @@ namespace tl121pet.Services.Services
             _dataContext.MeetingGoals.Update(goal);
             await _dataContext.SaveChangesAsync();
         }
+
+        public async Task CompleteAllPersonGoalsAsync(long personId)
+        {
+            List<Person> filteredPeople = new List<Person>();
+
+            var uncompletedGoals = (
+                from mg in _dataContext.MeetingGoals
+                join m in _dataContext.Meetings on mg.MeetingId equals m.MeetingId
+                where m.PersonId == personId && mg.IsCompleted == false
+                select mg
+            ).ToListAsync();
+
+            foreach (var goal in await uncompletedGoals)
+            {
+                goal.IsCompleted = true;
+            }
+            await _dataContext.SaveChangesAsync();
+        }
         #endregion Goal
 
         #region MeetingProcessing
