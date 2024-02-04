@@ -46,9 +46,16 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeletePerson(int id)
+        public async Task<ActionResult> DeletePerson(long id)
         {
             await _personService.DeletePersonAsync(id);
+            return Ok();
+        }
+
+        [HttpPut("archive/{id}")]
+        public async Task<ActionResult> ArchivePerson(long id)
+        {
+            await _application.ArchivePersonAsync(id);
             return Ok();
         }
     }

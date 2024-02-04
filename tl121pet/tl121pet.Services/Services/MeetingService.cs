@@ -184,11 +184,35 @@ namespace tl121pet.Services.Services
                 .Where(p => p.MeetingId == id)
                 .ToListAsync();
         }
+        public async Task<List<MeetingGoal>> GetPrevoiusUnclosedMeetingGoalsAsync(Guid id, long personId)
+        {
+            return await _dataContext.MeetingGoals
+                .Where(m => m.MeetingId != id && m.IsCompleted == false)
+                .ToListAsync();
+        }
         public async Task CompleteGoalAsync(Guid goalId)
         {
             MeetingGoal goal = await GetMeetingGoalByIdAsync(goalId);
             goal.IsCompleted = true;
             _dataContext.MeetingGoals.Update(goal);
+            await _dataContext.SaveChangesAsync();
+        }
+
+        public async Task CompleteAllPersonGoalsAsync(long personId)
+        {
+            List<Person> filteredPeople = new List<Person>();
+
+            var uncompletedGoals = (
+                from mg in _dataContext.MeetingGoals
+                join m in _dataContext.Meetings on mg.MeetingId equals m.MeetingId
+                where m.PersonId == personId && mg.IsCompleted == false
+                select mg
+            ).ToListAsync();
+
+            foreach (var goal in await uncompletedGoals)
+            {
+                goal.IsCompleted = true;
+            }
             await _dataContext.SaveChangesAsync();
         }
         #endregion Goal
