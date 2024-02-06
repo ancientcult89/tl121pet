@@ -184,11 +184,15 @@ namespace tl121pet.Services.Services
                 .Where(p => p.MeetingId == id)
                 .ToListAsync();
         }
-        public async Task<List<MeetingGoal>> GetPrevoiusUnclosedMeetingGoalsAsync(Guid id, long personId)
+        public async Task<List<MeetingGoal>> GetPrevoiusUnclosedMeetingGoalsAsync(Guid meetingId, long personId)
         {
-            return await _dataContext.MeetingGoals
-                .Where(m => m.MeetingId != id && m.IsCompleted == false)
-                .ToListAsync();
+            var uncompletedGoals = (
+                from mg in _dataContext.MeetingGoals
+                join m in _dataContext.Meetings on mg.MeetingId equals m.MeetingId
+                where m.PersonId == personId && mg.IsCompleted == false && m.MeetingId != meetingId
+                select mg
+            ).ToListAsync();
+            return await uncompletedGoals;
         }
         public async Task CompleteGoalAsync(Guid goalId)
         {
