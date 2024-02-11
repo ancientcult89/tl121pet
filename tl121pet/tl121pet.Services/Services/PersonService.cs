@@ -69,11 +69,10 @@ namespace tl121pet.Services.Services
 
         public async Task<List<Person>> GetPeopleFilteredByProjectAsync(long projectTeam)
         {
-            List<Person> filteredPeople = new List<Person>();
-
-            var people = (
+            var filteredPeople = (
                 from p in _dataContext.People
                 join up in _dataContext.ProjectMembers on p.PersonId equals up.PersonId
+                join gr in _dataContext.Grades on p.GradeId equals gr.GradeId
                 where up.ProjectTeamId == projectTeam && p.IsArchive == false
                 group p by new
                 {
@@ -84,8 +83,10 @@ namespace tl121pet.Services.Services
                     p.Email,
                     p.ShortName,
                     p.GradeId,
+                    p.IsArchive,
+                    gr.GradeName
                 } into g
-                select new
+                select new Person
                 {
                     PersonId = g.Key.PersonId,
                     FirstName = g.Key.FirstName,
@@ -94,27 +95,15 @@ namespace tl121pet.Services.Services
                     Email = g.Key.Email,
                     ShortName = g.Key.ShortName,
                     GradeId = g.Key.GradeId,
+                    IsArchive = g.Key.IsArchive,
+                    Grade = new Grade { 
+                        GradeId = g.Key.GradeId,
+                        GradeName = g.Key.GradeName,
+                    }
                 }
             ).ToListAsync();
 
-            //TODO: не очень оптимальная штука, можно выше получить грейд
-            foreach (var p in await people)
-            {
-                Person person = new Person()
-                {
-                    PersonId = p.PersonId,
-                    Email = p.Email,
-                    FirstName = p.FirstName,
-                    LastName = p.LastName,
-                    SurName = p.SurName,
-                    ShortName = p.ShortName,
-                    GradeId = p.GradeId,
-                    Grade = _dataContext.Grades.Where(g => g.GradeId == p.GradeId).FirstOrDefault()
-                };
-                filteredPeople.Add(person);
-            }
-
-            return filteredPeople;
+            return await filteredPeople;
         }
 
         public async Task<List<Person>> GetPeopleWithGradeAsync()
