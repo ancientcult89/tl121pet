@@ -10,6 +10,7 @@ namespace tl121pet.Services.Interfaces
         public Task<List<OneToOneDeadline>> GetDeadLinesAsync();
         public Task<string> GenerateFollowUpAsync(Guid meetingId, long personId);
         public Task SendFollowUpAsync(Guid meetingId, long personId);
+        public Task SendGreetingMailAsync(long personId);
         public Task ChangeLocaleAsync(int localeId);
         public Task<string> GetPreviousMeetingNoteAndGoalsAsync(Guid meetingId, long personId);
         public Task<List<Person>> GetPeopleFilteredByProjectsAsync();

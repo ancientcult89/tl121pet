@@ -58,5 +58,12 @@ namespace tl121pet.Controllers.v1
             await _application.ArchivePersonAsync(id);
             return Ok();
         }
+
+        [HttpPut("testmail/{personId}")]
+        public async Task<ActionResult> SendTestMail(long personId)
+        {
+            await _application.SendGreetingMailAsync(personId);
+            return Ok();
+        }
     }
 }
