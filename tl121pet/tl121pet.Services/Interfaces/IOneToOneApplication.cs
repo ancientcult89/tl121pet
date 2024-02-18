@@ -15,8 +15,6 @@ namespace tl121pet.Services.Interfaces
         public Task<string> GetPreviousMeetingNoteAndGoalsAsync(Guid meetingId, long personId);
         public Task<List<Person>> GetPeopleFilteredByProjectsAsync();
         public Task<List<TaskDTO>> GetTaskListAsync(long? personId, Guid? currentMeetingId);
-        [Obsolete]
-        public Task<List<Meeting>> GetMeetingsAsync(long? personId);
         public Task<MeetingPagedResponseDTO> GetPagedMeetingsAsync(MeetingPagedRequestDTO request);
         public Task<Meeting> CreateMeetingAsync(MeetingDTO m);
         public Task<Meeting> UpdateMeetingAsync(MeetingDTO m);

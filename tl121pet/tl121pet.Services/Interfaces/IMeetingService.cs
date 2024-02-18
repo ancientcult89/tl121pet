@@ -20,7 +20,7 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteMeetingAsync(Guid id);
         public Task<Meeting?> GetLastOneToOneByPersonIdAsync(long personId);
         public Task<Meeting> MarkAsSendedFollowUpAndFillActualDateAsync(Guid meetingId, DateTime actualDate);
-        public Task<List<TaskDTO>> GetTasksByUserId(long userId, long? personId, Guid? currentMeetingId);
+        public Task<List<TaskDTO>> GetTasksByUserIdAsync(long userId, long? personId, Guid? currentMeetingId);
         #endregion Meetings
 
         #region MeetingNotes
@@ -37,8 +37,6 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteGoalAsync(Guid id);
         public Task<List<MeetingGoal>> GetMeetingGoalsAsync(Guid id);
         public Task<List<MeetingGoal>> GetPrevoiusUnclosedMeetingGoalsAsync(Guid meetingId, long personId);
-        [Obsolete]
-        public Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId);
         public Task CompleteGoalAsync(Guid goalId);
         public Task CompleteAllPersonGoalsAsync(long personId);
         #endregion MeetingGoals

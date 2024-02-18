@@ -132,23 +132,11 @@ namespace tl121pet.Services.Services
             if(userId == null)
                 return taskList;
 
-            taskList = await _meetingService.GetTasksByUserId((long)userId, personId, currentMeetingId);
+            taskList = await _meetingService.GetTasksByUserIdAsync((long)userId, personId, currentMeetingId);
 
             return taskList;
         }
 
-        [Obsolete]
-        public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
-        {
-            List<Meeting> meetingsRes = new List<Meeting>();
-            long? userId = _authService.GetMyUserId();
-            if (userId != null)
-            {
-                meetingsRes = await _meetingService.GetMeetingsByUserIdAsync((long)userId, personId);
-            }
-
-            return meetingsRes;
-        }
         public async Task<MeetingPagedResponseDTO> GetPagedMeetingsAsync(MeetingPagedRequestDTO request)
         {
             MeetingPagedResponseDTO response = new MeetingPagedResponseDTO();

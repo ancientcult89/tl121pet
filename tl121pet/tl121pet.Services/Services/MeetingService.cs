@@ -204,8 +204,6 @@ namespace tl121pet.Services.Services
 
         public async Task CompleteAllPersonGoalsAsync(long personId)
         {
-            List<Person> filteredPeople = new List<Person>();
-
             var uncompletedGoals = (
                 from mg in _dataContext.MeetingGoals
                 join m in _dataContext.Meetings on mg.MeetingId equals m.MeetingId
@@ -251,31 +249,10 @@ namespace tl121pet.Services.Services
                 .FirstOrDefaultAsync();
             return previousMeeting?.MeetingId;
         }
-
-        [Obsolete]
-        public async Task<List<MeetingGoal>> GetMeetingGoalsByPersonAsync(long personId)
-        {
-            List<MeetingGoal> meetingGoals = new List<MeetingGoal>();
-
-            var searchedGoals = (
-                from goals in _dataContext.MeetingGoals
-                join meeting in _dataContext.Meetings on goals.MeetingId equals meeting.MeetingId
-                join peop in _dataContext.People on meeting.PersonId equals peop.PersonId
-                where peop.PersonId == personId
-                select goals
-            ).ToListAsync();
-
-            foreach (MeetingGoal goal in await searchedGoals)
-            {
-                meetingGoals.Add(goal);
-            }
-
-            return meetingGoals;
-        }
         #endregion MeetingProcessing
 
         #region Tasks
-        public async Task<List<TaskDTO>> GetTasksByUserId(long userId, long? personId, Guid? currentMeetingId)
+        public async Task<List<TaskDTO>> GetTasksByUserIdAsync(long userId, long? personId, Guid? currentMeetingId)
         {
             List<TaskDTO> tasks = await (
                 from g in _dataContext.MeetingGoals
