@@ -88,7 +88,17 @@ namespace tl121pet.Services.Services
                 await MarkAsSendedFollowUpAsync(meetingId);
             }
             catch { throw new Exception("e-mail service is unavalable"); }
-        }        
+        }
+
+        public async Task SendGreetingMailAsync(long personId)
+        {
+            MailRequest mail = await GeneratGreetingMailRequest(personId);
+            try
+            {
+                await _mailService.SendMailAsync(mail);
+            }
+            catch { throw new Exception("e-mail service is unavalable"); }
+        }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
         {
@@ -122,23 +132,11 @@ namespace tl121pet.Services.Services
             if(userId == null)
                 return taskList;
 
-            taskList = await _meetingService.GetTasksByUserId((long)userId, personId, currentMeetingId);
+            taskList = await _meetingService.GetTasksByUserIdAsync((long)userId, personId, currentMeetingId);
 
             return taskList;
         }
 
-        [Obsolete]
-        public async Task<List<Meeting>> GetMeetingsAsync(long? personId)
-        {
-            List<Meeting> meetingsRes = new List<Meeting>();
-            long? userId = _authService.GetMyUserId();
-            if (userId != null)
-            {
-                meetingsRes = await _meetingService.GetMeetingsByUserIdAsync((long)userId, personId);
-            }
-
-            return meetingsRes;
-        }
         public async Task<MeetingPagedResponseDTO> GetPagedMeetingsAsync(MeetingPagedRequestDTO request)
         {
             MeetingPagedResponseDTO response = new MeetingPagedResponseDTO();
@@ -245,6 +243,26 @@ namespace tl121pet.Services.Services
             mail.ToEmail = destinationPerson.Email;
             mail.Body = await GenerateFollowUpAsync(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";
+
+            return mail;
+        }
+
+        private async Task<string> GenerateGreetingMessageAsync(Person targetPerson)
+        {
+            string result = "";
+            result = $"{(!String.IsNullOrEmpty(targetPerson.ShortName) ? targetPerson.ShortName : targetPerson.FirstName)}, привет!\n\n";
+            result += $"Это приветственное письмо, которое необходимо, что бы убедиться, что именно ты ({targetPerson.LastName + " " + targetPerson.FirstName}) получишь follow-up!\n";
+            result += $"При получении этого письма дай мне знать, что оно получено\n";
+            return result;
+        }
+
+        private async Task<MailRequest> GeneratGreetingMailRequest(long personId)
+        {
+            MailRequest mail = new MailRequest();
+            Person destinationPerson = await _personService.GetPersonByIdAsync(personId);
+            mail.ToEmail = destinationPerson.Email;
+            mail.Body = await GenerateGreetingMessageAsync(destinationPerson);
+            mail.Subject = "Greeting message";
 
             return mail;
         }

@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using tl121pet.DAL.Data;
+using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
@@ -2114,6 +2116,139 @@ namespace tl121pet.Tests
             //Assert
             await result.Should().ThrowAsync<DataFoundException>().WithMessage("Goal not found");
         }
+
+        /// <summary>
+        /// проверяем, что CompleteAllPersonGoalsAsync завершит все цели сотрудника (в случае его архивации)
+        /// </summary>
+        [Fact]
+        public async void CompleteAllPersonGoalsAsync_ShouldCompleteAllPersonsGoal()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+                UserId = user.Id,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test",
+            };
+            MeetingGoal createdMeetingGoal2 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test2",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal, createdMeetingGoal2);
+            _dataContext.SaveChanges();
+
+
+            Meeting createdMeeting2 = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+                UserId = user.Id,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting2);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal3 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                MeetingGoalDescription = "test3",
+            };
+            MeetingGoal createdMeetingGoal4 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                MeetingGoalDescription = "test4",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal3, createdMeetingGoal4);
+            _dataContext.SaveChanges();
+
+            List<MeetingGoal> expectedGoals = new List<MeetingGoal>()
+            {
+                new MeetingGoal
+                {
+                    MeetingGoalId = createdMeetingGoal.MeetingGoalId,
+                    MeetingGoalDescription = "test",
+                    IsCompleted = true,
+                    MeetingId = createdMeeting.MeetingId,
+                },
+                new MeetingGoal
+                {
+                    MeetingGoalId = createdMeetingGoal2.MeetingGoalId,
+                    MeetingGoalDescription = "test2",
+                    IsCompleted = true,
+                    MeetingId = createdMeeting.MeetingId,
+                },
+                new MeetingGoal
+                {
+                    MeetingGoalId = createdMeetingGoal3.MeetingGoalId,
+                    MeetingGoalDescription = "test3",
+                    IsCompleted = true,
+                    MeetingId = createdMeeting2.MeetingId,
+                },
+                new MeetingGoal
+                {
+                    MeetingGoalId = createdMeetingGoal4.MeetingGoalId,
+                    MeetingGoalDescription = "test4",
+                    IsCompleted = true,
+                    MeetingId = createdMeeting2.MeetingId,
+                }
+            };
+
+            long? personId = createdPerson.PersonId;
+
+            //Act
+            await _meetingService.CompleteAllPersonGoalsAsync((long)personId);
+            List<MeetingGoal> resultGoals = await _dataContext.MeetingGoals
+                .Where(mg => mg.MeetingId == createdMeeting.MeetingId || mg.MeetingId == createdMeeting2.MeetingId)
+                .ToListAsync();
+
+            //Assert
+            resultGoals.Should().BeEquivalentTo(expectedGoals);
+        }
         #endregion MeetinGoal
 
         #region MeetingProcessing
@@ -2484,12 +2619,14 @@ namespace tl121pet.Tests
             //Assert
             resultMeetingId.Should().BeNull();
         }
+        #endregion MeetingProcessing
 
+        #region Tasks
         /// <summary>
-        /// проверяем, что GetMeetingGoalsByPersonAsync возвращает цели по конкретному оструднику
+        /// проверяем, что GetTasksByUserIdAsync возвращает цели по конкретному пользователю
         /// </summary>
         [Fact]
-        public async void GetMeetingGoalsByPersonAsync_ShouldReturnPersonsGoals()
+        public async void GetTasksByUserIdAsync_ShouldReturnAllPersonsGoals()
         {
             //Arrange
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
@@ -2575,44 +2712,71 @@ namespace tl121pet.Tests
             MeetingGoal createdMeetingGoal3 = new MeetingGoal()
             {
                 MeetingId = createdMeeting2.MeetingId,
-                MeetingGoalDescription = "test",
+                MeetingGoalDescription = "test3",
             };
             MeetingGoal createdMeetingGoal4 = new MeetingGoal()
             {
                 MeetingId = createdMeeting2.MeetingId,
-                MeetingGoalDescription = "test2",
+                MeetingGoalDescription = "test4",
             };
             _dataContext.MeetingGoals.AddRange(createdMeetingGoal3, createdMeetingGoal4);
             _dataContext.SaveChanges();
 
-            List<MeetingGoal> expectedGoals = new List<MeetingGoal>()
+            List<TaskDTO> expectedGoals = new List<TaskDTO>()
             {
-                new MeetingGoal
+                new TaskDTO
                 {
-                    MeetingId = createdMeeting.MeetingId,
-                    MeetingGoalDescription = "test",
                     MeetingGoalId = createdMeetingGoal.MeetingGoalId,
+                    MeetingGoalDescription = "test",
+                    IsCompleted = createdMeetingGoal.IsCompleted,
+                    PersonName = createdPerson.LastName + " " + createdPerson.FirstName + " " + createdPerson.SurName,
+                    PersonId = createdPerson.PersonId,
+                    FactDate = createdMeeting.MeetingDate
                 },
-                new MeetingGoal()
+                new TaskDTO
                 {
-                    MeetingId = createdMeeting.MeetingId,
-                    MeetingGoalDescription = "test2",
                     MeetingGoalId = createdMeetingGoal2.MeetingGoalId,
+                    MeetingGoalDescription = "test2",
+                    IsCompleted = createdMeetingGoal2.IsCompleted,
+                    PersonName = createdPerson.LastName + " " + createdPerson.FirstName + " " + createdPerson.SurName,
+                    PersonId = createdPerson.PersonId,
+                    FactDate = createdMeeting.MeetingDate
+                },
+                new TaskDTO
+                {
+                    MeetingGoalId = createdMeetingGoal3.MeetingGoalId,
+                    MeetingGoalDescription = "test3",
+                    IsCompleted = createdMeetingGoal3.IsCompleted,
+                    PersonName = createdPerson2.LastName + " " + createdPerson2.FirstName + " " + createdPerson2.SurName,
+                    PersonId = createdPerson2.PersonId,
+                    FactDate = createdMeeting2.MeetingDate
+                },
+                new TaskDTO
+                {
+                    MeetingGoalId = createdMeetingGoal4.MeetingGoalId,
+                    MeetingGoalDescription = "test4",
+                    IsCompleted = createdMeetingGoal4.IsCompleted,
+                    PersonName = createdPerson2.LastName + " " + createdPerson2.FirstName + " " + createdPerson2.SurName,
+                    PersonId = createdPerson2.PersonId,
+                    FactDate = createdMeeting2.MeetingDate
                 }
             };
 
+            long? nullPersonId = null;
+            Guid? nullMeetingId = null;
+
             //Act
-            List<MeetingGoal> resultNotes = await _meetingService.GetMeetingGoalsByPersonAsync(createdPerson.PersonId);
+            List<TaskDTO> resultGoals = await _meetingService.GetTasksByUserIdAsync(user.Id, nullPersonId, nullMeetingId);
 
             //Assert
-            resultNotes.Should().BeEquivalentTo(expectedGoals);
+            resultGoals.Should().BeEquivalentTo(expectedGoals);
         }
 
         /// <summary>
-        /// проверяем, что GetMeetingGoalsByPersonAsync возвращает пустую коллекцию, если не было заведено целей во время встречи
+        /// проверяем, что GetTasksByUserIdAsync возвращает цели по конкретному сотруднику в рамках встреч конкретного пользователя
         /// </summary>
         [Fact]
-        public async void GetMeetingGoalsByPersonAsync_ShouldReturnEmptyCollectionIfGoalsNotExists()
+        public async void GetTasksByUserIdAsync_ShouldReturnConcretePersonsGoalsByPersonId()
         {
             //Arrange
             ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
@@ -2658,12 +2822,268 @@ namespace tl121pet.Tests
             _dataContext.Meetings.Add(createdMeeting);
             _dataContext.SaveChanges();
 
+            MeetingGoal createdMeetingGoal = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test",
+            };
+            MeetingGoal createdMeetingGoal2 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test2",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal, createdMeetingGoal2);
+            _dataContext.SaveChanges();
+
+            Person createdPerson2 = new Person()
+            {
+                Email = "1111@test2.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson2);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting2 = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson2.PersonId,
+                Person = createdPerson2,
+                FollowUpIsSended = false,
+                UserId = user.Id,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting2);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal3 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                MeetingGoalDescription = "test3",
+            };
+            MeetingGoal createdMeetingGoal4 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                MeetingGoalDescription = "test4",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal3, createdMeetingGoal4);
+            _dataContext.SaveChanges();
+
+            List<TaskDTO> expectedGoals = new List<TaskDTO>()
+            {
+                new TaskDTO
+                {
+                    MeetingGoalId = createdMeetingGoal.MeetingGoalId,
+                    MeetingGoalDescription = "test",
+                    IsCompleted = createdMeetingGoal.IsCompleted,
+                    PersonName = createdPerson.LastName + " " + createdPerson.FirstName + " " + createdPerson.SurName,
+                    PersonId = createdPerson.PersonId,
+                    FactDate = createdMeeting.MeetingDate
+                },
+                new TaskDTO
+                {
+                    MeetingGoalId = createdMeetingGoal2.MeetingGoalId,
+                    MeetingGoalDescription = "test2",
+                    IsCompleted = createdMeetingGoal2.IsCompleted,
+                    PersonName = createdPerson.LastName + " " + createdPerson.FirstName + " " + createdPerson.SurName,
+                    PersonId = createdPerson.PersonId,
+                    FactDate = createdMeeting.MeetingDate
+                }
+            };
+
+            long? personId = createdPerson.PersonId;
+            Guid? nullMeetingId = null;
+
             //Act
-            List<MeetingGoal> resultNotes = await _meetingService.GetMeetingGoalsByPersonAsync(createdPerson.PersonId);
+            List<TaskDTO> resultGoals = await _meetingService.GetTasksByUserIdAsync(user.Id, personId, nullMeetingId);
 
             //Assert
-            resultNotes.Should().BeEmpty();
+            resultGoals.Should().BeEquivalentTo(expectedGoals);
         }
-        #endregion MeetingProcessing
+
+        /// <summary>
+        /// проверяем, что GetTasksByUserIdAsync возвращает пустую коллекцию, если не было заведено целей во время встречи
+        /// </summary>
+        [Fact]
+        public async void GetTasksByUserIdAsync_ShouldReturnEmptyCollectionIfGoalsNotExists()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+                UserId = user.Id,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            long? nullPersonId = null;
+            Guid? nullMeetingId = null;
+
+            //Act
+            List<TaskDTO> resultGoals = await _meetingService.GetTasksByUserIdAsync(user.Id, nullPersonId, nullMeetingId);
+
+            //Assert
+            resultGoals.Should().BeEmpty();
+        }
+
+        /// <summary>
+        /// проверяем, что GetTasksByUserIdAsync не вернёт таски текущей встречи, а только предыдущие
+        /// </summary>
+        [Fact]
+        public async void GetTasksByUserIdAsync_DoNotReturnCurrentMeetingGoalsFilteringByMeetingId()
+        {
+            //Arrange
+            ProjectTeam sourseTeam = new ProjectTeam { ProjectTeamName = "Test" };
+            DateTime plannedMeetingDate = DateTime.Now;
+
+            User user = new User()
+            {
+                Email = "test@test.test",
+                UserName = "test",
+            };
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            _dataContext.ProjectTeams.Add(sourseTeam);
+            Grade testGrade = new Grade
+            {
+                GradeId = 1,
+                GradeName = "Junior"
+            };
+            _dataContext.Grades.Add(testGrade);
+            _dataContext.SaveChanges();
+            Person createdPerson = new Person()
+            {
+                Email = "1111@test.com",
+                FirstName = "Eric",
+                LastName = "Cripke",
+                GradeId = testGrade.GradeId,
+                ShortName = "Rick",
+                SurName = "Rickson",
+                Grade = testGrade
+            };
+            _dataContext.People.Add(createdPerson);
+            _dataContext.SaveChanges();
+            Meeting createdMeeting = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+                UserId = user.Id,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test",
+            };
+            MeetingGoal createdMeetingGoal2 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting.MeetingId,
+                MeetingGoalDescription = "test2",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal, createdMeetingGoal2);
+            _dataContext.SaveChanges();
+
+
+            Meeting createdMeeting2 = new Meeting()
+            {
+                MeetingPlanDate = plannedMeetingDate,
+                PersonId = createdPerson.PersonId,
+                Person = createdPerson,
+                FollowUpIsSended = false,
+                UserId = user.Id,
+            };
+
+            _dataContext.Meetings.Add(createdMeeting2);
+            _dataContext.SaveChanges();
+
+            MeetingGoal createdMeetingGoal3 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                MeetingGoalDescription = "test3",
+            };
+            MeetingGoal createdMeetingGoal4 = new MeetingGoal()
+            {
+                MeetingId = createdMeeting2.MeetingId,
+                MeetingGoalDescription = "test4",
+            };
+            _dataContext.MeetingGoals.AddRange(createdMeetingGoal3, createdMeetingGoal4);
+            _dataContext.SaveChanges();
+
+            List<TaskDTO> expectedGoals = new List<TaskDTO>()
+            {
+                new TaskDTO
+                {
+                    MeetingGoalId = createdMeetingGoal3.MeetingGoalId,
+                    MeetingGoalDescription = "test3",
+                    IsCompleted = createdMeetingGoal3.IsCompleted,
+                    PersonName = createdPerson.LastName + " " + createdPerson.FirstName + " " + createdPerson.SurName,
+                    PersonId = createdPerson.PersonId,
+                    FactDate = createdMeeting2.MeetingDate
+                },
+                new TaskDTO
+                {
+                    MeetingGoalId = createdMeetingGoal4.MeetingGoalId,
+                    MeetingGoalDescription = "test4",
+                    IsCompleted = createdMeetingGoal4.IsCompleted,
+                    PersonName = createdPerson.LastName + " " + createdPerson.FirstName + " " + createdPerson.SurName,
+                    PersonId = createdPerson.PersonId,
+                    FactDate = createdMeeting2.MeetingDate
+                }
+            };
+
+            long? personId = createdPerson.PersonId;
+            Guid? currentMeetingId = createdMeeting.MeetingId;
+
+            //Act
+            List<TaskDTO> resultGoals = await _meetingService.GetTasksByUserIdAsync(user.Id, personId, currentMeetingId);
+
+            //Assert
+            resultGoals.Should().BeEquivalentTo(expectedGoals);
+        }
+        #endregion Tasks
     }
 }

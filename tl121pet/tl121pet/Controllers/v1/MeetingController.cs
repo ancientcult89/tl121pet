@@ -20,13 +20,6 @@ namespace tl121pet.Controllers.v1
         }
 
         #region Meeting
-        [Obsolete]
-        [HttpGet]
-        public async Task<ActionResult<List<Meeting>>> GetMeetingList(long? personId = null)
-        {
-            return await _application.GetMeetingsAsync(personId);
-        }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Meeting>> GetMeetingById(Guid id)
         {
