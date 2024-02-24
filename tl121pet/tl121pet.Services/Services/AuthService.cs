@@ -14,21 +14,15 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService(IConfiguration configuration
+        , DataContext dataContext
+        , IHttpContextAccessor httpContextAccessor) : IAuthService
     {
-        private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private DataContext _dataContext;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private DataContext _dataContext = dataContext;
         public string Role { get; set; } = string.Empty;
 
-        public AuthService(IConfiguration configuration
-            , DataContext dataContext
-            , IHttpContextAccessor httpContextAccessor)
-        {
-            _configuration = configuration;
-            _dataContext = dataContext;
-            _httpContextAccessor = httpContextAccessor;
-        }
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
@@ -58,17 +52,30 @@ namespace tl121pet.Services.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            string secret = _configuration.GetSection("AppSettings:TokenSecret").Value;
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
             var token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: cred);
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            var jwt = new JwtSecurityTokenHandler();
 
-            return jwt;
+            string returnedToken = "";
+
+            try {
+                returnedToken = jwt.WriteToken(token);
+            }
+            catch (Exception ex)
+            { 
+                throw new Exception(ex.Message);
+            }
+
+            return returnedToken;
         }
 
         public long? GetMyUserId()

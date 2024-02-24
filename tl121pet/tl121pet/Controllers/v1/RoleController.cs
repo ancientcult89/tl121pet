@@ -1,19 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class RoleController : ApiController
+    public class RoleController(IRoleService roleService) : ApiController
     {
-        private readonly IRoleService _roleService;
-
-        public RoleController(IRoleService roleService)
-        {
-            _roleService = roleService;
-        }
+        private readonly IRoleService _roleService = roleService;
 
         [HttpGet]
         public async Task<ActionResult<List<Role>>> GetRoleList()

@@ -6,13 +6,9 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class RoleService : IRoleService
+    public class RoleService(DataContext dataContext) : IRoleService
     {
-        private DataContext _dataContext;
-        public RoleService(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
+        private DataContext _dataContext = dataContext;
         public async Task<List<Role>> GetRoleListAsync()
         {
             return await _dataContext.Roles.ToListAsync();

@@ -3,18 +3,15 @@ using tl121pet.Entities.DTO;
 using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class ProjectController : ApiController
+    public class ProjectController(IProjectService projectService) : ApiController
     {
-        private readonly IProjectService _projectService;
-        public ProjectController(IProjectService projectService)
-        {
-            _projectService = projectService;
-        }
+        private readonly IProjectService _projectService = projectService;
 
         #region ProjectsReference
         [HttpGet]

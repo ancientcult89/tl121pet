@@ -1,4 +1,5 @@
-﻿using tl121pet.Entities.Aggregate;
+﻿using MailKit;
+using tl121pet.Entities.Aggregate;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Infrastructure;
@@ -9,24 +10,16 @@ using tl121pet.Services.Interfaces;
 namespace tl121pet.Services.Services
 {
 
-    public class OneToOneApplication : IOneToOneApplication
-    {
-        private IPersonService _personService;
-        private IMeetingService _meetingService;
-        private IMailService _mailService;
-        private readonly IAuthService _authService;
-
-        public OneToOneApplication(
+    public class OneToOneApplication(
             IMeetingService meetingService,
-            IMailService mailService,
+            ITlMailService mailService,
             IPersonService personService,
-            IAuthService authService)
-        {
-            _meetingService = meetingService;
-            _mailService = mailService;
-            _personService = personService;
-            _authService = authService;
-        }
+            IAuthService authService) : IOneToOneApplication
+    {
+        private IPersonService _personService = personService;
+        private IMeetingService _meetingService = meetingService;
+        private ITlMailService _mailService = mailService;
+        private readonly IAuthService _authService = authService;
 
         public async Task<List<OneToOneDeadline>> GetDeadLinesAsync()
         {

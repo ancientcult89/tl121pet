@@ -6,13 +6,10 @@ namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class GradeController : ApiController
+    public class GradeController(IGradeService gradeService) : ApiController
     {
-        private IGradeService _gradeService;
-        public GradeController(IGradeService gradeService)
-        {
-            _gradeService = gradeService;
-        }
+        private IGradeService _gradeService = gradeService;
+
         [HttpGet]
         public async Task<ActionResult<List<Grade>>> GetGradeList()
         {
