@@ -15,8 +15,16 @@ using Swashbuckle.AspNetCore.Filters;
 using tl121pet.Middlwares;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
+bool useInMemoryFlag = false;
+if (builder.Configuration.GetSection("AppSettings:UseInMemory").Value != "false")
+{
+    builder.Services.AddDbContext<DataContext>(o => o.UseInMemoryDatabase("testDB"));
+    useInMemoryFlag = true;
+}
+else
+{ 
+    builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("TeamLead_Db"), o => o.MigrationsAssembly("tl121pet")));
+}
 
 //auth
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -117,6 +125,8 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 var context = app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>();
-SeedData.SeedDatabase(context);
+var authService = app.Services.CreateScope().ServiceProvider.GetRequiredService<IAuthService>();
+CreatePasswordDelegate createPasswordDelegate = new CreatePasswordDelegate(authService.CreatePasswordHash);
+SeedData.SeedDatabase(context, useInMemoryFlag, createPasswordDelegate);
 
 app.Run();
