@@ -1,9 +1,12 @@
 # TeamLead Helper
 
 .env frontend config example:<br>
+```env
 REACT_APP_API_URL='http://localhost:80/'
+```
 
-teamleadhelperconfig.json example:<br>
+teamleadhelperconfig.json example:
+```json
 {
   "AppSettings": {
     "Token": "somesecretandhorrobletokenbooo"
@@ -24,9 +27,10 @@ teamleadhelperconfig.json example:<br>
     "Host": "mailserver",
     "Port": 465
   }
-}<br>
+}
+```
 
-all example configs are located in the folder ./configs_example
+all example configs are located in the folder [./configs_example](./configs_example)
 <br>
 
 
