@@ -51,6 +51,20 @@ namespace tl121pet.Controllers.v1
             }
         }
 
+        [HttpPost("recoverypassword")]
+        public async Task<ActionResult> RecoverPassword([FromBody] RecoverPasswordRequestDTO recoverPasswordRequest)
+        {
+            try
+            {
+                await _oneToOneApplication.RecoverPasswordAsync(recoverPasswordRequest);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [Authorize]
         [HttpPut("{id}/changepassword")]
         public async Task<ActionResult> ChangePassword([FromBody] ChangeUserPasswordRequestDTO changeUserPasswordRequest)

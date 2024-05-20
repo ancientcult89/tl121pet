@@ -5,10 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Text;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Infrastructure;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
@@ -137,15 +140,32 @@ namespace tl121pet.Services.Services
                 throw new Exception("User not found");
             if (VerifyPasswordHash(changeUserPasswordRequest.CurrentPassword, user.PasswordHash, user.PasswordSalt))
             {
-                CreatePasswordHash(changeUserPasswordRequest.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
-                user.PasswordHash = passwordHash;
-                user.PasswordSalt = passwordSalt;
-                await UpdateUserAsync(user);
+                await SaveNewPasswordAsync(changeUserPasswordRequest.NewPassword, user);
             }
             else
             {
                 throw new Exception("Wrong password");
             }
+        }
+
+        private async Task SaveNewPasswordAsync(string newPassword, User user)
+        {
+            CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            await UpdateUserAsync(user);
+        }
+
+        public async Task<string> RecoverPasswordAsync(string email)
+        {
+            try
+            {
+                User user = await GetUserByEmailAsync(email) ?? throw new DataFoundException("User not found");
+                string newPassword = GenerateRandomString(10);
+                await SaveNewPasswordAsync(newPassword, user);
+                return newPassword;
+            }
+            catch(Exception ex) { throw new Exception(ex.Message); }
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -252,5 +272,33 @@ namespace tl121pet.Services.Services
                 return string.Empty;
         }
         #endregion Role
+
+        public static string GenerateRandomString(int length)
+        {
+            const string pattern = "[A-Za-z]";
+            Random random = new Random();
+            StringBuilder result = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                char randomChar = GetRandomCharFromPattern(pattern, random);
+                result.Append(randomChar);
+            }
+
+            return result.ToString();
+        }
+
+        private static char GetRandomCharFromPattern(string pattern, Random random)
+        {
+            Regex regex = new Regex(pattern);
+            char randomChar;
+
+            do
+            {
+                randomChar = (char)random.Next(32, 127); // Генерируем случайный символ в диапазоне печатных символов ASCII
+            } while (!regex.IsMatch(randomChar.ToString()));
+
+            return randomChar;
+        }
     }
 }

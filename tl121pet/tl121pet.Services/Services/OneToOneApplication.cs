@@ -11,10 +11,10 @@ namespace tl121pet.Services.Services
 {
 
     public class OneToOneApplication(
-            IMeetingService meetingService,
-            ITlMailService mailService,
-            IPersonService personService,
-            IAuthService authService) : IOneToOneApplication
+        IMeetingService meetingService,
+        ITlMailService mailService,
+        IPersonService personService,
+        IAuthService authService) : IOneToOneApplication
     {
         private IPersonService _personService = personService;
         private IMeetingService _meetingService = meetingService;
@@ -74,7 +74,7 @@ namespace tl121pet.Services.Services
         //TODO: на вход должнен подаваться айдишка встречи и уже готовая почта
         public async Task SendFollowUpAsync(Guid meetingId, long personId)
         {
-            MailRequest mail = await GenerateFollowUpMailRequest(meetingId, personId);
+            MailRequest mail = await GenerateFollowUpMailRequestAsync(meetingId, personId);
             try
             {
                 await _mailService.SendMailAsync(mail);
@@ -229,13 +229,23 @@ namespace tl121pet.Services.Services
 
         private async Task MarkAsSendedFollowUpAsync(Guid meetingId) => await _meetingService.MarkAsSendedFollowUpAndFillActualDateAsync(meetingId, DateTime.Now);
 
-        private async Task<MailRequest> GenerateFollowUpMailRequest(Guid meetingId, long personId)
+        private async Task<MailRequest> GenerateFollowUpMailRequestAsync(Guid meetingId, long personId)
         {
             MailRequest mail = new MailRequest();
             Person destinationPerson = await _personService.GetPersonByIdAsync(personId);
             mail.ToEmail = destinationPerson.Email;
             mail.Body = await GenerateFollowUpAsync(meetingId, personId);
             mail.Subject = "1-2-1 Follow-up";
+
+            return mail;
+        }
+
+        private async Task<MailRequest> GeneratPasswordRecoveryMailAsync(string newPassword, string email)
+        {
+            MailRequest mail = new MailRequest();
+            mail.ToEmail = email;
+            mail.Body = $"Ваш новый пароль: {newPassword}";
+            mail.Subject = "Восстановление пароля";
 
             return mail;
         }
@@ -267,6 +277,17 @@ namespace tl121pet.Services.Services
                 throw new DataFoundException("User not found");
             else 
                 return (long)userId;
+        }
+
+        public async Task RecoverPasswordAsync(RecoverPasswordRequestDTO recoverPasswordRequest)
+        {            
+            string newPassword = await _authService.RecoverPasswordAsync(recoverPasswordRequest.Email);
+            MailRequest mail = await GeneratPasswordRecoveryMailAsync(newPassword, recoverPasswordRequest.Email);
+            try
+            {
+                await _mailService.SendMailAsync(mail);
+            }
+            catch { throw new Exception("e-mail service is unavalable"); }
         }
     }
 }

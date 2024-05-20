@@ -13,6 +13,7 @@ namespace tl121pet.Services.Interfaces
         public Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request);
         public Task<string> CreateTokenAsync(User user);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
+        public Task<string> RecoverPasswordAsync(string email);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public string Role { get; set; }
 
