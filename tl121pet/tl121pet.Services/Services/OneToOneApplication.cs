@@ -1,4 +1,5 @@
-﻿using MailKit;
+﻿using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 using tl121pet.Entities.Aggregate;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
@@ -14,17 +15,19 @@ namespace tl121pet.Services.Services
         IMeetingService meetingService,
         ITlMailService mailService,
         IPersonService personService,
+        IHttpContextAccessor httpContextAccessor,
         IAuthService authService) : IOneToOneApplication
     {
         private IPersonService _personService = personService;
         private IMeetingService _meetingService = meetingService;
         private ITlMailService _mailService = mailService;
         private readonly IAuthService _authService = authService;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
         public async Task<List<OneToOneDeadline>> GetDeadLinesAsync()
         {
             List<OneToOneDeadline> deadLines = new List<OneToOneDeadline>();
-            
+
             foreach (Person p in await GetPeopleFilteredByProjectsAsync())
             {
                 TimeSpan datediff = new TimeSpan();
@@ -69,9 +72,9 @@ namespace tl121pet.Services.Services
                 prevNotes = await GetMeetingFeedbackRequiredNotesByMeetingId((Guid)previousMeetingGuid);
             }
             return prevNotes;
-        }       
+        }
 
-        //TODO: на вход должнен подаваться айдишка встречи и уже готовая почта
+        //TODO: на вход должен подаваться айдишка встречи и уже готовая почта
         public async Task SendFollowUpAsync(Guid meetingId, long personId)
         {
             MailRequest mail = await GenerateFollowUpMailRequestAsync(meetingId, personId);
@@ -96,7 +99,7 @@ namespace tl121pet.Services.Services
         public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
         {
             List<Person> people = new List<Person>();
-            long? userId = _authService.GetMyUserId();
+            long? userId = GetMyUserId();
             List<ProjectTeam> projects = new List<ProjectTeam>();
             if (userId != null)
             {
@@ -120,9 +123,9 @@ namespace tl121pet.Services.Services
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId, Guid? currentMeetingId)
         {
             List<TaskDTO> taskList = new List<TaskDTO>();
-            long? userId = _authService.GetMyUserId();
+            long? userId = GetMyUserId();
 
-            if(userId == null)
+            if (userId == null)
                 return taskList;
 
             taskList = await _meetingService.GetTasksByUserIdAsync((long)userId, personId, currentMeetingId);
@@ -133,7 +136,7 @@ namespace tl121pet.Services.Services
         public async Task<MeetingPagedResponseDTO> GetPagedMeetingsAsync(MeetingPagedRequestDTO request)
         {
             MeetingPagedResponseDTO response = new MeetingPagedResponseDTO();
-            long? userId = _authService.GetMyUserId();
+            long? userId = GetMyUserId();
             if (userId != null)
             {
                 response = await _meetingService.GetMeetingsByUserIdAsync(request, (long)userId);
@@ -144,13 +147,13 @@ namespace tl121pet.Services.Services
 
         public async Task ChangeLocaleAsync(int localeId)
         {
-            await _authService.ChangeLocaleByUserIdAsync(GetUserId(), (Locale)localeId);
+            await _authService.ChangeLocaleByUserIdAsync(GetMyUserId(), (Locale)localeId);
         }
 
         public async Task<Meeting> CreateMeetingAsync(MeetingDTO meetingDto)
         {
             Meeting newMeeting = meetingDto.ToEntity();
-            newMeeting.UserId = GetUserId();
+            newMeeting.UserId = GetMyUserId();
             return await _meetingService.CreateMeetingAsync(newMeeting);
         }
 
@@ -158,13 +161,13 @@ namespace tl121pet.Services.Services
         {
             Meeting newMeeting = meetingDto.ToEntity();
 
-            newMeeting.UserId = GetUserId();
+            newMeeting.UserId = GetMyUserId();
             return await _meetingService.UpdateMeetingAsync(newMeeting);
         }
 
         public async Task<Meeting> CreateMeetingByPersonIdAsync(long personId)
         {
-            return await _meetingService.CreateCurrentMeetingByPersonIdAsync(GetUserId(), personId);
+            return await _meetingService.CreateCurrentMeetingByPersonIdAsync(GetMyUserId(), personId);
         }
 
         private async Task<string> GetMeetingFeedbackRequiredNotesAndGoalByMeetingId(Guid meetingId, long personId)
@@ -270,17 +273,20 @@ namespace tl121pet.Services.Services
             return mail;
         }
 
-        private long GetUserId()
+        private long GetMyUserId()
         {
-            long? userId = _authService.GetMyUserId();
-            if (userId == null)
+            var result = string.Empty;
+            if (_httpContextAccessor.HttpContext != null)
+            {
+                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+                return Convert.ToInt64(result);
+            }
+            else
                 throw new DataFoundException("User not found");
-            else 
-                return (long)userId;
         }
 
         public async Task RecoverPasswordAsync(RecoverPasswordRequestDTO recoverPasswordRequest)
-        {            
+        {
             string newPassword = await _authService.RecoverPasswordAsync(recoverPasswordRequest.Email);
             MailRequest mail = await GeneratPasswordRecoveryMailAsync(newPassword, recoverPasswordRequest.Email);
             try

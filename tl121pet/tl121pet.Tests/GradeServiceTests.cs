@@ -18,7 +18,7 @@ namespace tl121pet.Tests
         private readonly IGradeService _gradeService;
         public GradeServiceTests()
         {
-            var connectionString = "Server=host.docker.internal;Database=TLGradeTest;Port=49153;User Id=postgres;Password=postgrespw";
+            var connectionString = "Server=localhost;Database=TLGradeTest;Port=49154;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                 .UseNpgsql(connectionString)
                 .Options;

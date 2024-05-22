@@ -6,7 +6,6 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IAuthService
     {
-        public long? GetMyUserId();
         public Task RegisterAsync(UserRegisterRequestDTO request);
         public Task ChangePasswordAsync(ChangeUserPasswordRequestDTO changeUserPasswordRequest);
         public Task ChangeLocaleByUserIdAsync(long userId, Locale locale);

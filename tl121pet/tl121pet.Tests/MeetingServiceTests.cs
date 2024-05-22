@@ -19,7 +19,7 @@ namespace tl121pet.Tests
         private IMeetingService _meetingService;
         public MeetingServiceTests()
         {
-            var connectionString = "Server=host.docker.internal;Database=TLMeetingTest;Port=49153;User Id=postgres;Password=postgrespw";
+            var connectionString = "Server=localhost;Database=TLMeetingTest;Port=49154;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                 .UseNpgsql(connectionString)
                 .Options;

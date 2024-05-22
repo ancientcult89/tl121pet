@@ -13,6 +13,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using tl121pet.Middlwares;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 bool useInMemoryFlag = false;
@@ -27,6 +28,7 @@ else
 }
 
 //auth
+string secret = builder.Configuration.GetSection("AppSettings:TokenSecret").Value;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddCookie(opts => { opts.LoginPath = "/auth/Login"; })
     .AddJwtBearer(opts => {
@@ -34,7 +36,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         opts.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration.GetSection("AppSettings:TokenSecret").Value)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
             ValidateIssuer = false,
             ValidateAudience = false,
             ClockSkew = TimeSpan.Zero,
@@ -78,6 +80,7 @@ builder.Services.AddScoped<IMeetingService, MeetingService>();
 builder.Services.AddScoped<IGradeService, GradeService>();
 builder.Services.AddScoped<IPersonService, PersonService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
+builder.Services.AddSingleton(secret);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 

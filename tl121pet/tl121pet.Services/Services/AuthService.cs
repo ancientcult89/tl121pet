@@ -17,13 +17,11 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class AuthService(IConfiguration configuration
-        , DataContext dataContext
-        , IHttpContextAccessor httpContextAccessor) : IAuthService
+    public class AuthService(string secret, DataContext dataContext) : IAuthService
     {
-        private readonly IConfiguration _configuration = configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly string _secret = secret;
         private DataContext _dataContext = dataContext;
+
         public string Role { get; set; } = string.Empty;
 
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
@@ -55,7 +53,7 @@ namespace tl121pet.Services.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
-            string secret = _configuration.GetSection("AppSettings:TokenSecret").Value;
+            string secret = _secret; //_configuration.GetSection("AppSettings:TokenSecret").Value;
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
 
@@ -79,18 +77,6 @@ namespace tl121pet.Services.Services
             }
 
             return returnedToken;
-        }
-
-        public long? GetMyUserId()
-        {
-            var result = string.Empty;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                return  Convert.ToInt64(result);
-            }
-            else
-                return null;
         }
 
         public async Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request)

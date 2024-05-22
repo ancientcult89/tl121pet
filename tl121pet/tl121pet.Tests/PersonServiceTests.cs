@@ -18,7 +18,7 @@ namespace tl121pet.Tests
         private readonly IPersonService _personService;
         public PersonServiceTests()
         {
-            var connectionString = "Server=host.docker.internal;Database=TLPersonTest;Port=49153;User Id=postgres;Password=postgrespw";
+            var connectionString = "Server=localhost;Database=TLPersonTest;Port=49154;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                 .UseNpgsql(connectionString)
                 .Options;
