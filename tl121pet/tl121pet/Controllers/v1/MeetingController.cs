@@ -3,21 +3,17 @@ using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class MeetingController : ApiController
+    public class MeetingController(IMeetingService meetingService, IOneToOneApplication application) : ApiController
     {
-        private readonly IMeetingService _meetingService;
-        private readonly IOneToOneApplication _application;
-
-        public MeetingController(IMeetingService meetingService, IOneToOneApplication application)
-        {
-            _meetingService = meetingService;
-            _application = application;
-        }
+        private readonly IMeetingService _meetingService = meetingService;
+        private readonly IOneToOneApplication _application = application;
 
         #region Meeting
         [HttpGet("{id}")]

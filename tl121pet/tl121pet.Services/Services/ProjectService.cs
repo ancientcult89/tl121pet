@@ -6,14 +6,9 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class ProjectService : IProjectService
+    public class ProjectService(DataContext dataContext) : IProjectService
     {
-        private readonly DataContext _dataContext;
-
-        public ProjectService(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
+        private readonly DataContext _dataContext = dataContext;
 
         public async Task<List<ProjectTeam>> GetAllTeamsAsync()
         {

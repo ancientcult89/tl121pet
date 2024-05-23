@@ -6,14 +6,9 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class PersonService : IPersonService
+    public class PersonService(DataContext dataContext) : IPersonService
     {
-        private DataContext _dataContext;
-
-        public PersonService(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
+        private DataContext _dataContext = dataContext;
 
         public async Task<List<Person>> GetPeopleFilteredByProjectsAsync(List<ProjectTeam> projects)
         {

@@ -5,30 +5,25 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
+using System.Text;
 using tl121pet.DAL.Data;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Infrastructure;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class AuthService : IAuthService
+    public class AuthService(string secret, DataContext dataContext) : IAuthService
     {
-        private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private DataContext _dataContext;
+        private readonly string _secret = secret;
+        private DataContext _dataContext = dataContext;
+
         public string Role { get; set; } = string.Empty;
 
-        public AuthService(IConfiguration configuration
-            , DataContext dataContext
-            , IHttpContextAccessor httpContextAccessor)
-        {
-            _configuration = configuration;
-            _dataContext = dataContext;
-            _httpContextAccessor = httpContextAccessor;
-        }
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
         {
             using (var hmac = new HMACSHA512())
@@ -58,29 +53,30 @@ namespace tl121pet.Services.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
-            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+            string secret = _secret; //_configuration.GetSection("AppSettings:TokenSecret").Value;
+
+            var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secret));
 
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
             var token = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: cred);
 
-            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+            var jwt = new JwtSecurityTokenHandler();
 
-            return jwt;
-        }
+            string returnedToken = "";
 
-        public long? GetMyUserId()
-        {
-            var result = string.Empty;
-            if (_httpContextAccessor.HttpContext != null)
-            {
-                result = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                return  Convert.ToInt64(result);
+            try {
+                returnedToken = jwt.WriteToken(token);
             }
-            else
-                return null;
+            catch (Exception ex)
+            { 
+                throw new Exception(ex.Message);
+            }
+
+            return returnedToken;
         }
 
         public async Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request)
@@ -130,15 +126,32 @@ namespace tl121pet.Services.Services
                 throw new Exception("User not found");
             if (VerifyPasswordHash(changeUserPasswordRequest.CurrentPassword, user.PasswordHash, user.PasswordSalt))
             {
-                CreatePasswordHash(changeUserPasswordRequest.NewPassword, out byte[] passwordHash, out byte[] passwordSalt);
-                user.PasswordHash = passwordHash;
-                user.PasswordSalt = passwordSalt;
-                await UpdateUserAsync(user);
+                await SaveNewPasswordAsync(changeUserPasswordRequest.NewPassword, user);
             }
             else
             {
                 throw new Exception("Wrong password");
             }
+        }
+
+        private async Task SaveNewPasswordAsync(string newPassword, User user)
+        {
+            CreatePasswordHash(newPassword, out byte[] passwordHash, out byte[] passwordSalt);
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            await UpdateUserAsync(user);
+        }
+
+        public async Task<string> RecoverPasswordAsync(string email)
+        {
+            try
+            {
+                User user = await GetUserByEmailAsync(email) ?? throw new DataFoundException("User not found");
+                string newPassword = GenerateRandomString(10);
+                await SaveNewPasswordAsync(newPassword, user);
+                return newPassword;
+            }
+            catch(Exception ex) { throw new Exception(ex.Message); }
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -245,5 +258,33 @@ namespace tl121pet.Services.Services
                 return string.Empty;
         }
         #endregion Role
+
+        public static string GenerateRandomString(int length)
+        {
+            const string pattern = "[A-Za-z]";
+            Random random = new Random();
+            StringBuilder result = new StringBuilder(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                char randomChar = GetRandomCharFromPattern(pattern, random);
+                result.Append(randomChar);
+            }
+
+            return result.ToString();
+        }
+
+        private static char GetRandomCharFromPattern(string pattern, Random random)
+        {
+            Regex regex = new Regex(pattern);
+            char randomChar;
+
+            do
+            {
+                randomChar = (char)random.Next(32, 127); // Генерируем случайный символ в диапазоне печатных символов ASCII
+            } while (!regex.IsMatch(randomChar.ToString()));
+
+            return randomChar;
+        }
     }
 }

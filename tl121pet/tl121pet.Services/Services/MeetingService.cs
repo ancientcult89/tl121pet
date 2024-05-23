@@ -8,14 +8,9 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class MeetingService : IMeetingService
+    public class MeetingService(DataContext dataContext) : IMeetingService
     {
-        private DataContext _dataContext;
-
-        public MeetingService(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
+        private DataContext _dataContext = dataContext;
 
         #region Meeting
         public async Task<Meeting> CreateMeetingAsync(Meeting newMeeting)

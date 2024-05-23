@@ -6,13 +6,13 @@ namespace tl121pet.Services.Interfaces
 {
     public interface IAuthService
     {
-        public long? GetMyUserId();
         public Task RegisterAsync(UserRegisterRequestDTO request);
         public Task ChangePasswordAsync(ChangeUserPasswordRequestDTO changeUserPasswordRequest);
         public Task ChangeLocaleByUserIdAsync(long userId, Locale locale);
         public Task<LoginResponseDTO> LoginAsync(UserLoginRequestDTO request);
         public Task<string> CreateTokenAsync(User user);
         public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
+        public Task<string> RecoverPasswordAsync(string email);
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt);
         public string Role { get; set; }
 

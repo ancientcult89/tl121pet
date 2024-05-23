@@ -1,20 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class PersonController : ApiController
+    public class PersonController(IPersonService personService, IOneToOneApplication application) : ApiController
     {
-        private IPersonService _personService;
-        private readonly IOneToOneApplication _application;
-        public PersonController(IPersonService personService, IOneToOneApplication application)
-        {
-            _personService = personService;
-            _application = application;
-        }
+        private IPersonService _personService = personService;
+        private readonly IOneToOneApplication _application = application;
+
         [HttpGet]
         public async Task<ActionResult<List<Person>>> GetPersonList()
         {

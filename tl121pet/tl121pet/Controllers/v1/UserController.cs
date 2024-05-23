@@ -5,20 +5,16 @@ using tl121pet.Entities.Extensions;
 using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class UserController : Controller
+    public class UserController(IAuthService authService, IOneToOneApplication oneToOneApplication) : Controller
     {
-        private readonly IAuthService _authService;
-        private readonly IOneToOneApplication _oneToOneApplication;
-        public UserController(IAuthService authService, IOneToOneApplication oneToOneApplication)
-        {
-            _authService = authService;
-            _oneToOneApplication = oneToOneApplication;
-        }
+        private readonly IAuthService _authService = authService;
+        private readonly IOneToOneApplication _oneToOneApplication = oneToOneApplication;
 
         [Authorize]
         [HttpGet]
@@ -48,6 +44,20 @@ namespace tl121pet.Controllers.v1
             try
             {
                 return await _authService.LoginAsync(loginRequest);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("recoverypassword")]
+        public async Task<ActionResult> RecoverPassword([FromBody] RecoverPasswordRequestDTO recoverPasswordRequest)
+        {
+            try
+            {
+                await _oneToOneApplication.RecoverPasswordAsync(recoverPasswordRequest);
+                return Ok();
             }
             catch (Exception ex)
             {

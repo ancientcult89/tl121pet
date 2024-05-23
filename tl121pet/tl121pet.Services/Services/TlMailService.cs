@@ -7,13 +7,10 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class MailService : IMailService
+    public class TlMailService(IOptions<MailSettings> mailSettings) : ITlMailService
     {
-        private readonly MailSettings _settings;
-        public MailService(IOptions<MailSettings> mailSettings)
-        { 
-            _settings = mailSettings.Value;
-        }
+        private readonly MailSettings _settings = mailSettings.Value;
+
         public async Task SendMailAsync(MailRequest mail)
         {
             MimeMessage email = BuildMailMessage(mail);

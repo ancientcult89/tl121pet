@@ -1,20 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
 using tl121pet.Services.Interfaces;
+using tl121pet.Services.Services;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class TaskController : ApiController
+    public class TaskController(IMeetingService meetingService, IOneToOneApplication application) : ApiController
     {
-        private IMeetingService _meetingService;
-        private IOneToOneApplication _application;
-        public TaskController(IMeetingService meetingService, IOneToOneApplication application)
-        {
-            _meetingService = meetingService;
-            _application = application;
-        }
+        private IMeetingService _meetingService = meetingService;
+        private IOneToOneApplication _application = application;
 
         [HttpGet]
         public async Task<ActionResult<List<TaskDTO>>> GetTaskList(Guid? currentMeetingId, long? personId = null)

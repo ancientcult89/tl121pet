@@ -6,13 +6,10 @@ using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
 {
-    public class GradeService : IGradeService
+    public class GradeService (DataContext dataContext) : IGradeService
     {
-        private DataContext _dataContext;
-        public GradeService(DataContext dataContext)
-        {
-            _dataContext = dataContext;
-        }
+        private DataContext _dataContext = dataContext;
+
         public async Task<List<Grade>> GetAllGradesAsync()
         {
             return await _dataContext.Grades.ToListAsync();

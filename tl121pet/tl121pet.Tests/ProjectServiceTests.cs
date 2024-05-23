@@ -17,7 +17,7 @@ namespace tl121pet.Tests
         private IProjectService _projectService;
         public ProjectServiceTests()
         {
-            var connectionString = "Server=host.docker.internal;Database=TLProjectTest;Port=49153;User Id=postgres;Password=postgrespw";
+            var connectionString = "Server=localhost;Database=TLProjectTest;Port=49154;User Id=postgres;Password=postgrespw";
             var dbContextOptions = new DbContextOptionsBuilder<DataContext>()
                 .UseNpgsql(connectionString)
                 .Options;

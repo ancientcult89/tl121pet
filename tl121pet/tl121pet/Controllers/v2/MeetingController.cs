@@ -6,14 +6,9 @@ namespace tl121pet.Controllers.v2
 {
     [ApiController]
     [Route("api/v2/[controller]")]
-    public class MeetingController : ApiController
+    public class MeetingController(IOneToOneApplication application) : ApiController
     {
-        private readonly IOneToOneApplication _application;
-
-        public MeetingController(IOneToOneApplication application)
-        {
-            _application = application;
-        }
+        private readonly IOneToOneApplication _application = application;
 
         [HttpGet]
         public async Task<ActionResult<MeetingPagedResponseDTO>> GetMeetingList([FromQuery] MeetingPagedRequestDTO requestDTO)
