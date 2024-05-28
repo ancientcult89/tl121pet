@@ -90,9 +90,8 @@ var app = builder.Build();
 
 app.UseCors(x => x.AllowAnyMethod()
     .AllowAnyHeader()
-    .SetIsOriginAllowed(origin => true) // allow any origin
-    .WithOrigins(builder.Configuration.GetSection("CorsAllowedHosts").ToString())); // Allow only this origin can also have multiple origins separated with comma
-    //.AllowCredentials());
+    .AllowAnyOrigin());
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.MapDefaultControllerRoute();
