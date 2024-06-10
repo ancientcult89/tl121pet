@@ -73,6 +73,7 @@ builder.Services.AddMvc().AddViewLocalization(LanguageViewLocationExpanderFormat
 builder.Services.AddHttpClient();
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+builder.Services.Configure<EncryptionSettings>(builder.Configuration.GetSection("EncryptionSettings"));
 
 builder.Services.AddScoped<IOneToOneApplication, OneToOneApplication>();
 builder.Services.AddTransient<ITlMailService, TlMailService>();
@@ -83,6 +84,7 @@ builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddSingleton(secret);
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddTransient<IEncryptionService, EncryptionService>();
 
 builder.Services.AddHttpContextAccessor();
 
