@@ -9,19 +9,26 @@ namespace tl121pet.Services.Services
 {
     public class TlMailService(IOptions<MailSettings> mailSettings) : ITlMailService
     {
-        private readonly MailSettings _settings = mailSettings.Value;
+        private readonly MailSettings _infrastructureSettings = mailSettings.Value;
 
-        public async Task SendMailAsync(MailRequest mail)
+        public async Task SendInfrastructureMailAsync(MailRequest mail)
         {
-            MimeMessage email = BuildMailMessage(mail);
-            using var smtp = ConfigureMailServer(_settings);
+            MimeMessage email = BuildMailMessage(mail, _infrastructureSettings.Mail);
+            using var smtp = ConfigureMailServer(_infrastructureSettings);
             await smtp.SendAsync(email);
         }
 
-        private MimeMessage BuildMailMessage(MailRequest mail)
+        public async Task SendMailAsync(MailRequest mail, MailSettings mailSettings)
+        {
+            MimeMessage email = BuildMailMessage(mail, mailSettings.Mail);
+            using var smtp = ConfigureMailServer(mailSettings);
+            await smtp.SendAsync(email);
+        }
+
+        private MimeMessage BuildMailMessage(MailRequest mail, string senderEmail)
         {
             MimeMessage email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_settings.Mail));
+            email.From.Add(MailboxAddress.Parse(senderEmail));
             email.To.Add(MailboxAddress.Parse(mail.ToEmail));
             email.Subject = mail.Subject;
             email.Body = new TextPart(TextFormat.Text) { Text = mail.Body };
@@ -33,10 +40,10 @@ namespace tl121pet.Services.Services
         {
             SmtpClient smtp = new SmtpClient();
             smtp.Connect(
-                _settings.Host,
-                _settings.Port,
+                settings.Host,
+                settings.Port,
                 true);
-            smtp.Authenticate(_settings.Mail, _settings.Password);
+            smtp.Authenticate(settings.Mail, settings.Password);
             return smtp;
         }
     }

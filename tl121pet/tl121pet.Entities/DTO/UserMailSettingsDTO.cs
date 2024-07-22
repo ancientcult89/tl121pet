@@ -1,6 +1,8 @@
-﻿namespace tl121pet.Entities.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace tl121pet.Entities.DTO
 {
-    public class UserMailSetting
+    public class UserMailSettingsDTO
     {
         public long UserMailSettingId { get; set; }
         /// <summary>
@@ -22,6 +24,7 @@
         /// <summary>
         /// ИД пользователя
         /// </summary>
+        [Required]
         public long UserId { get; set; }
     }
 }

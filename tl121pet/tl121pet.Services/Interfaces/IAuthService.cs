@@ -26,6 +26,5 @@ namespace tl121pet.Services.Interfaces
         public Task<UserDTO> UpdateUserAsync(UserDTO user);
         public Task DeleteUserAsync(long userId);
         public Task<List<User>> GetUserListAsync();
-
     }
 }

@@ -2,21 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
 using tl121pet.Entities.Extensions;
-using tl121pet.Entities.Infrastructure;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
-using tl121pet.Services.Services;
 
 namespace tl121pet.Controllers.v1
 {
     [ApiController]
     [Route("api/v1/[controller]")]
-    public class UserController(IAuthService authService, IOneToOneApplication oneToOneApplication) : Controller
+    public class UserController(IAuthService authService, IOneToOneApplication oneToOneApplication, IUserMailSettingService userMailSettingService) : ApiController
     {
         private readonly IAuthService _authService = authService;
         private readonly IOneToOneApplication _oneToOneApplication = oneToOneApplication;
+        private readonly IUserMailSettingService _userMailSettingService = userMailSettingService;
 
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<List<UserResponseDTO>>> GetUserList()
         {
@@ -24,6 +22,7 @@ namespace tl121pet.Controllers.v1
             return respond.Select(u => u.ToResponseDto()).ToList();
         }
 
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<ActionResult> RegisterUser([FromBody] UserRegisterRequestDTO request)
         {
@@ -33,11 +32,12 @@ namespace tl121pet.Controllers.v1
                 return Ok();
             }
             catch (Exception ex)
-            { 
+            {
                 return BadRequest(ex.Message);
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] UserLoginRequestDTO loginRequest)
         {
@@ -51,6 +51,7 @@ namespace tl121pet.Controllers.v1
             }
         }
 
+        [AllowAnonymous]
         [HttpPost("recoverypassword")]
         public async Task<ActionResult> RecoverPassword([FromBody] RecoverPasswordRequestDTO recoverPasswordRequest)
         {
@@ -65,33 +66,30 @@ namespace tl121pet.Controllers.v1
             }
         }
 
-        [Authorize]
         [HttpPut("{id}/changepassword")]
         public async Task<ActionResult> ChangePassword([FromBody] ChangeUserPasswordRequestDTO changeUserPasswordRequest)
         {
             try
-            { 
+            {
                 await _authService.ChangePasswordAsync(changeUserPasswordRequest);
                 return Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDTO>> GetUserById(long id)
         {
             User? user = await _authService.GetUserByIdAsync(id);
             if (user == null)
                 return NotFound();
-            else 
+            else
                 return user.ToDto();
         }
 
-        [Authorize]
         [HttpPost("changelocale")]
         public async Task<ActionResult> ChangeLocale([FromBody] ChangeLocaleRequestDTO request)
         {
@@ -110,6 +108,28 @@ namespace tl121pet.Controllers.v1
         {
             await _authService.DeleteUserAsync(id);
             return Ok();
+        }
+
+        [HttpGet("/currentUserId")]
+        public ActionResult<long> GetMailSettingsByUserId()
+        {           
+                return _oneToOneApplication.GetMyUserId();
+        }
+
+        [HttpGet("{userId}/mailsettings")]
+        public async Task<ActionResult<UserMailSettingsDTO>> GetMailSettingsByUserId(long userId)
+        {
+            UserMailSetting? userMailSetting = await _oneToOneApplication.GetUserMailSettingsByUserIdAsync(userId);
+            if (userMailSetting == null)
+                return new UserMailSettingsDTO();
+            else
+                return userMailSetting.ToDto();
+        }
+
+        [HttpPut("{userId}/mailsettings")]
+        public async Task<ActionResult<UserMailSettingsDTO>> SetUserMailSettings([FromBody] UserMailSettingsDTO userMailSettings)
+        {
+            return await _oneToOneApplication.SetUserMailSettingsAsync(userMailSettings);
         }
     }
 }

@@ -16,6 +16,8 @@ namespace tl121pet.Services.Services
         ITlMailService mailService,
         IPersonService personService,
         IHttpContextAccessor httpContextAccessor,
+        IUserMailSettingService userMailSettingService,
+        IEncryptionService encryptionService,
         IAuthService authService) : IOneToOneApplication
     {
         private IPersonService _personService = personService;
@@ -23,6 +25,8 @@ namespace tl121pet.Services.Services
         private ITlMailService _mailService = mailService;
         private readonly IAuthService _authService = authService;
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+        private readonly IUserMailSettingService _userMailSettingService = userMailSettingService;
+        private readonly IEncryptionService _encryptionService = encryptionService;
 
         public async Task<List<OneToOneDeadline>> GetDeadLinesAsync()
         {
@@ -80,7 +84,17 @@ namespace tl121pet.Services.Services
             MailRequest mail = await GenerateFollowUpMailRequestAsync(meetingId, personId);
             try
             {
-                await _mailService.SendMailAsync(mail);
+                long? userId = GetMyUserId();
+                if (userId == null)
+                    throw new Exception("User not found");
+
+                UserMailSetting userMailSetting = await _userMailSettingService.GetUserMailSettingsByUserIdAsync((long)userId);
+                User user = await _authService.GetUserByIdAsync((long)userId);
+
+                MailSettings mailSettings = GenerateMailSettings(userMailSetting, user.Email);
+                mailSettings.Password = _encryptionService.Decrypt(mailSettings.Password);
+
+                await _mailService.SendMailAsync(mail, mailSettings);
                 await MarkAsSendedFollowUpAsync(meetingId);
             }
             catch { throw new Exception("e-mail service is unavalable"); }
@@ -88,10 +102,20 @@ namespace tl121pet.Services.Services
 
         public async Task SendGreetingMailAsync(long personId)
         {
+            long? userId = GetMyUserId();
+            if (userId == null)
+                throw new Exception("User not found");
+
+            UserMailSetting userMailSetting = await _userMailSettingService.GetUserMailSettingsByUserIdAsync((long)userId);
+            User user = await _authService.GetUserByIdAsync((long)userId);
+
+            MailSettings mailSettings = GenerateMailSettings(userMailSetting, user.Email);
+            mailSettings.Password = _encryptionService.Decrypt(mailSettings.Password);
+
             MailRequest mail = await GeneratGreetingMailRequest(personId);
             try
             {
-                await _mailService.SendMailAsync(mail);
+                await _mailService.SendMailAsync(mail, mailSettings);
             }
             catch { throw new Exception("e-mail service is unavalable"); }
         }
@@ -273,7 +297,7 @@ namespace tl121pet.Services.Services
             return mail;
         }
 
-        private long GetMyUserId()
+        public long GetMyUserId()
         {
             var result = string.Empty;
             if (_httpContextAccessor.HttpContext != null)
@@ -285,15 +309,43 @@ namespace tl121pet.Services.Services
                 throw new DataFoundException("User not found");
         }
 
+        private MailSettings GenerateMailSettings(UserMailSetting userMailSetting, string senderMail)
+        {
+            MailSettings mailSettings = new MailSettings()
+            {
+                DisplayName = userMailSetting.DisplayName,
+                Host = userMailSetting.EmailHostAddress,
+                Mail = senderMail,
+                Password = userMailSetting.EmailPassword,
+                Port = userMailSetting.EmailPort,
+            };
+            return mailSettings;
+        }
+
         public async Task RecoverPasswordAsync(RecoverPasswordRequestDTO recoverPasswordRequest)
         {
             string newPassword = await _authService.RecoverPasswordAsync(recoverPasswordRequest.Email);
             MailRequest mail = await GeneratPasswordRecoveryMailAsync(newPassword, recoverPasswordRequest.Email);
             try
             {
-                await _mailService.SendMailAsync(mail);
+                await _mailService.SendInfrastructureMailAsync(mail);
             }
             catch { throw new Exception("e-mail service is unavalable"); }
+        }
+
+        public async Task<UserMailSetting> GetUserMailSettingsByUserIdAsync(long userId)
+        {
+            UserMailSetting userMailSetting = await _userMailSettingService.GetUserMailSettingsByUserIdAsync(userId);
+            if(userMailSetting?.EmailPassword != null)
+                userMailSetting.EmailPassword = _encryptionService.Decrypt(userMailSetting.EmailPassword);
+
+            return userMailSetting;
+        }
+
+        public async Task<UserMailSettingsDTO> SetUserMailSettingsAsync(UserMailSettingsDTO userMailSetting)
+        {
+            userMailSetting.EmailPassword = _encryptionService.Encrypt(userMailSetting.EmailPassword);
+            return await _userMailSettingService.SetUserMailSettingsAsync(userMailSetting);
         }
     }
 }

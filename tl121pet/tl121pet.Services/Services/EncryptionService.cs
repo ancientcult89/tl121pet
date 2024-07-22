@@ -17,8 +17,8 @@ namespace tl121pet.Services.Services
 
         public string Encrypt(string plainText)
         {
-            byte[] key = Encoding.UTF8.GetBytes(_settings.Key);
-            byte[] iv = Encoding.UTF8.GetBytes(_settings.IV);
+            byte[] key, iv;
+            PrepareKeyAndIV(out key, out iv);
 
             using (Aes aes = Aes.Create())
             {
@@ -42,8 +42,9 @@ namespace tl121pet.Services.Services
 
         public string Decrypt(string cipherText)
         {
-            byte[] key = Encoding.UTF8.GetBytes(_settings.Key);
-            byte[] iv = Encoding.UTF8.GetBytes(_settings.IV);
+            byte[] key, iv;
+            PrepareKeyAndIV(out key, out iv);
+
             byte[] buffer = Convert.FromBase64String(cipherText);
 
             using (Aes aes = Aes.Create())
@@ -62,6 +63,21 @@ namespace tl121pet.Services.Services
                         }
                     }
                 }
+            }
+        }
+
+        private void PrepareKeyAndIV(out byte[] key, out byte[] iv)
+        {
+            key = Convert.FromBase64String(_settings.Key);
+            iv = Encoding.UTF8.GetBytes(_settings.IV);
+            if (key.Length != 16 && key.Length != 24 && key.Length != 32)
+            {
+                throw new ArgumentException("Key must be 16, 24, or 32 bytes in length.");
+            }
+
+            if (iv.Length != 16)
+            {
+                throw new ArgumentException("IV must be 16 bytes in length.");
             }
         }
     }

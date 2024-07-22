@@ -12,8 +12,8 @@ using tl121pet.DAL.Data;
 namespace tl121pet.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240610140811_MailSettings")]
-    partial class MailSettings
+    [Migration("20240722120315_UserMailSettings")]
+    partial class UserMailSettings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -231,9 +231,6 @@ namespace tl121pet.Migrations
                     b.Property<int>("Locale")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("MailSettingsUserMailSettingId")
-                        .HasColumnType("bigint");
-
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("bytea");
@@ -263,8 +260,6 @@ namespace tl121pet.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MailSettingsUserMailSettingId");
-
                     b.HasIndex("RoleId");
 
                     b.ToTable("Users");
@@ -282,20 +277,26 @@ namespace tl121pet.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EMailPassword")
+                    b.Property<string>("EmailHostAddress")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EmailHostAddress")
+                    b.Property<string>("EmailPassword")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("EmailPort")
                         .HasColumnType("integer");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("UserMailSettingId");
 
-                    b.ToTable("UserMailSetting");
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserMailSettings");
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.UserProject", b =>
@@ -390,17 +391,20 @@ namespace tl121pet.Migrations
 
             modelBuilder.Entity("tl121pet.Entities.Models.User", b =>
                 {
-                    b.HasOne("tl121pet.Entities.Models.UserMailSetting", "MailSettings")
-                        .WithMany()
-                        .HasForeignKey("MailSettingsUserMailSettingId");
-
                     b.HasOne("tl121pet.Entities.Models.Role", "Role")
                         .WithMany()
                         .HasForeignKey("RoleId");
 
-                    b.Navigation("MailSettings");
-
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("tl121pet.Entities.Models.UserMailSetting", b =>
+                {
+                    b.HasOne("tl121pet.Entities.Models.User", null)
+                        .WithOne("MailSettings")
+                        .HasForeignKey("tl121pet.Entities.Models.UserMailSetting", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("tl121pet.Entities.Models.UserProject", b =>
@@ -427,6 +431,11 @@ namespace tl121pet.Migrations
                     b.Navigation("MeetingGoals");
 
                     b.Navigation("MeetingNotes");
+                });
+
+            modelBuilder.Entity("tl121pet.Entities.Models.User", b =>
+                {
+                    b.Navigation("MailSettings");
                 });
 #pragma warning restore 612, 618
         }
