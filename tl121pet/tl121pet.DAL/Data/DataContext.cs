@@ -20,5 +20,6 @@ namespace tl121pet.DAL.Data
         public DbSet<Role> Roles => Set<Role>();
         public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
         public DbSet<UserProject> UserProjects => Set<UserProject>();
+        public DbSet<UserMailSetting> UserMailSettings => Set<UserMailSetting>();
     }
 }

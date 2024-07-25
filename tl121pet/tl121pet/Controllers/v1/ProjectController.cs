@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using tl121pet.Entities.DTO;
-using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Entities.Models;
 using tl121pet.Services.Interfaces;
-using tl121pet.Services.Services;
 
 namespace tl121pet.Controllers.v1
 {

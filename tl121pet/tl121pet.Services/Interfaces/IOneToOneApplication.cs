@@ -21,5 +21,8 @@ namespace tl121pet.Services.Interfaces
         public Task<Meeting> CreateMeetingByPersonIdAsync(long personId);
         public Task ArchivePersonAsync(long id);
         public Task RecoverPasswordAsync(RecoverPasswordRequestDTO recoverPasswordRequest);
+        public Task<UserMailSetting> GetUserMailSettingsByUserIdAsync(long userId);
+        public Task<UserMailSettingsDTO> SetUserMailSettingsAsync(UserMailSettingsDTO userMailSetting);
+        public long GetMyUserId();
     }
 }
