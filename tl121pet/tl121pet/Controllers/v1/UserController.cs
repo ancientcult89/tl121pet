@@ -110,7 +110,7 @@ namespace tl121pet.Controllers.v1
             return Ok();
         }
 
-        [HttpGet("/currentUserId")]
+        [HttpGet("currentUserId")]
         public ActionResult<long> GetMailSettingsByUserId()
         {           
                 return _oneToOneApplication.GetMyUserId();
