@@ -12,7 +12,7 @@ namespace tl121pet.Services.Services
 
         public async Task<List<ProjectTeam>> GetAllTeamsAsync()
         {
-            return await _dataContext.ProjectTeams.ToListAsync();
+            return await _dataContext.ProjectTeams.OrderBy(p => p.ProjectTeamName).ToListAsync();
         }
 
         public async Task<ProjectTeam> GetProjectTeamByIdAsync(long id)

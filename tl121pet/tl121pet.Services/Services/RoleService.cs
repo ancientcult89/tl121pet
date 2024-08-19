@@ -11,7 +11,7 @@ namespace tl121pet.Services.Services
         private DataContext _dataContext = dataContext;
         public async Task<List<Role>> GetRoleListAsync()
         {
-            return await _dataContext.Roles.ToListAsync();
+            return await _dataContext.Roles.OrderBy(r => r.RoleName).ToListAsync();
         }
 
         public async Task<Role> CreateRoleAsync(Role role)
@@ -64,6 +64,21 @@ namespace tl121pet.Services.Services
         {
             Role role = await _dataContext.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.RoleId == roleId);
             return role.RoleName;
+        }
+
+        public async Task<bool> IsUserAdmin(long userId)
+        {
+            Role? admiRole =  await _dataContext.Roles.Where(r => r.RoleName == "Admin").FirstOrDefaultAsync();
+            if (admiRole == null)
+                throw new Exception("!!!The Admin role is not Exists. Critical Business Error!!!");
+
+            User? checkedUser = await _dataContext.Users
+                .Where(u => u.Id == userId && u.RoleId == admiRole.RoleId)
+                .FirstOrDefaultAsync();
+
+            bool isUserAdmin = checkedUser == null ? false : true;
+
+            return isUserAdmin;
         }
     }
 }

@@ -72,6 +72,8 @@ namespace tl121pet.Services.Services
                 .OrderBy(m => m.MeetingId)
                 .Skip((request.CurrentPage - 1) * request.PageSize)
                 .Take(request.PageSize)
+                .OrderByDescending(m => m.MeetingDate)
+                .ThenBy(m => m.Person.LastName)
                 .ToListAsync();
 
             PageInfoResponse pageInfo = new PageInfoResponse() { 
@@ -236,11 +238,17 @@ namespace tl121pet.Services.Services
             return meeting;
         }
 
-        public async Task<Guid?> GetPreviousMeetingIdAsync(Guid currnetMeetingId, long personId)
+        public async Task<Guid?> GetPreviousMeetingIdAsync(Guid currentMeetingId, long personId)
         {
+            //TODO: переделать логику,т.к. 2 зоны отвественности у метода: получить объект текущей встречи и по нему выдернуть
+            // пользака, который проводил 1-2-1 для дальнейшей сверке. правильно - сразу подавать айдишку пользака
+            Meeting? currentMeeting = await _dataContext.Meetings.Where(m => m.MeetingId == currentMeetingId).FirstOrDefaultAsync();
+            if (currentMeeting == null)
+                throw new Exception("Current meeting is not exists");
+
             Meeting previousMeeting = await _dataContext.Meetings
-                .OrderByDescending(p => p.MeetingDate)
-                .Where(p => p.PersonId == personId && p.MeetingId != currnetMeetingId)
+                .OrderByDescending(m => m.MeetingDate)
+                .Where(m => m.PersonId == personId && m.MeetingId != currentMeetingId && m.UserId == currentMeeting.UserId)
                 .FirstOrDefaultAsync();
             return previousMeeting?.MeetingId;
         }

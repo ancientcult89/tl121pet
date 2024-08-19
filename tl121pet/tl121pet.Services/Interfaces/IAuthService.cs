@@ -23,7 +23,7 @@ namespace tl121pet.Services.Interfaces
         public Task<List<ProjectTeam>> GetUserProjectsAsync(long userId);
         public Task<User> CreateUserAsync(User user);
         public Task UpdateUserAsync(User user);
-        public Task<UserDTO> UpdateUserAsync(UserDTO user);
+        public Task<UserDTO> UpdateUserCommonSettingsAsync(UserDTO user);
         public Task DeleteUserAsync(long userId);
         public Task<List<User>> GetUserListAsync();
     }

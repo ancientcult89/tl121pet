@@ -9,5 +9,6 @@ namespace tl121pet.Services.Interfaces
         public Task DeleteRoleAsync(int roleId);
         public Task<Role> CreateRoleAsync(Role role);
         public Task<Role> UpdateRoleAsync(Role role);
+        public Task<bool> IsUserAdmin(long userId);
     }
 }

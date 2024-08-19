@@ -202,7 +202,7 @@ namespace tl121pet.Services.Services
 
         public async Task<List<User>> GetUserListAsync()
         {
-            return await _dataContext.Users.Include(p => p.Role).ToListAsync() ?? new List<User>();
+            return await _dataContext.Users.Include(p => p.Role).OrderBy(u => u.UserName).ToListAsync() ?? new List<User>();
         }
 
         public async Task<List<ProjectTeam>> GetUserProjectsAsync(long userId)
@@ -230,7 +230,7 @@ namespace tl121pet.Services.Services
             await _dataContext.SaveChangesAsync();
         }
 
-        public async Task<UserDTO> UpdateUserAsync(UserDTO userDto)
+        public async Task<UserDTO> UpdateUserCommonSettingsAsync(UserDTO userDto)
         {
             User user = await GetUserByIdAsync(userDto.Id);
 

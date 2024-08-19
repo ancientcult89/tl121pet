@@ -18,6 +18,7 @@ namespace tl121pet.Services.Interfaces
         public Task<MeetingPagedResponseDTO> GetPagedMeetingsAsync(MeetingPagedRequestDTO request);
         public Task<Meeting> CreateMeetingAsync(MeetingDTO m);
         public Task<Meeting> UpdateMeetingAsync(MeetingDTO m);
+        public Task<UserDTO> UpdateUserCommonSettingsAsync(UserDTO user);
         public Task<Meeting> CreateMeetingByPersonIdAsync(long personId);
         public Task ArchivePersonAsync(long id);
         public Task RecoverPasswordAsync(RecoverPasswordRequestDTO recoverPasswordRequest);

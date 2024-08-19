@@ -12,7 +12,7 @@ namespace tl121pet.Services.Services
 
         public async Task<List<Grade>> GetAllGradesAsync()
         {
-            return await _dataContext.Grades.ToListAsync();
+            return await _dataContext.Grades.OrderBy(g => g.GradeName).ToListAsync();
         }
         public async Task<Grade> CreateGradeAsync(Grade grade)
         {

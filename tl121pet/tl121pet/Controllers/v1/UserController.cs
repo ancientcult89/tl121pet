@@ -98,9 +98,9 @@ namespace tl121pet.Controllers.v1
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserDTO>> UpdateUser([FromBody] UserDTO user)
+        public async Task<ActionResult<UserDTO>> UpdateUserCommonSettings([FromBody] UserDTO user)
         {
-            return await _authService.UpdateUserAsync(user);
+            return await _oneToOneApplication.UpdateUserCommonSettingsAsync(user);
         }
 
         [HttpDelete("{id}")]

@@ -18,7 +18,7 @@ namespace tl121pet.Services.Services
                 peopleFiltered.AddRange(await GetPeopleFilteredByProjectAsync(pt.ProjectTeamId));
             }
 
-            peopleFiltered = peopleFiltered.Distinct(new PersonComparer()).ToList();
+            peopleFiltered = peopleFiltered.Distinct(new PersonComparer()).OrderByDescending(p => p.LastName).ToList();
 
             return peopleFiltered;
         }
@@ -103,7 +103,10 @@ namespace tl121pet.Services.Services
 
         public async Task<List<Person>> GetPeopleWithGradeAsync()
         {
-            return await _dataContext.People.Include(p => p.Grade).Where(p => p.IsArchive == false).ToListAsync();
+            return await _dataContext.People.Include(p => p.Grade)
+                .Where(p => p.IsArchive == false)
+                .OrderBy(p => p.LastName)
+                .ToListAsync();
         }
 
         private async Task CheckPersonExistsByEmail(Person person)

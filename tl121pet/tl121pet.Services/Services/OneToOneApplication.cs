@@ -18,6 +18,7 @@ namespace tl121pet.Services.Services
         IHttpContextAccessor httpContextAccessor,
         IUserMailSettingService userMailSettingService,
         IEncryptionService encryptionService,
+        IRoleService roleService,
         IAuthService authService) : IOneToOneApplication
     {
         private IPersonService _personService = personService;
@@ -27,6 +28,7 @@ namespace tl121pet.Services.Services
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private readonly IUserMailSettingService _userMailSettingService = userMailSettingService;
         private readonly IEncryptionService _encryptionService = encryptionService;
+        private readonly IRoleService _roleService = roleService;
 
         public async Task<List<OneToOneDeadline>> GetDeadLinesAsync()
         {
@@ -346,6 +348,26 @@ namespace tl121pet.Services.Services
         {
             userMailSetting.EmailPassword = _encryptionService.Encrypt(userMailSetting.EmailPassword);
             return await _userMailSettingService.SetUserMailSettingsAsync(userMailSetting);
+        }
+
+        public async Task<UserDTO> UpdateUserCommonSettingsAsync(UserDTO user)
+        {
+            long? currentSessionUser = GetMyUserId();
+            if (currentSessionUser == null)
+                throw new Exception("Not exists session, please login");
+
+            User updatedUser = await _authService.GetUserByIdAsync(user.Id);
+
+            if (updatedUser == null)
+                throw new Exception("User is not exists");
+
+            if (updatedUser.RoleId != user.RoleId)
+            {
+                if (!(await _roleService.IsUserAdmin((long)currentSessionUser)))
+                    throw new Exception("Only Admin can change User Role");
+            }
+
+            return await _authService.UpdateUserCommonSettingsAsync(user);
         }
     }
 }
