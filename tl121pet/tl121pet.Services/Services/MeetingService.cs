@@ -244,7 +244,7 @@ namespace tl121pet.Services.Services
             // пользака, который проводил 1-2-1 для дальнейшей сверке. правильно - сразу подавать айдишку пользака
             Meeting? currentMeeting = await _dataContext.Meetings.Where(m => m.MeetingId == currentMeetingId).FirstOrDefaultAsync();
             if (currentMeeting == null)
-                throw new Exception("Current meeting is not exists");
+                throw new LogicException("Current meeting is not exists");
 
             Meeting previousMeeting = await _dataContext.Meetings
                 .OrderByDescending(m => m.MeetingDate)

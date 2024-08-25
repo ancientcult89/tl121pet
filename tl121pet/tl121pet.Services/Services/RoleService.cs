@@ -70,7 +70,7 @@ namespace tl121pet.Services.Services
         {
             Role? admiRole =  await _dataContext.Roles.Where(r => r.RoleName == "Admin").FirstOrDefaultAsync();
             if (admiRole == null)
-                throw new Exception("!!!The Admin role is not Exists. Critical Business Error!!!");
+                throw new LogicException("!!!The Admin role is not Exists. Critical Business Error!!!");
 
             User? checkedUser = await _dataContext.Users
                 .Where(u => u.Id == userId && u.RoleId == admiRole.RoleId)

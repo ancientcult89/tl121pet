@@ -73,7 +73,7 @@ namespace tl121pet.Services.Services
             }
             catch (Exception ex)
             { 
-                throw new Exception(ex.Message);
+                throw new LogicException(ex.Message);
             }
 
             return returnedToken;
@@ -83,7 +83,7 @@ namespace tl121pet.Services.Services
         {
             User user = await GetUserByEmailAsync(request.Email);
             if (user == null)
-                throw new Exception("User not found");
+                throw new LogicException("User not found");
 
             if (VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
@@ -97,17 +97,24 @@ namespace tl121pet.Services.Services
                 return loginResponse;
             }
 
-            throw new Exception("Wrong password");
+            throw new LogicException("Wrong password");
         }
 
         public async Task RegisterAsync(UserRegisterRequestDTO request)
         {
+            if(request.Password.Count() < 6)
+                throw new LogicException("Please enter at least 6 characters");
+
+            if(request.Password != request.ConfirmPassword)
+                throw new LogicException("Password is not equal to confirmation");
+
             User existsUserByEmail = await GetUserByEmailAsync(request.Email);
             if (existsUserByEmail != null)
-                throw new Exception("A User with the same email already exists");
+                throw new LogicException("A User with the same email already exists");
+
             User existsUserByName = await GetUserByNameAsync(request.UserName);
             if (existsUserByName != null)
-                throw new Exception("A User with the same UserName already exists");
+                throw new LogicException("A User with the same UserName already exists");
 
             CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
             User newUser = new User { 
@@ -123,14 +130,14 @@ namespace tl121pet.Services.Services
         {
             User user = await GetUserByIdAsync(changeUserPasswordRequest.UserId);
             if (user == null)
-                throw new Exception("User not found");
+                throw new LogicException("User not found");
             if (VerifyPasswordHash(changeUserPasswordRequest.CurrentPassword, user.PasswordHash, user.PasswordSalt))
             {
                 await SaveNewPasswordAsync(changeUserPasswordRequest.NewPassword, user);
             }
             else
             {
-                throw new Exception("Wrong password");
+                throw new LogicException("Wrong password");
             }
         }
 
@@ -151,7 +158,7 @@ namespace tl121pet.Services.Services
                 await SaveNewPasswordAsync(newPassword, user);
                 return newPassword;
             }
-            catch(Exception ex) { throw new Exception(ex.Message); }
+            catch(Exception ex) { throw new LogicException(ex.Message); }
         }
 
         public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
@@ -176,8 +183,6 @@ namespace tl121pet.Services.Services
             _dataContext.Users.Remove(user);
             await _dataContext.SaveChangesAsync();
         }
-
-
 
         public async Task<User?> GetUserByEmailAsync(string email)
         {
@@ -235,7 +240,7 @@ namespace tl121pet.Services.Services
             User user = await GetUserByIdAsync(userDto.Id);
 
             if (user == null)
-                throw new Exception("User not found");
+                throw new LogicException("User not found");
 
             user.UserName = userDto.UserName;
             user.Email = userDto.Email;

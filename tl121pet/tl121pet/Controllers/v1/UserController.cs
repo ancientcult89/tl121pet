@@ -26,29 +26,15 @@ namespace tl121pet.Controllers.v1
         [HttpPost("register")]
         public async Task<ActionResult> RegisterUser([FromBody] UserRegisterRequestDTO request)
         {
-            try
-            {
-                await _authService.RegisterAsync(request);
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _authService.RegisterAsync(request);
+            return Ok();
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] UserLoginRequestDTO loginRequest)
         {
-            try
-            {
-                return await _authService.LoginAsync(loginRequest);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            return await _authService.LoginAsync(loginRequest);
         }
 
         [AllowAnonymous]
@@ -69,15 +55,8 @@ namespace tl121pet.Controllers.v1
         [HttpPut("{id}/changepassword")]
         public async Task<ActionResult> ChangePassword([FromBody] ChangeUserPasswordRequestDTO changeUserPasswordRequest)
         {
-            try
-            {
                 await _authService.ChangePasswordAsync(changeUserPasswordRequest);
                 return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
         }
 
         [HttpGet("{id}")]

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 using tl121pet.Entities.Infrastructure;
+using tl121pet.Entities.Infrastructure.Exceptions;
 using tl121pet.Services.Interfaces;
 
 namespace tl121pet.Services.Services
@@ -39,11 +40,27 @@ namespace tl121pet.Services.Services
         private SmtpClient ConfigureMailServer(MailSettings settings)
         {
             SmtpClient smtp = new SmtpClient();
-            smtp.Connect(
+            try
+            {
+                smtp.Connect(
                 settings.Host,
                 settings.Port,
                 true);
-            smtp.Authenticate(settings.Mail, settings.Password);
+            }
+            catch
+            {
+                throw new LogicException("Unable to connect to mail server: check you mail settings");
+            }
+
+            try
+            {
+                smtp.Authenticate(settings.Mail, settings.Password);
+            }
+            catch
+            {
+                throw new LogicException("Mail Authentication failed: check you mail settings");
+            }
+            
             return smtp;
         }
     }

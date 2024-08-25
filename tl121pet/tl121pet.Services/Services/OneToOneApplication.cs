@@ -84,29 +84,26 @@ namespace tl121pet.Services.Services
         public async Task SendFollowUpAsync(Guid meetingId, long personId)
         {
             MailRequest mail = await GenerateFollowUpMailRequestAsync(meetingId, personId);
-            try
-            {
-                long? userId = GetMyUserId();
-                if (userId == null)
-                    throw new Exception("User not found");
 
-                UserMailSetting userMailSetting = await _userMailSettingService.GetUserMailSettingsByUserIdAsync((long)userId);
-                User user = await _authService.GetUserByIdAsync((long)userId);
+            long? userId = GetMyUserId();
+            if (userId == null)
+                throw new LogicException("User not found");
 
-                MailSettings mailSettings = GenerateMailSettings(userMailSetting, user.Email);
-                mailSettings.Password = _encryptionService.Decrypt(mailSettings.Password);
+            UserMailSetting userMailSetting = await _userMailSettingService.GetUserMailSettingsByUserIdAsync((long)userId);
+            User user = await _authService.GetUserByIdAsync((long)userId);
 
-                await _mailService.SendMailAsync(mail, mailSettings);
-                await MarkAsSendedFollowUpAsync(meetingId);
-            }
-            catch { throw new Exception("e-mail service is unavalable"); }
+            MailSettings mailSettings = GenerateMailSettings(userMailSetting, user.Email);
+            mailSettings.Password = _encryptionService.Decrypt(mailSettings.Password);
+
+            await _mailService.SendMailAsync(mail, mailSettings);
+            await MarkAsSendedFollowUpAsync(meetingId);
         }
 
         public async Task SendGreetingMailAsync(long personId)
         {
             long? userId = GetMyUserId();
             if (userId == null)
-                throw new Exception("User not found");
+                throw new LogicException("User not found");
 
             UserMailSetting userMailSetting = await _userMailSettingService.GetUserMailSettingsByUserIdAsync((long)userId);
             User user = await _authService.GetUserByIdAsync((long)userId);
@@ -115,11 +112,8 @@ namespace tl121pet.Services.Services
             mailSettings.Password = _encryptionService.Decrypt(mailSettings.Password);
 
             MailRequest mail = await GeneratGreetingMailRequest(personId);
-            try
-            {
-                await _mailService.SendMailAsync(mail, mailSettings);
-            }
-            catch { throw new Exception("e-mail service is unavalable"); }
+
+            await _mailService.SendMailAsync(mail, mailSettings);
         }
 
         public async Task<List<Person>> GetPeopleFilteredByProjectsAsync()
@@ -143,7 +137,7 @@ namespace tl121pet.Services.Services
                 await _personService.ArchivePersonAsync(personId);
                 await _meetingService.CompleteAllPersonGoalsAsync(personId);
             }
-            catch { throw new Exception("Failed to archive employee"); }
+            catch { throw new LogicException("Failed to archive employee"); }
         }
 
         public async Task<List<TaskDTO>> GetTaskListAsync(long? personId, Guid? currentMeetingId)
@@ -228,12 +222,7 @@ namespace tl121pet.Services.Services
             List<MeetingGoal> goals = await _meetingService.GetMeetingGoalsAsync(meetingId);
             if (goals.Count() > 0)
             {
-                meetingGoals += "К следующему 1-2-1 договорились:\n";
-                foreach (MeetingGoal mg in goals)
-                {
-                    meetingGoals += $"\t- {mg.MeetingGoalDescription};\n";
-                }
-                meetingGoals += "\n\n";
+                meetingGoals += "К следующему 1-2-1 договорились:\n" + FormingMeetingGoalText(goals);
             }
 
             return meetingGoals;
@@ -245,13 +234,21 @@ namespace tl121pet.Services.Services
             List<MeetingGoal> goals = await _meetingService.GetPrevoiusUnclosedMeetingGoalsAsync(meetingId, personId);
             if (goals.Count() > 0)
             {
-                meetingGoals += "С прошлой встречи остались цели:\n";
-                foreach (MeetingGoal mg in goals)
-                {
-                    meetingGoals += $"\t- {mg.MeetingGoalDescription};\n";
-                }
-                meetingGoals += "\n\n";
+                meetingGoals += "С прошлой встречи остались цели:\n" + FormingMeetingGoalText(goals);
             }
+
+            return meetingGoals;
+        }
+
+        private string FormingMeetingGoalText(List<MeetingGoal> goals)
+        {
+            string meetingGoals = "";
+
+            foreach (MeetingGoal mg in goals)
+            {
+                meetingGoals += $"\t- {mg.MeetingGoalDescription};\n";
+            }
+            meetingGoals += "\n\n";
 
             return meetingGoals;
         }
@@ -332,7 +329,7 @@ namespace tl121pet.Services.Services
             {
                 await _mailService.SendInfrastructureMailAsync(mail);
             }
-            catch { throw new Exception("e-mail service is unavalable"); }
+            catch { throw new LogicException("e-mail service is unavalable"); }
         }
 
         public async Task<UserMailSetting> GetUserMailSettingsByUserIdAsync(long userId)
@@ -354,17 +351,17 @@ namespace tl121pet.Services.Services
         {
             long? currentSessionUser = GetMyUserId();
             if (currentSessionUser == null)
-                throw new Exception("Not exists session, please login");
+                throw new LogicException("Not exists session, please login");
 
             User updatedUser = await _authService.GetUserByIdAsync(user.Id);
 
             if (updatedUser == null)
-                throw new Exception("User is not exists");
+                throw new LogicException("User is not exists");
 
             if (updatedUser.RoleId != user.RoleId)
             {
                 if (!(await _roleService.IsUserAdmin((long)currentSessionUser)))
-                    throw new Exception("Only Admin can change User Role");
+                    throw new LogicException("Only Admin can change User Role");
             }
 
             return await _authService.UpdateUserCommonSettingsAsync(user);
